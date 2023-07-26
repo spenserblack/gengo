@@ -59,6 +59,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     let analyzer_target_path = Path::new(&env::var("OUT_DIR")?).join("analyzer.rs");
     let code = tera.render_str(template!("analyzer.rs"), &context)?;
     fs::write(&analyzer_target_path, code)?;
+
+    let languages_target_path = Path::new(&env::var("OUT_DIR")?).join("languages.rs");
+    let code = tera.render_str(template!("languages.rs"), &context)?;
+    fs::write(&languages_target_path, code)?;
     Ok(())
 }
 

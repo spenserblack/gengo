@@ -1,9 +1,6 @@
 pub mod analyzer;
 
-/// A language.
-pub enum Language {
-    PlainText,
-}
+include!(concat!(env!("OUT_DIR"), "/languages.rs"));
 
 // A category for a language.
 pub enum Category {
