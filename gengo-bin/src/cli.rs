@@ -6,6 +6,10 @@ pub fn new() -> Cli {
     Cli::parse()
 }
 
+pub fn new_from<'a>(args: &[&'a str]) -> Cli {
+    Cli::parse_from(args)
+}
+
 /// Fetch language statistics for your source code.
 #[derive(Parser)]
 #[command(version)]
