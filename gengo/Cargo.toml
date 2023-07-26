@@ -6,6 +6,7 @@ repository = "https://github.com/spenserblack/gengo"
 readme = "../README.md"
 
 [dependencies]
+regex = "1"
 
 [build-dependencies]
 serde = { version = "1.0", features = ["derive"] }

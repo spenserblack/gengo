@@ -245,6 +245,7 @@ dependencies = [
 name = "gengo"
 version = "0.1.0"
 dependencies = [
+ "regex",
  "serde",
  "serde_yaml",
  "tera",
