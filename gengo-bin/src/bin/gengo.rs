@@ -1,4 +1,3 @@
-
 use std::process::exit;
 fn main() {
     let cli = gengo_bin::cli::new();

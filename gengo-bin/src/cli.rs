@@ -6,7 +6,7 @@ pub fn new() -> Cli {
     Cli::parse()
 }
 
-pub fn new_from<'a>(args: &[&'a str]) -> Cli {
+pub fn new_from(args: &[&str]) -> Cli {
     Cli::parse_from(args)
 }
 
@@ -24,7 +24,12 @@ impl Cli {
     pub fn run<W: Write>(&self, mut w: W) -> Result<(), Box<dyn Error>> {
         // TODO Implement `Dispay` and read the `to_string` value?
         let result = gengo::add(self.left, self.right);
-        writeln!(w, "{left} + {right} = {result}", left=self.left, right=self.right)?;
+        writeln!(
+            w,
+            "{left} + {right} = {result}",
+            left = self.left,
+            right = self.right
+        )?;
         Ok(())
     }
 }
