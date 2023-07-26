@@ -18,6 +18,7 @@ pub struct Cli {
 
 impl Cli {
     pub fn run<W: Write>(&self, mut w: W) -> Result<(), Box<dyn Error>> {
+        // TODO Implement `Dispay` and read the `to_string` value?
         let result = gengo::add(self.left, self.right);
         writeln!(w, "{left} + {right} = {result}", left=self.left, right=self.right)?;
         Ok(())
