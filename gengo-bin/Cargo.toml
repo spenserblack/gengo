@@ -11,3 +11,6 @@ name = "gengo"
 [dependencies]
 clap = { version = "4", features = ["derive", "wrap_help"] }
 gengo = { path = "../gengo", version = "0.1" }
+
+[dev-dependencies]
+insta = "1"
