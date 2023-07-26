@@ -6,6 +6,8 @@
 # Language: # The name of the language
 #   category: # data, markup, programming, or prose
 #   color: # The color associated with the language (unused)
+#   heuristics: # Regexes unique to the contents of the file to resolve multiple matches
+#     - "^(?m)macro_rules!"
 #   matchers: # Entries to match against filenames
 #     extensions: # The file extensions associated with the language (optional)
 #       - ".rs"
@@ -14,8 +16,6 @@
 #     patterns: # Advanced regex patterns associated with the language (optional)
 #       # See the format of the `regex` crate: https://docs.rs/regex/latest/regex/#syntax
 #       - "^(?i)(?:^|\/)__snapshots__\/.*\.snap$"
-#   heuristics: # Regexes unique to the contents of the file to resolve multiple matches
-#     - "^(?m)macro_rules!"
 #   priority: 0.5 # Value between 0.0 and 1.0 to resolve pick a language if multiple matches couldn't be narrowed down (optional, default: 0.5)
 # ```
 #

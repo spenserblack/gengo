@@ -8,14 +8,22 @@ use std::fs;
 
 const LANGUAGES: &'static str = include_str!("./languages.yaml");
 
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 struct Language {
+    category: LanguageCategory,
     color: String,
     matchers: Matchers,
-    category: LanguageCategory,
+    #[serde(default)]
+    heuristics: Vec<String>,
+    #[serde(default = "default_priority")]
+    priority: f32,
 }
 
-#[derive(Deserialize, Serialize)]
+fn default_priority() -> f32 {
+    0.5
+}
+
+#[derive(Debug, Deserialize, Serialize)]
 struct Matchers {
     #[serde(default)]
     extensions: Vec<String>,
@@ -25,7 +33,7 @@ struct Matchers {
     patterns: Vec<String>,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all = "lowercase")]
 enum LanguageCategory {
     Data,
@@ -43,9 +51,10 @@ macro_rules! template {
 fn main() -> Result<(), Box<dyn Error>> {
     let mut tera = Tera::default();
     tera.register_filter("rustify", rustify);
-    let languages: Value = serde_yaml::from_str(LANGUAGES)?;
+    let languages: HashMap<String, Language> = dbg!(serde_yaml::from_str(LANGUAGES))?;
     let mut context = Context::new();
     context.insert("languages", &languages);
+    let context = dbg!(context);
 
     let languages_target_path = Path::new(&env::var("OUT_DIR")?).join("languages.rs");
     let code = tera.render_str(template!("languages.rs"), &context)?;
