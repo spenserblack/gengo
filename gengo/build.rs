@@ -1,10 +1,10 @@
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use std::env;
 use std::error::Error;
-use std::collections::HashMap;
-use std::path::Path;
-use tera::{Tera, Context, Value};
-use serde::{Deserialize, Serialize};
 use std::fs;
+use std::path::Path;
+use tera::{Context, Tera, Value};
 
 const LANGUAGES: &'static str = include_str!("./languages.yaml");
 
@@ -56,9 +56,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     context.insert("languages", &languages);
     let context = dbg!(context);
 
-    let languages_target_path = Path::new(&env::var("OUT_DIR")?).join("languages.rs");
-    let code = tera.render_str(template!("languages.rs"), &context)?;
-    fs::write(&languages_target_path, code)?;
+    let analyzer_target_path = Path::new(&env::var("OUT_DIR")?).join("analyzer.rs");
+    let code = tera.render_str(template!("analyzer.rs"), &context)?;
+    fs::write(&analyzer_target_path, code)?;
     Ok(())
 }
 

@@ -1,9 +1,9 @@
 vec![
     {% for language, attrs in languages %}
-        LanguageAnalyzer::new(
-            {{ language|rustify }},
-            {{ attrs.category|title }},
-            {{ attrs.color }},
+        Analyzer::new(
+            Language::{{ language|rustify }},
+            Category::{{ attrs.category|title }},
+            "{{ attrs.color }}",
             &[
                 {% for e in attrs.matchers.extensions %}
                     "{{ e }}",
