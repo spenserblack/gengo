@@ -3,7 +3,10 @@
   "image": "mcr.microsoft.com/devcontainers/rust:1",
   "customizations": {
     "vscode": {
-      "extensions": ["EditorConfig.EditorConfig"]
+      "extensions": [
+        "EditorConfig.EditorConfig",
+        "rust-lang.rust-analyzer"
+      ]
     }
   },
   "postCreateCommand": ".devcontainer/postCreate.sh",
