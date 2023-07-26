@@ -6,3 +6,8 @@ repository = "https://github.com/spenserblack/gengo"
 readme = "../README.md"
 
 [dependencies]
+
+[build-dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_yaml = "0.9"
+tera = { version = "1", default-features = false }

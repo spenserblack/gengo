@@ -1,0 +1,31 @@
+vec![
+    {% for language, attrs in languages %}
+        LanguageAnalyzer::new(
+            {{ language|rustify }},
+            {{ attrs.category|title }},
+            {{ attrs.color }},
+            &[
+                {% for e in attrs.matchers.extensions %}
+                    "{{ e }}",
+                {% endfor %}
+            ],
+            &[
+                {% for f in attrs.matchers.filenames %}
+                    "{{ f }}",
+                {% endfor %}
+            ],
+            &[
+                {% for p in attrs.matchers.patterns %}
+                    "{{ p }}",
+                {% endfor %}
+            ],
+            &[
+                {% for h in attrs.heuristics %}
+                    "{{ h }}",
+                {% endfor %}
+            ],
+            {{ attrs.priority }},
+        )
+    {% endfor %}
+]
+
