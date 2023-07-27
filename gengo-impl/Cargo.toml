@@ -3,6 +3,8 @@ name = "gengo-impl"
 version = "0.1.0"
 edition = "2021"
 
+exclude = ["fixtures/", "src/snapshots/"]
+
 [lib]
 proc-macro = true
 
