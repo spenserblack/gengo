@@ -1,16 +1,17 @@
 /// Analyzes a language.
 use super::{Category, Language};
-use std::collections::HashSet;
+use gengo_impl::default_analyzers;
 use regex::Regex;
-use std::path::Path;
+use std::collections::HashSet;
 use std::ffi::{OsStr, OsString};
+use std::path::Path;
 
 pub struct Analyzers(Vec<Analyzer>);
 
 impl Default for Analyzers {
     /// Create a new language analyzer with default values.
     fn default() -> Self {
-        Self(include!(concat!(env!("OUT_DIR"), "/analyzer.rs")))
+        Self(default_analyzers!())
     }
 }
 pub struct Analyzer {
@@ -59,7 +60,8 @@ impl Analyzer {
     }
 
     pub fn matches_filename(&self, filename: &str) -> bool {
-        self.filenames.contains(Path::new(filename).file_name().unwrap_or_default())
+        self.filenames
+            .contains(Path::new(filename).file_name().unwrap_or_default())
     }
 }
 

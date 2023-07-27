@@ -1,0 +1,5 @@
+---
+source: gengo-impl/src/lib.rs
+expression: tokens.to_string()
+---
+vec ! [Analyzer :: new (Language :: PlainText , Category :: Prose , "#000000" , & [".text" , ".txt" ,] , & ["LICENCE" , "LICENSE" ,] , & [] , & [] , 0.5f32 ,) , Analyzer :: new (Language :: Dockerfile , Category :: Programming , "#0000AA" , & [] , & ["Dockerfile" ,] , & ["Dockerfile\\.[\\w\\d]+$" ,] , & ["^(?m)ENTRYPOINT\\ " ,] , 0.75f32 ,) ,]

@@ -1,0 +1,31 @@
+---
+source: gengo-impl/src/lib.rs
+expression: tokens
+---
+TokenStream [
+    Ident {
+        sym: enum,
+    },
+    Ident {
+        sym: Language,
+    },
+    Group {
+        delimiter: Brace,
+        stream: TokenStream [
+            Ident {
+                sym: PlainText,
+            },
+            Punct {
+                char: ',',
+                spacing: Alone,
+            },
+            Ident {
+                sym: Rust,
+            },
+            Punct {
+                char: ',',
+                spacing: Alone,
+            },
+        ],
+    },
+]

@@ -1,6 +1,8 @@
+use gengo_impl::language_enum;
+
 pub mod analyzer;
 
-include!(concat!(env!("OUT_DIR"), "/languages.rs"));
+language_enum!();
 
 // A category for a language.
 pub enum Category {

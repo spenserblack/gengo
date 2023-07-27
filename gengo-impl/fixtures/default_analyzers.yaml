@@ -1,0 +1,22 @@
+---
+Plain Text:
+  category: prose
+  color: "#000000"
+  matchers:
+    extensions:
+      - ".text"
+      - ".txt"
+    filenames:
+      - "LICENCE"
+      - "LICENSE"
+Dockerfile:
+  category: programming
+  color: "#0000AA"
+  heuristics:
+    - "^(?m)ENTRYPOINT\\ "
+  matchers:
+    filenames:
+      - Dockerfile
+    patterns:
+      - "Dockerfile\\.[\\w\\d]+$"
+  priority: 0.75
