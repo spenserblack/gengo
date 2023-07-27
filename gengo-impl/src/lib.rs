@@ -4,7 +4,7 @@
 use indexmap::IndexMap;
 use proc_macro::TokenStream;
 use proc_macro2::TokenStream as TokenStream2;
-use proc_macro2::{Ident, Span};
+use proc_macro2::{Ident, Literal, Span};
 use quote::quote;
 use serde::{Deserialize, Serialize};
 use syn::{parse_macro_input, LitStr};
@@ -70,6 +70,99 @@ fn language_enum_impl(languages: &str) -> TokenStream2 {
 pub fn language_enum(input: TokenStream) -> TokenStream {
     let languages = parse_macro_input!(input as LitStr);
     let tokens = language_enum_impl(&languages.value());
+    tokens.into()
+}
+
+fn default_analyzers_impl(languages: &str) -> TokenStream2 {
+    let languages: Languages = serde_yaml::from_str(languages).unwrap();
+    let initializers: Vec<TokenStream2> = languages
+        .iter()
+        .map(|(name, language)| {
+            let name = rustify(name);
+            let name = Ident::new(&name, Span::call_site());
+            let name = quote! { Language::#name };
+
+            let category = match language.category {
+                LanguageCategory::Data => "Data",
+                LanguageCategory::Markup => "Markup",
+                LanguageCategory::Programming => "Programming",
+                LanguageCategory::Prose => "Prose",
+            };
+            let category = Ident::new(category, Span::call_site());
+            let category = quote! { Category::#category };
+
+            let color = Literal::string(&language.color);
+
+            let extensions: Vec<TokenStream2> = language
+                .matchers
+                .extensions
+                .iter()
+                .map(|ext| {
+                    Literal::string(ext);
+                    quote! { #ext }
+                })
+                .collect();
+            let extensions = quote! { &[#(#extensions ,)*] };
+
+            let filenames: Vec<TokenStream2> = language
+                .matchers
+                .filenames
+                .iter()
+                .map(|filename| {
+                    Literal::string(filename);
+                    quote! { #filename }
+                })
+                .collect();
+            let filenames = quote! { &[#(#filenames ,)*] };
+
+            let patterns: Vec<TokenStream2> = language
+                .matchers
+                .patterns
+                .iter()
+                .map(|pattern| {
+                    Literal::string(pattern);
+                    quote! { #pattern }
+                })
+                .collect();
+            let patterns = quote! { &[#(#patterns ,)*] };
+
+            let heuristics: Vec<TokenStream2> = language
+                .heuristics
+                .iter()
+                .map(|heuristic| {
+                    Literal::string(heuristic);
+                    quote! { #heuristic }
+                })
+                .collect();
+            let heuristics = quote! { &[#(#heuristics ,)*] };
+
+            let priority = Literal::f32_suffixed(language.priority);
+
+            quote! {
+                Analyzer::new(
+                    #name,
+                    #category,
+                    #color,
+                    #extensions,
+                    #filenames,
+                    #patterns,
+                    #heuristics,
+                    #priority,
+                )
+            }
+        })
+        .collect();
+    quote! {
+        vec![
+            #(#initializers ,)*
+        ]
+    }
+}
+
+#[proc_macro]
+pub fn default_analyzers(input: TokenStream) -> TokenStream {
+    let languages = parse_macro_input!(input as LitStr);
+    let tokens = default_analyzers_impl(&languages.value());
     tokens.into()
 }
 
