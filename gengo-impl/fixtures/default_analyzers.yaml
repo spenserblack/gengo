@@ -9,9 +9,14 @@ Plain Text:
     filenames:
       - "LICENCE"
       - "LICENSE"
-Rust:
+Dockerfile:
   category: programming
-  color: "#FF0000"
+  color: "#0000AA"
+  heuristics:
+    - "^(?m)ENTRYPOINT\\ "
   matchers:
-    extensions:
-      - ".rs"
+    filenames:
+      - Dockerfile
+    patterns:
+      - "Dockerfile\\.[\\w\\d]+$"
+  priority: 0.75

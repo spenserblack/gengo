@@ -197,4 +197,5 @@ mod tests {
     }
 
     snapshot_test_macro_impl!(language_enum_impl, "language_enum");
+    snapshot_test_macro_impl!(default_analyzers_impl, "default_analyzers");
 }
