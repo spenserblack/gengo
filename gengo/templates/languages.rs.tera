@@ -1,6 +1,0 @@
-/// A language.
-enum Language {
-    {% for language, _ in languages %}
-        {{ language|rustify }}
-    {% endfor %}
-}
