@@ -1,8 +1,19 @@
+use serde::Deserialize;
 pub mod analyzer;
 
-include!(concat!(env!("OUT_DIR"), "/languages.rs"));
+const LANGUAGE_DEFINITIONS: &str = include!(concat!(env!("OUT_DIR"), "/languages.json"));
 
-// A category for a language.
+/// A programming language.
+#[derive(Debug, Deserialize)]
+pub struct Language {
+    name: String,
+    category: Category,
+    color: String,
+}
+
+/// A category for a language.
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "lowercase")]
 pub enum Category {
     /// Data files. Examples: JSON, YAML, XML, CSV, etc.
     Data,

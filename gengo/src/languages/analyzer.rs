@@ -1,65 +1,111 @@
-/// Analyzes a language.
-use super::{Category, Language};
-use std::collections::HashSet;
+//! Analyzes a language.
+use super::{Category, LANGUAGE_DEFINITIONS};
 use regex::Regex;
-use std::path::Path;
+use serde::Deserialize;
+use std::collections::HashSet;
 use std::ffi::{OsStr, OsString};
+use std::path::Path;
 
 pub struct Analyzers(Vec<Analyzer>);
 
 impl Default for Analyzers {
     /// Create a new language analyzer with default values.
     fn default() -> Self {
-        Self(include!(concat!(env!("OUT_DIR"), "/analyzer.rs")))
+        let languages: IndexMap<String, AnalyzerArgs> =
+            serde_json::from_str(LANGUAGE_DEFINITIONS).unwrap();
+        let analyzers = languages
+            .into_iter()
+            .map(|(name, args)| {
+                let language = Language {
+                    name,
+                    category: args.category,
+                    color: args.color,
+                };
+                let matcher = args.matchers.into();
+                let heuristics = args
+                    .heuristics
+                    .into_iter()
+                    .map(|s| Regex::new(&s).unwrap())
+                    .collect();
+                Analyzer {
+                    language,
+                    matcher,
+                    heuristics,
+                    priority: args.priority,
+                }
+            })
+            .collect();
+        Self(analyzers)
     }
 }
-pub struct Analyzer {
+
+/// Used to match a programming language.
+struct Analyzer {
     language: Language,
-    category: Category,
-    color: String,
-    extensions: HashSet<OsString>,
-    filenames: HashSet<OsString>,
-    patterns: Vec<Regex>,
+    matcher: FilepathMatcher,
     heuristics: Vec<Regex>,
     priority: f32,
 }
 
-impl Analyzer {
-    /// Create a new language analyzer.
-    fn new(
-        language: Language,
-        category: Category,
-        color: &str,
-        extensions: &[&str],
-        filenames: &[&str],
-        patterns: &[&str],
-        heuristics: &[&str],
-        priority: f32,
-    ) -> Self {
-        let extensions = extensions.iter().map(|s| s.into()).collect();
-        let filenames = filenames.iter().map(|s| s.into()).collect();
-        // TODO Handle regex compile failures.
-        let patterns = patterns.iter().map(|s| Regex::new(s).unwrap()).collect();
-        let heuristics = heuristics.iter().map(|s| Regex::new(s).unwrap()).collect();
-        Self {
-            language,
-            category,
-            color: color.to_string(),
-            extensions,
-            filenames,
-            patterns,
-            heuristics,
-            priority,
-        }
-    }
+/// Matches a file path.
+struct FilepathMatcher {
+    extensions: HashSet<OsString>,
+    filenames: HashSet<OsString>,
+    patterns: Vec<Regex>,
+}
 
+impl Analyzer {
     pub fn matches_extension(&self, filename: &str) -> bool {
         let extension = Path::new(filename).extension().unwrap_or_default();
         self.extensions.contains(extension)
     }
 
     pub fn matches_filename(&self, filename: &str) -> bool {
-        self.filenames.contains(Path::new(filename).file_name().unwrap_or_default())
+        self.filenames
+            .contains(Path::new(filename).file_name().unwrap_or_default())
+    }
+}
+
+#[derive(Debug, Deserialize)]
+struct AnalyzerArgs {
+    category: Category,
+    color: String,
+    matchers: AnalyzerArgMatchers,
+    #[serde(default)]
+    heuristics: Vec<String>,
+    #[serde(default = "default_priority")]
+    priority: f32,
+}
+
+fn default_priority() -> f32 {
+    0.5
+}
+
+#[derive(Debug, Deserialize)]
+struct AnalyzerArgMatchers {
+    #[serde(default)]
+    extensions: Vec<String>,
+    #[serde(default)]
+    filenames: Vec<String>,
+    #[serde(default)]
+    patterns: Vec<String>,
+}
+
+impl From<AnalyzerArgMatchers> for FilepathMatcher {
+    fn from(matchers: AnalyzerArgMatchers) -> Self {
+        let extensions = matchers.extensions.iter().map(|s| s.into()).collect();
+        let filenames = matchers.filenames.iter().map(|s| s.into()).collect();
+        // TODO Handle regex compile failures.
+        let patterns = matchers
+            .patterns
+            .iter()
+            .map(|s| Regex::new(s).unwrap())
+            .collect();
+        Self {
+            extensions,
+            filenames,
+            patterns,
+        }
     }
 }
 
