@@ -1,5 +1,0 @@
----
-source: gengo-impl/src/lib.rs
-expression: tokens.to_string()
----
-enum Language { PlainText , Rust , }

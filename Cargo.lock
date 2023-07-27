@@ -245,8 +245,9 @@ dependencies = [
 name = "gengo"
 version = "0.1.0"
 dependencies = [
- "gengo-impl",
  "regex",
+ "serde",
+ "serde_yaml",
  "tera",
 ]
 
@@ -257,20 +258,6 @@ dependencies = [
  "clap",
  "gengo",
  "insta",
-]
-
-[[package]]
-name = "gengo-impl"
-version = "0.1.0"
-dependencies = [
- "indexmap",
- "insta",
- "paste",
- "proc-macro2",
- "quote",
- "serde",
- "serde_yaml",
- "syn",
 ]
 
 [[package]]
@@ -340,7 +327,6 @@ checksum = "d5477fe2230a79769d8dc68e0eabf5437907c0457a5614a9e8dddb67f65eb65d"
 dependencies = [
  "equivalent",
  "hashbrown",
- "serde",
 ]
 
 [[package]]
@@ -431,12 +417,6 @@ name = "once_cell"
 version = "1.18.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dd8b5dd2ae5ed71462c540258bedcb51965123ad7e7ccf4b9a8cafaa4a63576d"
-
-[[package]]
-name = "paste"
-version = "1.0.14"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "de3145af08024dea9fa9914f381a17b8fc6034dfb00f3a84013f7ff43f29ed4c"
 
 [[package]]
 name = "pest"

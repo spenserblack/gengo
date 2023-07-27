@@ -1,2 +1,2 @@
 [workspace]
-members = ["gengo", "gengo-bin", "gengo-impl"]
+members = ["gengo", "gengo-bin"]
