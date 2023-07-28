@@ -46,6 +46,7 @@ jobs:
         if: success() || failure()
         uses: codecov/codecov-action@v3
         with:
+          flags: ${{ matrix.os }}
           token: ${{ secrets.CODECOV_TOKEN }}
 
   lint:
