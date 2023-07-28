@@ -95,7 +95,7 @@ impl From<AnalyzerArgMatchers> for FilepathMatcher {
     fn from(matchers: AnalyzerArgMatchers) -> Self {
         let extensions = matchers.extensions.iter().map(|s| s.into()).collect();
         let filenames = matchers.filenames.iter().map(|s| s.into()).collect();
-        // TODO Handle regex compile failures.
+        // TODO Handle regex compile failures. Or not, it's the committer's fault.
         let patterns = matchers
             .patterns
             .iter()
