@@ -1,9 +1,10 @@
 //! Analyzes a language.
-use super::{Category, LANGUAGE_DEFINITIONS};
+use super::{Category, Language, LANGUAGE_DEFINITIONS};
 use regex::Regex;
 use serde::Deserialize;
 use std::collections::HashSet;
 use std::ffi::{OsStr, OsString};
+use indexmap::IndexMap;
 use std::path::Path;
 
 pub struct Analyzers(Vec<Analyzer>);
@@ -54,7 +55,29 @@ struct FilepathMatcher {
     patterns: Vec<Regex>,
 }
 
-impl Analyzer {
+impl FilepathMatcher {
+    /// Create a new filepath matcher.
+    pub fn new<S: AsRef<OsStr>>(extensions: &[S], filenames: &[S], patterns: &[String]) -> Self {
+        let extensions = extensions
+            .iter()
+            .map(Into::into)
+            .collect();
+        let filenames = filenames
+            .iter()
+            .map(Into::into)
+            .collect();
+        let patterns = patterns
+            .iter()
+            .map(|s| Regex::new(s.as_ref()).unwrap())
+            .collect();
+        Self {
+            extensions,
+            filenames,
+            patterns,
+        }
+
+    }
+
     pub fn matches_extension(&self, filename: &str) -> bool {
         let extension = Path::new(filename).extension().unwrap_or_default();
         self.extensions.contains(extension)
@@ -93,19 +116,11 @@ struct AnalyzerArgMatchers {
 
 impl From<AnalyzerArgMatchers> for FilepathMatcher {
     fn from(matchers: AnalyzerArgMatchers) -> Self {
-        let extensions = matchers.extensions.iter().map(|s| s.into()).collect();
-        let filenames = matchers.filenames.iter().map(|s| s.into()).collect();
-        // TODO Handle regex compile failures. Or not, it's the committer's fault.
-        let patterns = matchers
-            .patterns
-            .iter()
-            .map(|s| Regex::new(s).unwrap())
-            .collect();
-        Self {
-            extensions,
-            filenames,
-            patterns,
-        }
+        Self::new(
+            &matchers.extensions,
+            &matchers.filenames,
+            &matchers.patterns,
+        )
     }
 }
 
@@ -115,15 +130,10 @@ mod tests {
 
     #[test]
     fn test_matches_extension() {
-        let analyzer = Analyzer::new(
-            Language::PlainText,
-            Category::Prose,
-            "#000000",
+        let analyzer = FilepathMatcher::new(
             &["txt"],
             &[],
             &[],
-            &[],
-            0.5,
         );
         assert!(analyzer.matches_extension("foo.txt"));
         assert!(!analyzer.matches_extension("foo.rs"));
@@ -131,15 +141,10 @@ mod tests {
 
     #[test]
     fn test_matches_filename() {
-        let analyzer = Analyzer::new(
-            Language::PlainText,
-            Category::Prose,
-            "#000000",
+        let analyzer = FilepathMatcher::new(
             &[],
             &["LICENSE"],
             &[],
-            &[],
-            0.5,
         );
         assert!(analyzer.matches_filename("LICENSE"));
         assert!(!analyzer.matches_filename("Dockerfile"));

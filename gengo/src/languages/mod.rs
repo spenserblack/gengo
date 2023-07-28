@@ -1,7 +1,7 @@
 use serde::Deserialize;
 pub mod analyzer;
 
-const LANGUAGE_DEFINITIONS: &str = include!(concat!(env!("OUT_DIR"), "/languages.json"));
+const LANGUAGE_DEFINITIONS: &str = include_str!(concat!(env!("OUT_DIR"), "/languages.json"));
 
 /// A programming language.
 #[derive(Debug, Deserialize)]
