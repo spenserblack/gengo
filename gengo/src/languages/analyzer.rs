@@ -71,6 +71,12 @@ impl FilepathMatcher {
         }
     }
 
+    pub fn matches(&self, filename: &str) -> bool {
+        self.matches_extension(filename)
+            || self.matches_filename(filename)
+            || self.matches_pattern(filename)
+    }
+
     pub fn matches_extension(&self, filename: &str) -> bool {
         let extension = Path::new(filename).extension().unwrap_or_default();
         self.extensions.contains(extension)
@@ -79,6 +85,10 @@ impl FilepathMatcher {
     pub fn matches_filename(&self, filename: &str) -> bool {
         self.filenames
             .contains(Path::new(filename).file_name().unwrap_or_default())
+    }
+
+    pub fn matches_pattern(&self, filename: &str) -> bool {
+        self.patterns.iter().any(|p| p.is_match(filename))
     }
 }
 
@@ -133,5 +143,11 @@ mod tests {
         let analyzer = FilepathMatcher::new(&[], &["LICENSE"], &[]);
         assert!(analyzer.matches_filename("LICENSE"));
         assert!(!analyzer.matches_filename("Dockerfile"));
+    }
+
+    #[test]
+    fn test_matches_pattern() {
+        let analyzer = FilepathMatcher::new::<&str>(&[], &[], &[r"^Makefile\.[\w\d]+$".into()]);
+        assert!(analyzer.matches_pattern("Makefile"));
     }
 }
