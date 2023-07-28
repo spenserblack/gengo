@@ -154,7 +154,10 @@ mod tests {
 
     #[test]
     fn test_matches_pattern() {
-        let analyzer = FilepathMatcher::new::<&str>(&[], &[], &[r"^Makefile\.[\w\d]+$".into()]);
+        let analyzer =
+            FilepathMatcher::new::<&str>(&[], &[], &[r"^Makefile(?:\.[\w\d]+)?$".into()]);
         assert!(analyzer.matches_pattern("Makefile"));
+        assert!(analyzer.matches_pattern("Makefile.in"));
+        assert!(!analyzer.matches_pattern("Cakefile"));
     }
 }
