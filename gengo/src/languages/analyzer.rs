@@ -7,7 +7,14 @@ use std::collections::HashSet;
 use std::ffi::{OsStr, OsString};
 use std::path::Path;
 
+/// Analyzes and attempts to identify a language.
 pub struct Analyzers(Vec<Analyzer>);
+
+impl Analyzers {
+    fn iter(&self) -> impl Iterator<Item = &Analyzer> {
+        self.0.iter()
+    }
+}
 
 impl Default for Analyzers {
     /// Create a new language analyzer with default values.
