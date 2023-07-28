@@ -4,7 +4,7 @@ use std::error::Error;
 use std::fs;
 use std::path::Path;
 
-const LANGUAGES: &'static str = include_str!("./languages.yaml");
+const LANGUAGES: &str = include_str!("./languages.yaml");
 
 /// Converts `languages.yaml` to minified JSON and writes it to
 /// `languages.json`.
@@ -13,6 +13,6 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let languages_target_path = Path::new(&env::var("OUT_DIR")?).join("languages.json");
     let json = serde_json::to_string(&languages)?;
-    fs::write(&languages_target_path, json)?;
+    fs::write(languages_target_path, json)?;
     Ok(())
 }
