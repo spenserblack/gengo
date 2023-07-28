@@ -33,10 +33,20 @@ jobs:
         run: cargo check
 
       - name: Build
-        run: cargo build
+        run: cargo build --verbose
 
       - name: Test
-        run: cargo test
+        run: cargo test --verbose
+        env:
+          CARGO_INCREMENTAL: "0"
+          RUSTFLAGS: "-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Cpanic=abort -Zpanic_abort_tests"
+          RUSTDOCFLAGS: "-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Cpanic=abort -Zpanic_abort_tests"
+      - uses: actions-rs/grcov@v0.1.5
+      - name: Upload Coverage
+        if: success() || failure()
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   lint:
     name: Lint
