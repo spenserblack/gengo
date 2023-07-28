@@ -44,7 +44,6 @@ jobs:
       - name: Generate Coverage
         run: cargo tarpaulin --verbose --workspace --timeout 120 --out Xml
       - name: Upload Coverage
-        if: success() || failure()
         uses: codecov/codecov-action@v3
         with:
           flags: ${{ matrix.os }}
