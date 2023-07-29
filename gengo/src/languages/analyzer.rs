@@ -6,6 +6,7 @@ use serde::Deserialize;
 use std::collections::HashSet;
 use std::ffi::{OsStr, OsString};
 use std::path::Path;
+use std::fmt::Display;
 
 /// Analyzes and attempts to identify a language.
 pub struct Analyzers(Vec<Analyzer>);
@@ -29,7 +30,8 @@ impl Default for Analyzers {
                     category: args.category,
                     color: args.color,
                 };
-                let matchers = args.matchers.into();
+                let matchers = &args.matchers;
+                let matchers = matchers.into();
                 let heuristics = args
                     .heuristics
                     .into_iter()
@@ -62,12 +64,14 @@ trait MatcherTrait {
 /// Checks if a file matches.
 enum Matcher {
     Filepath(FilepathMatcher),
+    Shebang(ShebangMatcher),
 }
 
 impl MatcherTrait for Matcher {
     fn matches(&self, filename: &OsStr, contents: &[u8]) -> bool {
         match self {
             Matcher::Filepath(matcher) => matcher.matches(filename, contents),
+            Matcher::Shebang(matcher) => matcher.matches(filename, contents),
         }
     }
 }
@@ -123,6 +127,35 @@ impl MatcherTrait for FilepathMatcher {
     }
 }
 
+/// Matches a shebang.
+struct ShebangMatcher {
+    re: Regex,
+}
+
+impl ShebangMatcher {
+    pub fn new<S: Display>(cmd: S) -> Self {
+        let re = Regex::new(&format!(r"^#!(?:/usr(?:/local)?)?/bin/(?:env )?{cmd}$")).unwrap();
+        Self { re }
+    }
+}
+
+impl MatcherTrait for ShebangMatcher {
+    /// Checks if the file contents match a shebang by checking the first line of the contents.
+    ///
+    /// Does not read more than 100 bytes.
+    fn matches(&self, _filename: &OsStr, contents: &[u8]) -> bool {
+        let mut lines = contents.split(|&c| c == b'\n');
+        let first_line = lines.next().unwrap_or_default();
+        let first_line = if first_line.len() > 100 {
+            &first_line[..100]
+        } else {
+            first_line
+        };
+        let first_line = String::from_utf8_lossy(first_line);
+        self.re.is_match(&first_line)
+    }
+}
+
 #[derive(Debug, Deserialize)]
 struct AnalyzerArgs {
     category: Category,
@@ -146,10 +179,11 @@ struct AnalyzerArgMatchers {
     filenames: Vec<String>,
     #[serde(default)]
     patterns: Vec<String>,
+    interpreter_pattern: Option<String>,
 }
 
-impl From<AnalyzerArgMatchers> for Vec<Matcher> {
-    fn from(matchers: AnalyzerArgMatchers) -> Self {
+impl From<&AnalyzerArgMatchers> for Vec<Matcher> {
+    fn from(matchers: &AnalyzerArgMatchers) -> Self {
         let filepath_matcher = if !matchers.extensions.is_empty()
             || !matchers.filenames.is_empty()
             || !matchers.patterns.is_empty()
@@ -158,15 +192,16 @@ impl From<AnalyzerArgMatchers> for Vec<Matcher> {
         } else {
             None
         };
-        [filepath_matcher]
+        let shebang_matcher = matchers.interpreter_pattern.as_ref().map(|p| Matcher::Shebang(ShebangMatcher::new(p)));
+        [filepath_matcher, shebang_matcher]
             .into_iter()
             .filter_map(|m| m)
             .collect()
     }
 }
 
-impl From<AnalyzerArgMatchers> for FilepathMatcher {
-    fn from(matchers: AnalyzerArgMatchers) -> Self {
+impl From<&AnalyzerArgMatchers> for FilepathMatcher {
+    fn from(matchers: &AnalyzerArgMatchers) -> Self {
         Self::new(
             &matchers.extensions,
             &matchers.filenames,
@@ -200,5 +235,16 @@ mod tests {
         assert!(analyzer.matches_pattern(OsStr::new("Makefile")));
         assert!(analyzer.matches_pattern(OsStr::new("Makefile.in")));
         assert!(!analyzer.matches_pattern(OsStr::new("Cakefile")));
+    }
+
+    #[test]
+    fn test_matches_shebang() {
+        let analyzer = ShebangMatcher::new(r"python3?");
+        assert!(analyzer.matches(OsStr::new("foo.py"), b"#!/bin/python\n"));
+        assert!(analyzer.matches(OsStr::new("foo.py"), b"#!/usr/bin/python\n"));
+        assert!(analyzer.matches(OsStr::new("foo.py"), b"#!/usr/local/bin/python\n"));
+        assert!(analyzer.matches(OsStr::new("foo.py"), b"#!/usr/bin/python3\n"));
+        assert!(analyzer.matches(OsStr::new("foo.py"), b"#!/usr/bin/env python\n"));
+        assert!(!analyzer.matches(OsStr::new("foo.py"), b"#!/bin/sh\n"));
     }
 }
