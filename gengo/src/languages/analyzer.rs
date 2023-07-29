@@ -134,7 +134,7 @@ struct ShebangMatcher {
 
 impl ShebangMatcher {
     pub fn new<S: Display>(cmd: S) -> Self {
-        let re = Regex::new(&format!(r"^#!(?:/usr(?:/local)?)?/bin/(?:env )?{cmd}$")).unwrap();
+        let re = Regex::new(&format!(r"^#!(?:/usr(?:/local)?)?/bin/(?:env )?(?:{cmd})$")).unwrap();
         Self { re }
     }
 }
