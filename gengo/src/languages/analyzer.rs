@@ -1,9 +1,8 @@
 //! Analyzes a language.
 use super::{Category, Language, LANGUAGE_DEFINITIONS};
-use indexmap::IndexMap;
+use indexmap::{IndexMap, IndexSet};
 use regex::Regex;
 use serde::Deserialize;
-use std::collections::HashSet;
 use std::ffi::{OsStr, OsString};
 use std::fmt::Display;
 use std::path::Path;
@@ -115,8 +114,8 @@ impl MatcherTrait for Matcher {
 /// Matches a file path.
 #[derive(Debug)]
 pub struct FilepathMatcher {
-    extensions: HashSet<OsString>,
-    filenames: HashSet<OsString>,
+    extensions: IndexSet<OsString>,
+    filenames: IndexSet<OsString>,
     patterns: Vec<Regex>,
 }
 
