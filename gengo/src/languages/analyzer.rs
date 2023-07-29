@@ -5,8 +5,8 @@ use regex::Regex;
 use serde::Deserialize;
 use std::collections::HashSet;
 use std::ffi::{OsStr, OsString};
-use std::path::Path;
 use std::fmt::Display;
+use std::path::Path;
 
 /// Analyzes and attempts to identify a language.
 pub struct Analyzers(Vec<Analyzer>);
@@ -192,7 +192,10 @@ impl From<&AnalyzerArgMatchers> for Vec<Matcher> {
         } else {
             None
         };
-        let shebang_matcher = matchers.interpreter_pattern.as_ref().map(|p| Matcher::Shebang(ShebangMatcher::new(p)));
+        let shebang_matcher = matchers
+            .interpreter_pattern
+            .as_ref()
+            .map(|p| Matcher::Shebang(ShebangMatcher::new(p)));
         [filepath_matcher, shebang_matcher]
             .into_iter()
             .filter_map(|m| m)

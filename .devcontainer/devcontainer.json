@@ -6,7 +6,11 @@
       "extensions": [
         "EditorConfig.EditorConfig",
         "rust-lang.rust-analyzer"
-      ]
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "files.autoSaveDelay": 1000
+      }
     }
   },
   "postCreateCommand": ".devcontainer/postCreate.sh",
