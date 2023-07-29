@@ -9,19 +9,46 @@ use std::fmt::Display;
 use std::path::Path;
 
 /// Analyzes and attempts to identify a language.
+#[derive(Debug)]
 pub struct Analyzers(Vec<Analyzer>);
 
 impl Analyzers {
     fn iter(&self) -> impl Iterator<Item = &Analyzer> {
         self.0.iter()
     }
-}
 
-impl Default for Analyzers {
-    /// Create a new language analyzer with default values.
-    fn default() -> Self {
+    /// First pass. Checks a file and returns the matching languages, and how
+    /// they were matched.
+    pub fn check(&self, filepath: &OsStr, contents: &[u8]) -> Vec<(&Language, Vec<&Matcher>)> {
+        let matches = self.iter()
+            .filter_map(|analyzer| {
+                let matching_analyzers: Vec<_> = analyzer.matchers.iter().filter(|matcher| matcher.matches(filepath, contents)).collect();
+                if matching_analyzers.is_empty() {
+                    None
+                } else {
+                    Some((&analyzer.language, matching_analyzers))
+                }
+            });
+        matches.collect()
+    }
+
+    /// Creates analyzers from JSON.
+    pub fn from_json(json: &str) -> Self {
+        // TODO Return result instead of unwrapping.
         let languages: IndexMap<String, AnalyzerArgs> =
-            serde_json::from_str(LANGUAGE_DEFINITIONS).unwrap();
+            serde_json::from_str(json).unwrap();
+        Self::from_indexmap(languages)
+    }
+
+    /// Creates analyzers from YAML.
+    pub fn from_yaml(yaml: &str) -> Self {
+        // TODO Return result instead of unwrapping.
+        let languages: IndexMap<String, AnalyzerArgs> =
+            serde_yaml::from_str(yaml).unwrap();
+        Self::from_indexmap(languages)
+    }
+
+    fn from_indexmap(languages: IndexMap<String, AnalyzerArgs>) -> Self {
         let analyzers = languages
             .into_iter()
             .map(|(name, args)| {
@@ -49,7 +76,15 @@ impl Default for Analyzers {
     }
 }
 
+impl Default for Analyzers {
+    /// Create a new language analyzer with default values.
+    fn default() -> Self {
+        Self::from_json(LANGUAGE_DEFINITIONS)
+    }
+}
+
 /// Used to match a programming language.
+#[derive(Debug)]
 struct Analyzer {
     language: Language,
     matchers: Vec<Matcher>,
@@ -62,7 +97,8 @@ trait MatcherTrait {
 }
 
 /// Checks if a file matches.
-enum Matcher {
+#[derive(Debug)]
+pub enum Matcher {
     Filepath(FilepathMatcher),
     Shebang(ShebangMatcher),
 }
@@ -77,7 +113,8 @@ impl MatcherTrait for Matcher {
 }
 
 /// Matches a file path.
-struct FilepathMatcher {
+#[derive(Debug)]
+pub struct FilepathMatcher {
     extensions: HashSet<OsString>,
     filenames: HashSet<OsString>,
     patterns: Vec<Regex>,
@@ -128,7 +165,8 @@ impl MatcherTrait for FilepathMatcher {
 }
 
 /// Matches a shebang.
-struct ShebangMatcher {
+#[derive(Debug)]
+pub struct ShebangMatcher {
     re: Regex,
 }
 
