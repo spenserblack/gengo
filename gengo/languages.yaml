@@ -28,8 +28,8 @@ Plain Text:
   color: "#000000"
   matchers:
     extensions:
-      - ".text"
-      - ".txt"
+      - text
+      - txt
     filenames:
       - "LICENCE"
       - "LICENSE"

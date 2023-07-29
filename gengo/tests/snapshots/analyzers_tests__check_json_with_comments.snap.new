@@ -1,6 +1,0 @@
----
-source: gengo/tests/analyzers_tests.rs
-assertion_line: 13
-expression: results
----
-[]

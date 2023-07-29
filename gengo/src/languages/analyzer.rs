@@ -22,7 +22,7 @@ impl Analyzers {
     pub fn check(&self, filepath: &OsStr, contents: &[u8]) -> Vec<(&Language, Vec<&Matcher>)> {
         let matches = self.iter()
             .filter_map(|analyzer| {
-                let matching_analyzers: Vec<_> = analyzer.matchers.iter().filter(|matcher| matcher.matches(filepath, contents)).collect();
+                let matching_analyzers: Vec<_> = dbg!(analyzer.matchers.iter().filter(|matcher| matcher.matches(filepath, contents)).collect());
                 if matching_analyzers.is_empty() {
                     None
                 } else {
@@ -258,24 +258,24 @@ mod tests {
     #[test]
     fn test_matches_extension() {
         let analyzer = FilepathMatcher::new(&["txt"], &[], &[]);
-        assert!(analyzer.matches_extension(OsStr::new("foo.txt")));
-        assert!(!analyzer.matches_extension(OsStr::new("foo.rs")));
+        assert!(analyzer.matches(OsStr::new("foo.txt"), b""));
+        assert!(!analyzer.matches(OsStr::new("foo.rs"), b""));
     }
 
     #[test]
     fn test_matches_filename() {
         let analyzer = FilepathMatcher::new(&[], &["LICENSE"], &[]);
-        assert!(analyzer.matches_filename(OsStr::new("LICENSE")));
-        assert!(!analyzer.matches_filename(OsStr::new("Dockerfile")));
+        assert!(analyzer.matches(OsStr::new("LICENSE"), b""));
+        assert!(!analyzer.matches(OsStr::new("Dockerfile"), b""));
     }
 
     #[test]
     fn test_matches_pattern() {
         let analyzer =
             FilepathMatcher::new::<&str>(&[], &[], &[r"^Makefile(?:\.[\w\d]+)?$".into()]);
-        assert!(analyzer.matches_pattern(OsStr::new("Makefile")));
-        assert!(analyzer.matches_pattern(OsStr::new("Makefile.in")));
-        assert!(!analyzer.matches_pattern(OsStr::new("Cakefile")));
+        assert!(analyzer.matches(OsStr::new("Makefile"), b""));
+        assert!(analyzer.matches(OsStr::new("Makefile.in"), b""));
+        assert!(!analyzer.matches(OsStr::new("Cakefile"), b""));
     }
 
     #[test]

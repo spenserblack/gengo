@@ -3,7 +3,7 @@ JSON:
   color: "#000000"
   matchers:
     extensions:
-      - ".json"
+      - json
 JSON with Comments:
   category: data
   color: "#FFFFFF"
@@ -11,5 +11,5 @@ JSON with Comments:
     - "^(?m)\\s*?//"
   matchers:
     extensions:
-    - ".json"
-    - ".jsonc"
+    - json
+    - jsonc

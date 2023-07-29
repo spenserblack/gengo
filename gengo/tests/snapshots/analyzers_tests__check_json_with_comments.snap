@@ -1,0 +1,43 @@
+---
+source: gengo/tests/analyzers_tests.rs
+expression: results
+---
+[
+    (
+        Language {
+            name: "JSON",
+            category: Data,
+            color: "#000000",
+        },
+        [
+            Filepath(
+                FilepathMatcher {
+                    extensions: {
+                        "json",
+                    },
+                    filenames: {},
+                    patterns: [],
+                },
+            ),
+        ],
+    ),
+    (
+        Language {
+            name: "JSON with Comments",
+            category: Data,
+            color: "#FFFFFF",
+        },
+        [
+            Filepath(
+                FilepathMatcher {
+                    extensions: {
+                        "json",
+                        "jsonc",
+                    },
+                    filenames: {},
+                    patterns: [],
+                },
+            ),
+        ],
+    ),
+]
