@@ -39,6 +39,8 @@ jobs:
 
       - name: Install tarpaulin
         uses: actions-rs/install@v0.1
+        # NOTE: The last step fails if tarpaulin is already installed
+        continue-on-error: true
         with:
           crate: cargo-tarpaulin
       - name: Generate Coverage
