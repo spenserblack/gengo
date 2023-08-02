@@ -5,6 +5,7 @@
     "vscode": {
       "extensions": [
         "EditorConfig.EditorConfig",
+        "rebornix.ruby",
         "rust-lang.rust-analyzer"
       ],
       "settings": {
