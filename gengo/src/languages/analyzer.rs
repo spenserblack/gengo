@@ -171,9 +171,9 @@ impl FilepathMatcher {
 
 impl MatcherTrait for FilepathMatcher {
     fn matches(&mut self, filename: &OsStr, _contents: &[u8]) -> bool {
-        self.matches_extension(&filename)
-            || self.matches_filename(&filename)
-            || self.matches_pattern(&filename)
+        self.matches_extension(filename)
+            || self.matches_filename(filename)
+            || self.matches_pattern(filename)
     }
 }
 
@@ -284,7 +284,7 @@ impl From<&AnalyzerArgMatchers> for Vec<Matcher> {
         };
         [filepath_matcher, shebang_matcher]
             .into_iter()
-            .filter_map(|m| m)
+            .flatten()
             .collect()
     }
 }
