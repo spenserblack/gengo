@@ -40,9 +40,9 @@
 #       - "python"
 #       - "python3"
 #
-#   # Value between 0.0 and 1.0 to pick a language if multiple matches couldn't be
-#   # narrowed down (optional, default: 0.5)
-#   priority: 0.5
+#   # Value between 0 and 100 to pick a language if multiple matches couldn't be
+#   # narrowed down (optional, default: 50)
+#   priority: 50
 # ```
 #
 # WARNING: Please alphabetize!

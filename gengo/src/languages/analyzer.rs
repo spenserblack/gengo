@@ -97,7 +97,8 @@ struct Analyzer {
     language: Language,
     matchers: Vec<Matcher>,
     heuristics: Vec<Regex>,
-    priority: f32,
+    /// A value between `0` and `100` that determines the priority of a match.
+    priority: u8,
 }
 
 trait MatcherTrait {
@@ -246,11 +247,11 @@ struct AnalyzerArgs {
     #[serde(default)]
     heuristics: Vec<String>,
     #[serde(default = "default_priority")]
-    priority: f32,
+    priority: u8,
 }
 
-fn default_priority() -> f32 {
-    0.5
+fn default_priority() -> u8 {
+    50
 }
 
 #[derive(Debug, Deserialize)]
