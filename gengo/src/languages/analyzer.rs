@@ -335,4 +335,18 @@ mod tests {
         assert!(analyzer.matches(OsStr::new("foo.py"), b"#!/usr/bin/env python\n"));
         assert!(!analyzer.matches(OsStr::new("foo.py"), b"#!/bin/sh\n"));
     }
+
+    #[test]
+    fn test_shebang_lazy_compile() {
+        let mut analyzer = ShebangMatcher::new(&["sh", "bash"]);
+        analyzer.matches(OsStr::new("foo.sh"), b"#!/bin/sh\n");
+        assert!(matches!(
+            analyzer.matchers[0],
+            LazyShebangMatcher::Compiled(_)
+        ));
+        assert!(matches!(
+            analyzer.matchers[1],
+            LazyShebangMatcher::Uncompiled(_)
+        ));
+    }
 }
