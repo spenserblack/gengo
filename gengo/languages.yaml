@@ -30,15 +30,15 @@
 #     filenames:
 #       - "Dockerfile"
 #
-#     # Advanced regex patterns associated with the language (optional)
-#     patterns:
-#       # See the format of the `regex` crate: https://docs.rs/regex/latest/regex/#syntax
-#       - "^(?i)(?:^|\/)__snapshots__\/.*\.snap$"
-#
 #     # Used for checking shebangs.
 #     interpreters: # The interpreter(s) associated with the language (optional)
 #       - "python"
 #       - "python3"
+#
+#     # Advanced regex patterns associated with the language (optional)
+#     patterns:
+#       # See the format of the `regex` crate: https://docs.rs/regex/latest/regex/#syntax
+#       - "^(?i)(?:^|\/)__snapshots__\/.*\.snap$"
 #
 #   # Value between 0 and 100 to pick a language if multiple matches couldn't be
 #   # narrowed down (optional, default: 50)
