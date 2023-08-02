@@ -3,24 +3,46 @@
 # # Format
 #
 # ```yaml
-# Language: # The name of the language
-#   category: # data, markup, programming, or prose
-#   color: # The color associated with the language (unused)
-#   heuristics: # Regexes unique to the contents of the file to resolve multiple matches
+# # The name of the language.
+# Language:
+#
+#   # data, markup, programming, or prose
+#   category:
+#
+#   # The color associated with the language (unused).
+#   color:
+#
+#   # Regexes unique to the contents of the file to resolve multiple matches. These will
+#   # be used if the matchers (see below) cannot narrow down a file to a single
+#   # language.
+#   heuristics:
 #     - "^(?m)macro_rules!"
-#   matchers: # Entries to match against filenames
-#     extensions: # The file extensions associated with the language (optional)
+#
+#   # Entries to match against files. This is the first pass before more expensive
+#   # strategies are used.
+#   matchers:
+#
+#     # The file extensions associated with the language (optional)
+#     extensions:
 #       - ".rs"
-#     filenames: # The filenames associated with the language (optional)
+#
+#     # The filenames associated with the language (optional)
+#     filenames:
 #       - "Dockerfile"
-#     patterns: # Advanced regex patterns associated with the language (optional)
+#
+#     # Advanced regex patterns associated with the language (optional)
+#     patterns:
 #       # See the format of the `regex` crate: https://docs.rs/regex/latest/regex/#syntax
 #       - "^(?i)(?:^|\/)__snapshots__\/.*\.snap$"
-#     A pattern for a interpreter (optional). Used for checking shebangs.
+#
+#     # Used for checking shebangs.
 #     interpreters: # The interpreter(s) associated with the language (optional)
 #       - "python"
 #       - "python3"
-#   priority: 0.5 # Value between 0.0 and 1.0 to resolve pick a language if multiple matches couldn't be narrowed down (optional, default: 0.5)
+#
+#   # Value between 0.0 and 1.0 to pick a language if multiple matches couldn't be
+#   # narrowed down (optional, default: 0.5)
+#   priority: 0.5
 # ```
 #
 # WARNING: Please alphabetize!
