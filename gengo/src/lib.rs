@@ -1,6 +1,6 @@
 pub mod languages;
-pub use languages::Language;
 pub use languages::analyzer::Analyzers;
+pub use languages::Language;
 
 pub fn add(left: usize, right: usize) -> usize {
     left + right

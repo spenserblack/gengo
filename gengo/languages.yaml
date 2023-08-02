@@ -17,7 +17,9 @@
 #       # See the format of the `regex` crate: https://docs.rs/regex/latest/regex/#syntax
 #       - "^(?i)(?:^|\/)__snapshots__\/.*\.snap$"
 #     A pattern for a interpreter (optional). Used for checking shebangs.
-#     interpreter-pattern: "python3?"
+#     interpreters: # The interpreter(s) associated with the language (optional)
+#       - "python"
+#       - "python3"
 #   priority: 0.5 # Value between 0.0 and 1.0 to resolve pick a language if multiple matches couldn't be narrowed down (optional, default: 0.5)
 # ```
 #

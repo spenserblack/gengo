@@ -16,34 +16,43 @@ impl Analyzers {
         self.0.iter()
     }
 
+    fn iter_mut(&mut self) -> impl Iterator<Item = &mut Analyzer> {
+        self.0.iter_mut()
+    }
+
     /// First pass. Checks a file and returns the matching languages, and how
     /// they were matched.
-    pub fn check(&self, filepath: &OsStr, contents: &[u8]) -> Vec<(&Language, Vec<&Matcher>)> {
-        let matches = self.iter()
-            .filter_map(|analyzer| {
-                let matching_analyzers: Vec<_> = dbg!(analyzer.matchers.iter().filter(|matcher| matcher.matches(filepath, contents)).collect());
-                if matching_analyzers.is_empty() {
-                    None
-                } else {
-                    Some((&analyzer.language, matching_analyzers))
+    pub fn check(&mut self, filepath: &OsStr, contents: &[u8]) -> Vec<(&Language, Vec<&Matcher>)> {
+        let matches = self.iter_mut().filter_map(|analyzer| {
+            let mut matching_analyzers = Vec::with_capacity(analyzer.matchers.len());
+            for matcher in &mut analyzer.matchers {
+                if matcher.matches(filepath, contents) {
+                    matching_analyzers.push(&*matcher);
                 }
-            });
-        matches.collect()
+            }
+            // NOTE Shadow with immutable variable
+            let matching_analyzers = matching_analyzers;
+            if matching_analyzers.is_empty() {
+                None
+            } else {
+                Some((&analyzer.language, matching_analyzers))
+            }
+        });
+        let matches: Vec<_> = matches.collect();
+        matches
     }
 
     /// Creates analyzers from JSON.
     pub fn from_json(json: &str) -> Self {
         // TODO Return result instead of unwrapping.
-        let languages: IndexMap<String, AnalyzerArgs> =
-            serde_json::from_str(json).unwrap();
+        let languages: IndexMap<String, AnalyzerArgs> = serde_json::from_str(json).unwrap();
         Self::from_indexmap(languages)
     }
 
     /// Creates analyzers from YAML.
     pub fn from_yaml(yaml: &str) -> Self {
         // TODO Return result instead of unwrapping.
-        let languages: IndexMap<String, AnalyzerArgs> =
-            serde_yaml::from_str(yaml).unwrap();
+        let languages: IndexMap<String, AnalyzerArgs> = serde_yaml::from_str(yaml).unwrap();
         Self::from_indexmap(languages)
     }
 
@@ -92,18 +101,22 @@ struct Analyzer {
 }
 
 trait MatcherTrait {
-    fn matches(&self, filename: &OsStr, contents: &[u8]) -> bool;
+    /// Checks if a file matches.
+    ///
+    /// `self` is mut because some matchers may need to be compiled lazily.
+    fn matches(&mut self, filename: &OsStr, contents: &[u8]) -> bool;
 }
 
 /// Checks if a file matches.
 #[derive(Debug)]
+#[non_exhaustive]
 pub enum Matcher {
     Filepath(FilepathMatcher),
     Shebang(ShebangMatcher),
 }
 
 impl MatcherTrait for Matcher {
-    fn matches(&self, filename: &OsStr, contents: &[u8]) -> bool {
+    fn matches(&mut self, filename: &OsStr, contents: &[u8]) -> bool {
         match self {
             Matcher::Filepath(matcher) => matcher.matches(filename, contents),
             Matcher::Shebang(matcher) => matcher.matches(filename, contents),
@@ -121,7 +134,7 @@ pub struct FilepathMatcher {
 
 impl FilepathMatcher {
     /// Create a new filepath matcher.
-    pub fn new<S: AsRef<OsStr>>(extensions: &[S], filenames: &[S], patterns: &[String]) -> Self {
+    fn new<S: AsRef<OsStr>>(extensions: &[S], filenames: &[S], patterns: &[String]) -> Self {
         let extensions = extensions.iter().map(Into::into).collect();
         let filenames = filenames.iter().map(Into::into).collect();
         let patterns = patterns
@@ -156,7 +169,7 @@ impl FilepathMatcher {
 }
 
 impl MatcherTrait for FilepathMatcher {
-    fn matches(&self, filename: &OsStr, _contents: &[u8]) -> bool {
+    fn matches(&mut self, filename: &OsStr, _contents: &[u8]) -> bool {
         self.matches_extension(&filename)
             || self.matches_filename(&filename)
             || self.matches_pattern(&filename)
@@ -166,13 +179,22 @@ impl MatcherTrait for FilepathMatcher {
 /// Matches a shebang.
 #[derive(Debug)]
 pub struct ShebangMatcher {
-    re: Regex,
+    matchers: Vec<LazyShebangMatcher>,
+}
+
+#[derive(Debug)]
+enum LazyShebangMatcher {
+    Compiled(Regex),
+    Uncompiled(String),
 }
 
 impl ShebangMatcher {
-    pub fn new<S: Display>(cmd: S) -> Self {
-        let re = Regex::new(&format!(r"^#!(?:/usr(?:/local)?)?/bin/(?:env )?(?:{cmd})$")).unwrap();
-        Self { re }
+    fn new<S: Display>(cmd: &[S]) -> Self {
+        let matchers = cmd
+            .iter()
+            .map(|s| LazyShebangMatcher::Uncompiled(s.to_string()))
+            .collect();
+        Self { matchers }
     }
 }
 
@@ -180,7 +202,7 @@ impl MatcherTrait for ShebangMatcher {
     /// Checks if the file contents match a shebang by checking the first line of the contents.
     ///
     /// Does not read more than 100 bytes.
-    fn matches(&self, _filename: &OsStr, contents: &[u8]) -> bool {
+    fn matches(&mut self, _filename: &OsStr, contents: &[u8]) -> bool {
         let mut lines = contents.split(|&c| c == b'\n');
         let first_line = lines.next().unwrap_or_default();
         let first_line = if first_line.len() > 100 {
@@ -189,7 +211,30 @@ impl MatcherTrait for ShebangMatcher {
             first_line
         };
         let first_line = String::from_utf8_lossy(first_line);
-        self.re.is_match(&first_line)
+        self.matchers
+            .iter_mut()
+            .map(|m| m.compile())
+            .any(|matcher| {
+                if let LazyShebangMatcher::Compiled(re) = matcher {
+                    re.is_match(&first_line)
+                } else {
+                    unreachable!("matcher should be compiled")
+                }
+            })
+    }
+}
+
+impl LazyShebangMatcher {
+    fn compile(&mut self) -> &Self {
+        match self {
+            LazyShebangMatcher::Compiled(_) => self,
+            LazyShebangMatcher::Uncompiled(cmd) => {
+                let re = Regex::new(&format!(r"^#!(?:/usr(?:/local)?)?/bin/(?:env )?(?:{cmd})$"))
+                    .unwrap();
+                *self = LazyShebangMatcher::Compiled(re);
+                self
+            }
+        }
     }
 }
 
@@ -216,7 +261,8 @@ struct AnalyzerArgMatchers {
     filenames: Vec<String>,
     #[serde(default)]
     patterns: Vec<String>,
-    interpreter_pattern: Option<String>,
+    #[serde(default)]
+    interpreters: Vec<String>,
 }
 
 impl From<&AnalyzerArgMatchers> for Vec<Matcher> {
@@ -229,10 +275,12 @@ impl From<&AnalyzerArgMatchers> for Vec<Matcher> {
         } else {
             None
         };
-        let shebang_matcher = matchers
-            .interpreter_pattern
-            .as_ref()
-            .map(|p| Matcher::Shebang(ShebangMatcher::new(p)));
+        let shebang_matcher = if matchers.interpreters.is_empty() {
+            None
+        } else {
+            let shebang_matcher = ShebangMatcher::new(&matchers.interpreters);
+            Some(Matcher::Shebang(shebang_matcher))
+        };
         [filepath_matcher, shebang_matcher]
             .into_iter()
             .filter_map(|m| m)
@@ -256,21 +304,21 @@ mod tests {
 
     #[test]
     fn test_matches_extension() {
-        let analyzer = FilepathMatcher::new(&["txt"], &[], &[]);
+        let mut analyzer = FilepathMatcher::new(&["txt"], &[], &[]);
         assert!(analyzer.matches(OsStr::new("foo.txt"), b""));
         assert!(!analyzer.matches(OsStr::new("foo.rs"), b""));
     }
 
     #[test]
     fn test_matches_filename() {
-        let analyzer = FilepathMatcher::new(&[], &["LICENSE"], &[]);
+        let mut analyzer = FilepathMatcher::new(&[], &["LICENSE"], &[]);
         assert!(analyzer.matches(OsStr::new("LICENSE"), b""));
         assert!(!analyzer.matches(OsStr::new("Dockerfile"), b""));
     }
 
     #[test]
     fn test_matches_pattern() {
-        let analyzer =
+        let mut analyzer =
             FilepathMatcher::new::<&str>(&[], &[], &[r"^Makefile(?:\.[\w\d]+)?$".into()]);
         assert!(analyzer.matches(OsStr::new("Makefile"), b""));
         assert!(analyzer.matches(OsStr::new("Makefile.in"), b""));
@@ -279,7 +327,7 @@ mod tests {
 
     #[test]
     fn test_matches_shebang() {
-        let analyzer = ShebangMatcher::new(r"python3?");
+        let mut analyzer = ShebangMatcher::new(&["python", "python3"]);
         assert!(analyzer.matches(OsStr::new("foo.py"), b"#!/bin/python\n"));
         assert!(analyzer.matches(OsStr::new("foo.py"), b"#!/usr/bin/python\n"));
         assert!(analyzer.matches(OsStr::new("foo.py"), b"#!/usr/local/bin/python\n"));
