@@ -18,11 +18,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Install tarpaulin
-        uses: actions-rs/install@v0.1
-        with:
-          crate: cargo-tarpaulin
-
       - uses: actions/cache@v3
         with:
           path: |
@@ -41,6 +36,11 @@ jobs:
 
       - name: Test
         run: cargo test --verbose
+
+      - name: Install tarpaulin
+        uses: actions-rs/install@v0.1
+        with:
+          crate: cargo-tarpaulin
       - name: Generate Coverage
         run: cargo tarpaulin --verbose --workspace --timeout 120 --out Xml
       - name: Upload Coverage
