@@ -229,7 +229,7 @@ impl ShebangMatcher {
         let mut lines = contents.split(|&c| c == b'\n');
         let first_line = lines.next().unwrap_or_default();
         // Check that the first line is a shebang
-        if first_line.len() < 2 || first_line[0] != b'!' || first_line[1] != b'#' {
+        if first_line.len() < 2 || first_line[0] != b'#' || first_line[1] != b'!' {
             return false;
         }
         let first_line = if first_line.len() > Self::MAX_SHEBANG_LENGTH {
