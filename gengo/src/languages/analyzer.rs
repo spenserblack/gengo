@@ -41,25 +41,21 @@ impl Analyzers {
     }
 
     /// Returns the analyzers that have matched by shebang (`#!`).
-    pub fn by_shebang(&mut self, contents: &[u8]) -> Vec<&Analyzer> {
-        let mut matches: Vec<&Analyzer> = Vec::new();
-        for analyzer in self.iter_mut() {
-            let shebang_matched = analyzer
-                .matchers
-                .iter_mut()
-                .filter_map(|m| {
-                    if let Matcher::Shebang(m) = m {
-                        Some(m)
-                    } else {
-                        None
-                    }
-                })
-                .any(|m| m.matches(contents));
-            if shebang_matched {
-                matches.push(&*analyzer);
-            }
-        }
-        matches
+    pub fn by_shebang(&self, contents: &[u8]) -> Vec<&Analyzer> {
+        self.iter()
+            .filter(|a| {
+                a.matchers
+                    .iter()
+                    .filter_map(|m| {
+                        if let Matcher::Shebang(m) = m {
+                            Some(m)
+                        } else {
+                            None
+                        }
+                    })
+                    .any(|m| m.matches(contents))
+            })
+            .collect()
     }
 
     /// Creates analyzers from JSON.
@@ -123,7 +119,7 @@ trait MatcherTrait {
     /// Checks if a file matches.
     ///
     /// `self` is mut because some matchers may need to be compiled lazily.
-    fn matches(&mut self, filename: &OsStr, contents: &[u8]) -> bool;
+    fn matches(&self, filename: &OsStr, contents: &[u8]) -> bool;
 }
 
 /// Checks if a file matches.
@@ -135,7 +131,7 @@ pub enum Matcher {
 }
 
 impl MatcherTrait for Matcher {
-    fn matches(&mut self, filename: &OsStr, contents: &[u8]) -> bool {
+    fn matches(&self, filename: &OsStr, contents: &[u8]) -> bool {
         match self {
             Matcher::Filepath(matcher) => FilepathMatcher::matches(matcher, filename),
             Matcher::Shebang(matcher) => matcher.matches(contents),
@@ -194,7 +190,7 @@ impl FilepathMatcher {
 }
 
 impl MatcherTrait for FilepathMatcher {
-    fn matches(&mut self, filename: &OsStr, _contents: &[u8]) -> bool {
+    fn matches(&self, filename: &OsStr, _contents: &[u8]) -> bool {
         FilepathMatcher::matches(self, filename)
     }
 }
@@ -214,7 +210,7 @@ impl ShebangMatcher {
     /// Checks if the file contents match a shebang by checking the first line of the contents.
     ///
     /// Does not read more than 100 bytes.
-    pub fn matches(&mut self, contents: &[u8]) -> bool {
+    pub fn matches(&self, contents: &[u8]) -> bool {
         let mut lines = contents.split(|&c| c == b'\n');
         let first_line = lines.next().unwrap_or_default();
         let first_line = if first_line.len() > 100 {
@@ -238,7 +234,7 @@ impl MatcherTrait for ShebangMatcher {
     /// Checks if the file contents match a shebang by checking the first line of the contents.
     ///
     /// Does not read more than 100 bytes.
-    fn matches(&mut self, _filename: &OsStr, contents: &[u8]) -> bool {
+    fn matches(&self, _filename: &OsStr, contents: &[u8]) -> bool {
         ShebangMatcher::matches(self, contents)
     }
 }
@@ -332,7 +328,7 @@ mod tests {
 
     #[test]
     fn test_matches_shebang() {
-        let mut analyzer = ShebangMatcher::new(&["python", "python3"]);
+        let analyzer = ShebangMatcher::new(&["python", "python3"]);
         assert!(analyzer.matches(b"#!/bin/python\n"));
         assert!(analyzer.matches(b"#!/usr/bin/python\n"));
         assert!(analyzer.matches(b"#!/usr/local/bin/python\n"));
