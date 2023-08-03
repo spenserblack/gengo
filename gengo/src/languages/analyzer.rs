@@ -3,6 +3,7 @@ use super::{Category, Language, LANGUAGE_DEFINITIONS};
 use indexmap::{IndexMap, IndexSet};
 use regex::Regex;
 use serde::Deserialize;
+use std::error::Error;
 use std::ffi::{OsStr, OsString};
 use std::fmt::Display;
 use std::path::Path;
@@ -43,17 +44,15 @@ impl Analyzers {
     }
 
     /// Creates analyzers from JSON.
-    pub fn from_json(json: &str) -> Self {
-        // TODO Return result instead of unwrapping.
-        let languages: IndexMap<String, AnalyzerArgs> = serde_json::from_str(json).unwrap();
-        Self::from_indexmap(languages)
+    pub fn from_json(json: &str) -> Result<Self, Box<dyn Error>> {
+        let languages: IndexMap<String, AnalyzerArgs> = serde_json::from_str(json)?;
+        Ok(Self::from_indexmap(languages))
     }
 
     /// Creates analyzers from YAML.
-    pub fn from_yaml(yaml: &str) -> Self {
-        // TODO Return result instead of unwrapping.
-        let languages: IndexMap<String, AnalyzerArgs> = serde_yaml::from_str(yaml).unwrap();
-        Self::from_indexmap(languages)
+    pub fn from_yaml(yaml: &str) -> Result<Self, Box<dyn Error>> {
+        let languages: IndexMap<String, AnalyzerArgs> = serde_yaml::from_str(yaml)?;
+        Ok(Self::from_indexmap(languages))
     }
 
     fn from_indexmap(languages: IndexMap<String, AnalyzerArgs>) -> Self {
@@ -87,7 +86,7 @@ impl Analyzers {
 impl Default for Analyzers {
     /// Create a new language analyzer with default values.
     fn default() -> Self {
-        Self::from_json(LANGUAGE_DEFINITIONS)
+        Self::from_json(LANGUAGE_DEFINITIONS).unwrap()
     }
 }
 
