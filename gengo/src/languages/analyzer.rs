@@ -228,6 +228,7 @@ impl LazyShebangMatcher {
     fn compile(&mut self) -> &Self {
         match self {
             LazyShebangMatcher::Compiled(_) => self,
+            // TODO Escape regex values in cmd
             LazyShebangMatcher::Uncompiled(cmd) => {
                 let re = Regex::new(&format!(r"^#!(?:/usr(?:/local)?)?/bin/(?:env )?(?:{cmd})$"))
                     .unwrap();
