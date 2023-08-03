@@ -4,10 +4,25 @@ expression: results
 ---
 [
     (
-        Language {
-            name: "JSON",
-            category: Data,
-            color: "#000000",
+        Analyzer {
+            language: Language {
+                name: "JSON",
+                category: Data,
+                color: "#000000",
+            },
+            matchers: [
+                Filepath(
+                    FilepathMatcher {
+                        extensions: {
+                            "json",
+                        },
+                        filenames: {},
+                        patterns: [],
+                    },
+                ),
+            ],
+            heuristics: [],
+            priority: 50,
         },
         [
             Filepath(
@@ -22,10 +37,30 @@ expression: results
         ],
     ),
     (
-        Language {
-            name: "JSON with Comments",
-            category: Data,
-            color: "#FFFFFF",
+        Analyzer {
+            language: Language {
+                name: "JSON with Comments",
+                category: Data,
+                color: "#FFFFFF",
+            },
+            matchers: [
+                Filepath(
+                    FilepathMatcher {
+                        extensions: {
+                            "json",
+                            "jsonc",
+                        },
+                        filenames: {},
+                        patterns: [],
+                    },
+                ),
+            ],
+            heuristics: [
+                Regex(
+                    "^(?m)\\s*?//",
+                ),
+            ],
+            priority: 50,
         },
         [
             Filepath(

@@ -21,22 +21,26 @@ impl Analyzers {
         self.0.iter_mut()
     }
 
-    /// First pass. Checks a file and returns the matching languages, and how
-    /// they were matched.
-    pub fn check(&mut self, filepath: &OsStr, contents: &[u8]) -> Vec<(&Language, Vec<&Matcher>)> {
+    /// First pass. Checks a file and returns the matching analyzers,
+    /// which provide the language details, and which matchers matched.
+    pub fn check(&mut self, filepath: &OsStr, contents: &[u8]) -> Vec<(Analyzer, Vec<&Matcher>)> {
         let matches = self.iter_mut().filter_map(|analyzer| {
-            let mut matching_analyzers = Vec::with_capacity(analyzer.matchers.len());
-            for matcher in &mut analyzer.matchers {
-                if matcher.matches(filepath, contents) {
-                    matching_analyzers.push(&*matcher);
+            // TODO Not clone the analyzer
+            let cloned_analyzer = analyzer.clone();
+            let matches = {
+                let mut matches = Vec::with_capacity(analyzer.matchers.len());
+                for matcher in &mut analyzer.matchers {
+                    if matcher.matches(filepath, contents) {
+                        matches.push(&*matcher);
+                    }
                 }
-            }
+                matches
+            };
             // NOTE Shadow with immutable variable
-            let matching_analyzers = matching_analyzers;
-            if matching_analyzers.is_empty() {
+            if matches.is_empty() {
                 None
             } else {
-                Some((&analyzer.language, matching_analyzers))
+                Some((cloned_analyzer, matches))
             }
         });
         let matches: Vec<_> = matches.collect();
@@ -91,8 +95,8 @@ impl Default for Analyzers {
 }
 
 /// Used to match a programming language.
-#[derive(Debug)]
-struct Analyzer {
+#[derive(Clone, Debug)]
+pub struct Analyzer {
     language: Language,
     matchers: Vec<Matcher>,
     heuristics: Vec<Regex>,
@@ -108,7 +112,7 @@ trait MatcherTrait {
 }
 
 /// Checks if a file matches.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 #[non_exhaustive]
 pub enum Matcher {
     Filepath(FilepathMatcher),
@@ -125,7 +129,7 @@ impl MatcherTrait for Matcher {
 }
 
 /// Matches a file path.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct FilepathMatcher {
     extensions: IndexSet<OsString>,
     filenames: IndexSet<OsString>,
@@ -177,12 +181,12 @@ impl MatcherTrait for FilepathMatcher {
 }
 
 /// Matches a shebang.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ShebangMatcher {
     matchers: Vec<LazyShebangMatcher>,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 enum LazyShebangMatcher {
     Compiled(Regex),
     Uncompiled(String),
