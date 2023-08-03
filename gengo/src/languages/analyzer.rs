@@ -21,30 +21,21 @@ impl Analyzers {
         self.0.iter_mut()
     }
 
-    /// First pass. Checks a file and returns the matching analyzers,
-    /// which provide the language details, and which matchers matched.
-    pub fn check(&mut self, filepath: &OsStr, contents: &[u8]) -> Vec<(Analyzer, Vec<&Matcher>)> {
-        let matches = self.iter_mut().filter_map(|analyzer| {
-            // TODO Not clone the analyzer
-            let cloned_analyzer = analyzer.clone();
-            let matches = {
-                let mut matches = Vec::with_capacity(analyzer.matchers.len());
-                for matcher in &mut analyzer.matchers {
-                    if matcher.matches(filepath, contents) {
-                        matches.push(&*matcher);
+    /// Returns the analyzers that have matched by filepath.
+    pub fn by_filepath(&self, filepath: &OsStr) -> Vec<&Analyzer> {
+        self.iter()
+            .filter(|a| {
+                a.matchers
+                .iter()
+                .filter_map(|m| {
+                    if let Matcher::Filepath(m) = m {
+                        Some(m)
+                    } else {
+                        None
                     }
-                }
-                matches
-            };
-            // NOTE Shadow with immutable variable
-            if matches.is_empty() {
-                None
-            } else {
-                Some((cloned_analyzer, matches))
-            }
-        });
-        let matches: Vec<_> = matches.collect();
-        matches
+                }).any(|m| m.matches(filepath))
+            })
+            .collect()
     }
 
     /// Creates analyzers from JSON.
@@ -170,13 +161,17 @@ impl FilepathMatcher {
         };
         self.patterns.iter().any(|p| p.is_match(filename))
     }
+
+    pub fn matches(&self, filename: &OsStr) -> bool {
+        self.matches_extension(filename)
+            || self.matches_filename(filename)
+            || self.matches_pattern(filename)
+    }
 }
 
 impl MatcherTrait for FilepathMatcher {
     fn matches(&mut self, filename: &OsStr, _contents: &[u8]) -> bool {
-        self.matches_extension(filename)
-            || self.matches_filename(filename)
-            || self.matches_pattern(filename)
+        FilepathMatcher::matches(self, filename)
     }
 }
 
@@ -309,25 +304,25 @@ mod tests {
 
     #[test]
     fn test_matches_extension() {
-        let mut analyzer = FilepathMatcher::new(&["txt"], &[], &[]);
-        assert!(analyzer.matches(OsStr::new("foo.txt"), b""));
-        assert!(!analyzer.matches(OsStr::new("foo.rs"), b""));
+        let analyzer = FilepathMatcher::new(&["txt"], &[], &[]);
+        assert!(analyzer.matches(OsStr::new("foo.txt")));
+        assert!(!analyzer.matches(OsStr::new("foo.rs")));
     }
 
     #[test]
     fn test_matches_filename() {
-        let mut analyzer = FilepathMatcher::new(&[], &["LICENSE"], &[]);
-        assert!(analyzer.matches(OsStr::new("LICENSE"), b""));
-        assert!(!analyzer.matches(OsStr::new("Dockerfile"), b""));
+        let analyzer = FilepathMatcher::new(&[], &["LICENSE"], &[]);
+        assert!(analyzer.matches(OsStr::new("LICENSE")));
+        assert!(!analyzer.matches(OsStr::new("Dockerfile")));
     }
 
     #[test]
     fn test_matches_pattern() {
-        let mut analyzer =
+        let analyzer =
             FilepathMatcher::new::<&str>(&[], &[], &[r"^Makefile(?:\.[\w\d]+)?$".into()]);
-        assert!(analyzer.matches(OsStr::new("Makefile"), b""));
-        assert!(analyzer.matches(OsStr::new("Makefile.in"), b""));
-        assert!(!analyzer.matches(OsStr::new("Cakefile"), b""));
+        assert!(analyzer.matches(OsStr::new("Makefile")));
+        assert!(analyzer.matches(OsStr::new("Makefile.in")));
+        assert!(!analyzer.matches(OsStr::new("Cakefile")));
     }
 
     #[test]

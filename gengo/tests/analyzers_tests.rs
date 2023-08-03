@@ -5,10 +5,9 @@ use std::ffi::OsStr;
 mod util;
 
 #[test]
-fn test_check_json_with_comments() {
+fn test_by_filepath_json_with_comments() {
     let fixture = fixture_str!("test_check_json_with_comments-analyzers.yaml");
-    let mut analyzers = dbg!(Analyzers::from_yaml(fixture)).unwrap();
-    let data = fixture_bytes!("test_check_json_with_comments-file.json");
-    let results = analyzers.check(OsStr::new("test.json"), data);
+    let analyzers = dbg!(Analyzers::from_yaml(fixture)).unwrap();
+    let results = analyzers.by_filepath(OsStr::new("test.json"));
     assert_debug_snapshot!(results);
 }
