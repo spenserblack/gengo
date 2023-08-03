@@ -1,0 +1,24 @@
+---
+source: gengo/tests/analyzers_tests.rs
+expression: analyzers.by_shebang(contents)
+---
+[
+    Analyzer {
+        language: Language {
+            name: "Fish",
+            category: Programming,
+            color: "#aaffaa",
+        },
+        matchers: [
+            Shebang(
+                ShebangMatcher {
+                    interpreters: {
+                        "fish",
+                    },
+                },
+            ),
+        ],
+        heuristics: [],
+        priority: 50,
+    },
+]

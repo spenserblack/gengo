@@ -58,6 +58,19 @@ impl Analyzers {
             .collect()
     }
 
+    /// First pass over a file to determine the language.
+    ///
+    /// It attempts to identify the file in this order:
+    /// 1. by shebang (`#!`)
+    /// 2. by filepath
+    pub fn simple(&self, filepath: &OsStr, contents: &[u8]) -> Vec<&Analyzer> {
+        let matches = self.by_shebang(contents);
+        if matches.len() > 0 {
+            return matches;
+        }
+        self.by_filepath(filepath)
+    }
+
     /// Creates analyzers from JSON.
     pub fn from_json(json: &str) -> Result<Self, Box<dyn Error>> {
         let languages: IndexMap<String, AnalyzerArgs> = serde_json::from_str(json)?;
