@@ -29,3 +29,13 @@ fn test_simple() {
     assert_debug_snapshot!("analyzers_tests__test_simple__by_filepath", analyzers.by_filepath(OsStr::new("test.sh")));
     assert_debug_snapshot!("analyzers_tests__test_simple", analyzers.simple(OsStr::new("test.sh"), contents));
 }
+
+#[test]
+fn test_with_heuristics() {
+    let fixture = fixture_str!("test_check_json_with_comments-analyzers.yaml");
+    let filepath = OsStr::new("test.json");
+    let contents = fixture_bytes!("test_check_json_with_comments-file.json");
+    let analyzers = dbg!(Analyzers::from_yaml(fixture)).unwrap();
+    assert_debug_snapshot!("analyzers_tests__test_with_heuristics__simple", analyzers.simple(filepath, contents));
+    assert_debug_snapshot!("analyzers_tests__test_with_heuristics__with_heuristics", analyzers.with_heuristics(filepath, contents, 1 << 20));
+}

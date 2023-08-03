@@ -1,6 +1,6 @@
 ---
 source: gengo/tests/analyzers_tests.rs
-expression: results
+expression: "analyzers.simple(filepath, contents)"
 ---
 [
     Analyzer {

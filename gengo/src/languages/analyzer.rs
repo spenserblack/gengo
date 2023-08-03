@@ -71,6 +71,32 @@ impl Analyzers {
         self.by_filepath(filepath)
     }
 
+    /// Second pass over a file to determine the language.
+    ///
+    /// If a single language isn't found, narrows down the matches by heuristics.
+    ///
+    /// Use `limit` to limit the number of bytes to read to match to heuristics.
+    pub fn with_heuristics(&self, filepath: &OsStr, contents: &[u8], limit: usize) -> Vec<&Analyzer> {
+        let contents = if contents.len() > limit {
+            &contents[..limit]
+        } else {
+            contents
+        };
+        let matches = self.simple(filepath, contents);
+        if matches.len() < 2 {
+            return matches;
+        }
+        let contents: &str = std::str::from_utf8(contents).unwrap_or_default();
+        matches
+            .into_iter()
+            .filter(|a| {
+                a.heuristics
+                    .iter()
+                    .any(|h| h.is_match(contents))
+            })
+            .collect()
+    }
+
     /// Creates analyzers from JSON.
     pub fn from_json(json: &str) -> Result<Self, Box<dyn Error>> {
         let languages: IndexMap<String, AnalyzerArgs> = serde_json::from_str(json)?;

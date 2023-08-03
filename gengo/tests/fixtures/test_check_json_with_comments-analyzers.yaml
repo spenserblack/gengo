@@ -8,7 +8,7 @@ JSON with Comments:
   category: data
   color: "#FFFFFF"
   heuristics:
-    - "^(?m)\\s*?//"
+    - "(?m)^\\s*?//"
   matchers:
     extensions:
     - json
