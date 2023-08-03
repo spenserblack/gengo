@@ -38,6 +38,43 @@ impl Analyzers {
             .collect()
     }
 
+    /// Returns the analyzers that have matched by shebang (`#!`).
+    pub fn by_shebang(&mut self, contents: &[u8]) -> Vec<&Analyzer> {
+        let mut matches: Vec<&Analyzer> = Vec::new();
+        for analyzer in self.iter_mut() {
+            // if let Some(shebang_matcher) = analyzer
+            //     .matchers
+            //     .iter_mut()
+            //     .filter_map(|m| {
+            //         if let Matcher::Shebang(m) = m {
+            //             Some(m)
+            //         } else {
+            //             None
+            //         }
+            //     })
+            //     .next()
+            // {
+            //     if shebang_matcher.matches(contents) {
+            //         matches.push(&*analyzer);
+            //     }
+            // }
+            let shebang_matched = analyzer
+                .matchers
+                .iter_mut()
+                .filter_map(|m| {
+                    if let Matcher::Shebang(m) = m {
+                        Some(m)
+                    } else {
+                        None
+                    }
+                }).any(|m| m.matches(contents));
+            if shebang_matched {
+                matches.push(&*analyzer);
+            }
+        }
+        matches
+    }
+
     /// Creates analyzers from JSON.
     pub fn from_json(json: &str) -> Result<Self, Box<dyn Error>> {
         let languages: IndexMap<String, AnalyzerArgs> = serde_json::from_str(json)?;
@@ -113,8 +150,8 @@ pub enum Matcher {
 impl MatcherTrait for Matcher {
     fn matches(&mut self, filename: &OsStr, contents: &[u8]) -> bool {
         match self {
-            Matcher::Filepath(matcher) => matcher.matches(filename, contents),
-            Matcher::Shebang(matcher) => matcher.matches(filename, contents),
+            Matcher::Filepath(matcher) => FilepathMatcher::matches(matcher, filename),
+            Matcher::Shebang(matcher) => matcher.matches(contents),
         }
     }
 }
@@ -195,13 +232,11 @@ impl ShebangMatcher {
             .collect();
         Self { matchers }
     }
-}
 
-impl MatcherTrait for ShebangMatcher {
     /// Checks if the file contents match a shebang by checking the first line of the contents.
     ///
     /// Does not read more than 100 bytes.
-    fn matches(&mut self, _filename: &OsStr, contents: &[u8]) -> bool {
+    pub fn matches(&mut self, contents: &[u8]) -> bool {
         let mut lines = contents.split(|&c| c == b'\n');
         let first_line = lines.next().unwrap_or_default();
         let first_line = if first_line.len() > 100 {
@@ -220,6 +255,15 @@ impl MatcherTrait for ShebangMatcher {
                     unreachable!("matcher should be compiled")
                 }
             })
+    }
+}
+
+impl MatcherTrait for ShebangMatcher {
+    /// Checks if the file contents match a shebang by checking the first line of the contents.
+    ///
+    /// Does not read more than 100 bytes.
+    fn matches(&mut self, _filename: &OsStr, contents: &[u8]) -> bool {
+        ShebangMatcher::matches(self, contents)
     }
 }
 
@@ -328,18 +372,18 @@ mod tests {
     #[test]
     fn test_matches_shebang() {
         let mut analyzer = ShebangMatcher::new(&["python", "python3"]);
-        assert!(analyzer.matches(OsStr::new("foo.py"), b"#!/bin/python\n"));
-        assert!(analyzer.matches(OsStr::new("foo.py"), b"#!/usr/bin/python\n"));
-        assert!(analyzer.matches(OsStr::new("foo.py"), b"#!/usr/local/bin/python\n"));
-        assert!(analyzer.matches(OsStr::new("foo.py"), b"#!/usr/bin/python3\n"));
-        assert!(analyzer.matches(OsStr::new("foo.py"), b"#!/usr/bin/env python\n"));
-        assert!(!analyzer.matches(OsStr::new("foo.py"), b"#!/bin/sh\n"));
+        assert!(analyzer.matches(b"#!/bin/python\n"));
+        assert!(analyzer.matches(b"#!/usr/bin/python\n"));
+        assert!(analyzer.matches(b"#!/usr/local/bin/python\n"));
+        assert!(analyzer.matches(b"#!/usr/bin/python3\n"));
+        assert!(analyzer.matches(b"#!/usr/bin/env python\n"));
+        assert!(!analyzer.matches(b"#!/bin/sh\n"));
     }
 
     #[test]
     fn test_shebang_lazy_compile() {
         let mut analyzer = ShebangMatcher::new(&["sh", "bash"]);
-        analyzer.matches(OsStr::new("foo.sh"), b"#!/bin/sh\n");
+        analyzer.matches(b"#!/bin/sh\n");
         assert!(matches!(
             analyzer.matchers[0],
             LazyShebangMatcher::Compiled(_)
