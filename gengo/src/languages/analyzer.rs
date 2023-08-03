@@ -1,6 +1,7 @@
 //! Analyzes a language.
 use super::{Category, Language, LANGUAGE_DEFINITIONS};
 use indexmap::{IndexMap, IndexSet};
+use once_cell::sync::Lazy;
 use regex::Regex;
 use serde::Deserialize;
 use std::error::Error;
@@ -26,14 +27,15 @@ impl Analyzers {
         self.iter()
             .filter(|a| {
                 a.matchers
-                .iter()
-                .filter_map(|m| {
-                    if let Matcher::Filepath(m) = m {
-                        Some(m)
-                    } else {
-                        None
-                    }
-                }).any(|m| m.matches(filepath))
+                    .iter()
+                    .filter_map(|m| {
+                        if let Matcher::Filepath(m) = m {
+                            Some(m)
+                        } else {
+                            None
+                        }
+                    })
+                    .any(|m| m.matches(filepath))
             })
             .collect()
     }
@@ -42,22 +44,6 @@ impl Analyzers {
     pub fn by_shebang(&mut self, contents: &[u8]) -> Vec<&Analyzer> {
         let mut matches: Vec<&Analyzer> = Vec::new();
         for analyzer in self.iter_mut() {
-            // if let Some(shebang_matcher) = analyzer
-            //     .matchers
-            //     .iter_mut()
-            //     .filter_map(|m| {
-            //         if let Matcher::Shebang(m) = m {
-            //             Some(m)
-            //         } else {
-            //             None
-            //         }
-            //     })
-            //     .next()
-            // {
-            //     if shebang_matcher.matches(contents) {
-            //         matches.push(&*analyzer);
-            //     }
-            // }
             let shebang_matched = analyzer
                 .matchers
                 .iter_mut()
@@ -67,7 +53,8 @@ impl Analyzers {
                     } else {
                         None
                     }
-                }).any(|m| m.matches(contents));
+                })
+                .any(|m| m.matches(contents));
             if shebang_matched {
                 matches.push(&*analyzer);
             }
@@ -215,22 +202,13 @@ impl MatcherTrait for FilepathMatcher {
 /// Matches a shebang.
 #[derive(Clone, Debug)]
 pub struct ShebangMatcher {
-    matchers: Vec<LazyShebangMatcher>,
-}
-
-#[derive(Clone, Debug)]
-enum LazyShebangMatcher {
-    Compiled(Regex),
-    Uncompiled(String),
+    interpreters: IndexSet<String>,
 }
 
 impl ShebangMatcher {
-    fn new<S: Display>(cmd: &[S]) -> Self {
-        let matchers = cmd
-            .iter()
-            .map(|s| LazyShebangMatcher::Uncompiled(s.to_string()))
-            .collect();
-        Self { matchers }
+    fn new<S: Display>(interpreters: &[S]) -> Self {
+        let interpreters = interpreters.iter().map(|s| s.to_string()).collect();
+        Self { interpreters }
     }
 
     /// Checks if the file contents match a shebang by checking the first line of the contents.
@@ -244,16 +222,14 @@ impl ShebangMatcher {
         } else {
             first_line
         };
-        let first_line = String::from_utf8_lossy(first_line);
-        self.matchers
-            .iter_mut()
-            .map(|m| m.compile())
-            .any(|matcher| {
-                if let LazyShebangMatcher::Compiled(re) = matcher {
-                    re.is_match(&first_line)
-                } else {
-                    unreachable!("matcher should be compiled")
-                }
+        let first_line = dbg!(String::from_utf8_lossy(first_line));
+        static RE: Lazy<Regex> = Lazy::new(|| Regex::new(r"^#!(?:/usr(?:/local)?)?/bin/(?:env )?([\w\d]+)$").unwrap());
+
+        dbg!(RE.captures(&first_line))
+            .and_then(|c| c.get(1))
+            .map_or(false, |m| {
+                let interpreter = m.as_str();
+                self.interpreters.contains(interpreter)
             })
     }
 }
@@ -264,21 +240,6 @@ impl MatcherTrait for ShebangMatcher {
     /// Does not read more than 100 bytes.
     fn matches(&mut self, _filename: &OsStr, contents: &[u8]) -> bool {
         ShebangMatcher::matches(self, contents)
-    }
-}
-
-impl LazyShebangMatcher {
-    fn compile(&mut self) -> &Self {
-        match self {
-            LazyShebangMatcher::Compiled(_) => self,
-            LazyShebangMatcher::Uncompiled(cmd) => {
-                let cmd = regex::escape(cmd);
-                let re = Regex::new(&format!(r"^#!(?:/usr(?:/local)?)?/bin/(?:env )?(?:{cmd})$"))
-                    .unwrap();
-                *self = LazyShebangMatcher::Compiled(re);
-                self
-            }
-        }
     }
 }
 
@@ -378,19 +339,5 @@ mod tests {
         assert!(analyzer.matches(b"#!/usr/bin/python3\n"));
         assert!(analyzer.matches(b"#!/usr/bin/env python\n"));
         assert!(!analyzer.matches(b"#!/bin/sh\n"));
-    }
-
-    #[test]
-    fn test_shebang_lazy_compile() {
-        let mut analyzer = ShebangMatcher::new(&["sh", "bash"]);
-        analyzer.matches(b"#!/bin/sh\n");
-        assert!(matches!(
-            analyzer.matchers[0],
-            LazyShebangMatcher::Compiled(_)
-        ));
-        assert!(matches!(
-            analyzer.matchers[1],
-            LazyShebangMatcher::Uncompiled(_)
-        ));
     }
 }

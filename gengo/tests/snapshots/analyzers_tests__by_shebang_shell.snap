@@ -12,16 +12,10 @@ expression: results
         matchers: [
             Shebang(
                 ShebangMatcher {
-                    matchers: [
-                        Compiled(
-                            Regex(
-                                "^#!(?:/usr(?:/local)?)?/bin/(?:env )?(?:sh)$",
-                            ),
-                        ),
-                        Uncompiled(
-                            "bash",
-                        ),
-                    ],
+                    interpreters: {
+                        "sh",
+                        "bash",
+                    },
                 },
             ),
         ],
