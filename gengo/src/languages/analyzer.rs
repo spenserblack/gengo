@@ -215,6 +215,8 @@ pub struct ShebangMatcher {
 }
 
 impl ShebangMatcher {
+    const MAX_SHEBANG_LENGTH: usize = 50;
+
     fn new<S: Display>(interpreters: &[S]) -> Self {
         let interpreters = interpreters.iter().map(|s| s.to_string()).collect();
         Self { interpreters }
@@ -226,8 +228,12 @@ impl ShebangMatcher {
     pub fn matches(&self, contents: &[u8]) -> bool {
         let mut lines = contents.split(|&c| c == b'\n');
         let first_line = lines.next().unwrap_or_default();
-        let first_line = if first_line.len() > 100 {
-            &first_line[..100]
+        // Check that the first line is a shebang
+        if first_line.len() < 2 || first_line[0] != b'!' || first_line[1] != b'#' {
+            return false;
+        }
+        let first_line = if first_line.len() > Self::MAX_SHEBANG_LENGTH {
+            &first_line[..Self::MAX_SHEBANG_LENGTH]
         } else {
             first_line
         };
