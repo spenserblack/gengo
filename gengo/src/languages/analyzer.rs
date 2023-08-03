@@ -46,16 +46,16 @@ impl Analyzers {
     /// Creates analyzers from JSON.
     pub fn from_json(json: &str) -> Result<Self, Box<dyn Error>> {
         let languages: IndexMap<String, AnalyzerArgs> = serde_json::from_str(json)?;
-        Ok(Self::from_indexmap(languages))
+        Self::from_indexmap(languages)
     }
 
     /// Creates analyzers from YAML.
     pub fn from_yaml(yaml: &str) -> Result<Self, Box<dyn Error>> {
         let languages: IndexMap<String, AnalyzerArgs> = serde_yaml::from_str(yaml)?;
-        Ok(Self::from_indexmap(languages))
+        Self::from_indexmap(languages)
     }
 
-    fn from_indexmap(languages: IndexMap<String, AnalyzerArgs>) -> Self {
+    fn from_indexmap(languages: IndexMap<String, AnalyzerArgs>) -> Result<Self, Box<dyn Error>> {
         let analyzers = languages
             .into_iter()
             .map(|(name, args)| {
@@ -69,17 +69,17 @@ impl Analyzers {
                 let heuristics = args
                     .heuristics
                     .into_iter()
-                    .map(|s| Regex::new(&s).unwrap())
-                    .collect();
-                Analyzer {
+                    .map(|s| Ok(Regex::new(&s)?))
+                    .collect::<Result<_, Box<dyn Error>>>()?;
+                Ok(Analyzer {
                     language,
                     matchers,
                     heuristics,
                     priority: args.priority,
-                }
+                })
             })
-            .collect();
-        Self(analyzers)
+            .collect::<Result<_, Box<dyn Error>>>()?;
+        Ok(Self(analyzers))
     }
 }
 
