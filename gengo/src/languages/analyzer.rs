@@ -97,6 +97,53 @@ impl Analyzers {
             .collect()
     }
 
+    /// Picks the best language to match to a file.
+    ///
+    /// Matches are first attempted by shebang. If there are no matches, then
+    /// matches are attempted by filepath.
+    ///
+    /// After this, if there are multiple languages, then matches are narrowed
+    /// down using heuristics. `limit` is used here to limit the number of
+    /// bytes to read to match to heuristics.
+    ///
+    /// Finally, after this, if there are *still* multiple matching languages,
+    /// then a language is chosen from community-driven priority.
+    ///
+    /// # Example
+    ///
+    /// Given the following simple definition, we can identify Rust code.
+    ///
+    /// ```yaml
+    /// Rust:
+    ///   category: programming
+    ///   color: "#FF4400"
+    ///   matches:
+    ///     extensions:
+    ///       - rs
+    /// ```
+    ///
+    /// ```
+    /// # use std::ffi::OsStr;
+    /// use gengo::Analyzers;
+    ///
+    /// // Minified JSON of the above definition.
+    /// const DEFINITIONS: &str = r##"{"Rust":{"category":"programming","color":"#FF4400","matchers":{"extensions":["rs"]}}}"##;
+    /// let analyzers = Analyzers::from_json(DEFINITIONS).unwrap();
+    /// let filename = OsStr::new("main.rs");
+    /// let contents = b"fn main() {}";
+    /// let limit = 1 << 20; // 1 MB
+    /// let language = analyzers.pick(filename, contents, limit).unwrap();
+    /// assert_eq!(language.name(), "Rust");
+    /// ```
+    pub fn pick(&self, filepath: &OsStr, contents: &[u8], limit: usize) -> Option<&Language> {
+        let matches = {
+            let mut matches = self.with_heuristics(filepath, contents, limit);
+            matches.sort_by_key(|a| a.priority);
+            matches
+        };
+        matches.first().map(|a| &a.language)
+    }
+
     /// Creates analyzers from JSON.
     pub fn from_json(json: &str) -> Result<Self, Box<dyn Error>> {
         let languages: IndexMap<String, AnalyzerArgs> = serde_json::from_str(json)?;

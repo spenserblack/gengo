@@ -11,6 +11,23 @@ pub struct Language {
     color: String,
 }
 
+impl Language {
+    /// Returns the name of the language.
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
+    /// Returns the category of the language.
+    pub fn category(&self) -> &Category {
+        &self.category
+    }
+
+    /// Returns the color of the language.
+    pub fn color(&self) -> &str {
+        &self.color
+    }
+}
+
 /// A category for a language.
 #[derive(Clone, Debug, Deserialize)]
 #[serde(rename_all = "lowercase")]
