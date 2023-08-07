@@ -14,22 +14,15 @@ pub fn new_from(args: &[&str]) -> Cli {
 #[derive(Parser)]
 #[command(version)]
 pub struct Cli {
-    /// The left side of the equation.
-    left: usize,
-    /// The right side of the equation.
-    right: usize,
+    /// The path to the repository to analyze.
+    #[arg(short, long, default_value = ".")]
+    repository: String,
 }
 
 impl Cli {
     pub fn run<W: Write>(&self, mut w: W) -> Result<(), Box<dyn Error>> {
         // TODO Implement `Display` and read the `to_string` value?
-        let result = gengo::add(self.left, self.right);
-        writeln!(
-            w,
-            "{left} + {right} = {result}",
-            left = self.left,
-            right = self.right
-        )?;
+        writeln!(w, "Would read from {}", self.repository,)?;
         Ok(())
     }
 }
