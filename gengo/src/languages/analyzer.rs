@@ -117,7 +117,7 @@ impl Analyzers {
     /// Rust:
     ///   category: programming
     ///   color: "#FF4400"
-    ///   matches:
+    ///   matchers:
     ///     extensions:
     ///       - rs
     /// ```
