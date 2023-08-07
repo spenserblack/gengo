@@ -24,7 +24,7 @@
 #
 #     # The file extensions associated with the language (optional)
 #     extensions:
-#       - ".rs"
+#       - "rs"
 #
 #     # The filenames associated with the language (optional)
 #     filenames:
