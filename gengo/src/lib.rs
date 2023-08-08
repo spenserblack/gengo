@@ -45,12 +45,14 @@ impl Gengo {
                 continue;
             };
 
+            let size = contents.len();
             let generated = self.is_generated(filepath, contents);
             let documentation = self.is_documentation(filepath, contents);
             let vendored = self.is_vendored(filepath, contents);
 
             let entry = Entry {
                 language,
+                size,
                 generated,
                 documentation,
                 vendored,
@@ -83,6 +85,8 @@ impl Gengo {
 pub struct Entry {
     /// The detected language.
     language: Language,
+    /// The size of the file.
+    size: usize,
     /// If the file was generated.
     generated: bool,
     /// If the file is documentation.
@@ -95,6 +99,11 @@ impl Entry {
     /// The detected language.
     pub fn language(&self) -> &Language {
         &self.language
+    }
+
+    /// The size of the file.
+    pub fn size(&self) -> usize {
+        self.size
     }
 
     /// If the file was generated.
