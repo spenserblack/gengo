@@ -21,9 +21,12 @@ pub struct Cli {
 }
 
 impl Cli {
-    pub fn run<W: Write>(&self, mut w: W) -> Result<(), Box<dyn Error>> {
-        // TODO Implement `Display` and read the `to_string` value?
-        writeln!(w, "Would read from {}", self.repository,)?;
+    pub fn run<Out: Write, Err: Write>(
+        &self,
+        mut out: Out,
+        mut err: Err,
+    ) -> Result<(), Box<dyn Error>> {
+        writeln!(out, "Would read from {}", self.repository,)?;
         Ok(())
     }
 }
