@@ -34,7 +34,7 @@ impl<P: AsRef<Path>> Builder<P> {
     }
 
     pub fn build(self) -> Result<Gengo, Box<dyn Error>> {
-        let repository = Repository::open(self.repository_path)?;
+        let repository = Repository::discover(self.repository_path)?;
         let analyzers = self.analyzers.unwrap_or_default();
         Ok(Gengo { repository, analyzers })
     }
