@@ -1,14 +1,14 @@
-use git2::Repository;
+pub use builder::Builder;
 use git2::Commit;
-use std::error::Error;
+use git2::Repository;
+use indexmap::IndexMap;
 pub use languages::analyzer::Analyzers;
 pub use languages::Language;
-pub use builder::Builder;
+use std::error::Error;
 use std::ffi::OsStr;
-use indexmap::IndexMap;
 
-pub mod languages;
 mod builder;
+pub mod languages;
 
 /// The main entry point for Gengo.
 pub struct Gengo {
@@ -34,7 +34,7 @@ impl Gengo {
         for entry in tree.iter() {
             let path = entry.name().ok_or("invalid path")?;
             let filepath = OsStr::new(path);
-            /// TODO Skip anything that is likely binary
+            // TODO Skip anything that is likely binary
             let blob = self.repository.find_blob(entry.id())?;
             let contents = blob.content();
 
@@ -79,6 +79,7 @@ impl Gengo {
 }
 
 /// A single entry in the language statistics.
+#[derive(Debug)]
 pub struct Entry {
     /// The detected language.
     language: Language,

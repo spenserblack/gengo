@@ -1,0 +1,16 @@
+JavaScript:
+  category: programming
+  color: "#FFFF00"
+  matchers:
+    extensions:
+      - js
+    interpreters:
+      - node
+TypeScript:
+  category: programming
+  color: "#0000FF"
+  matchers:
+    extensions:
+      - ts
+    interpreters:
+      - deno
