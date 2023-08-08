@@ -1,6 +1,7 @@
 pub use builder::Builder;
 use git2::Commit;
 use git2::Repository;
+use git2::ObjectType;
 use indexmap::IndexMap;
 pub use languages::analyzer::Analyzers;
 pub use languages::Language;
@@ -32,13 +33,18 @@ impl Gengo {
         let tree = commit.tree()?;
         let mut results = IndexMap::new();
         for entry in tree.iter() {
-            let path = entry.name().ok_or("invalid path")?;
-            let filepath = OsStr::new(path);
+            match dbg!(entry.kind()) {
+                Some(ObjectType::Blob) => {},
+                _ => continue,
+            }
+            let path = dbg!(entry.name().ok_or("invalid path").unwrap());
+            let filepath = dbg!(OsStr::new(path));
             // TODO Skip anything that is likely binary
-            let blob = self.repository.find_blob(entry.id())?;
-            let contents = blob.content();
+            let object = entry.to_object(&self.repository)?;
+            let blob = dbg!(object.as_blob().expect("object to be a blob"));
+            let contents = dbg!(blob.content());
 
-            let language = self.analyzers.pick(filepath, contents, self.read_limit);
+            let language = dbg!(self.analyzers.pick(filepath, contents, self.read_limit));
             let language = if let Some(language) = language {
                 language.clone()
             } else {
