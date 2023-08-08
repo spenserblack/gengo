@@ -32,6 +32,7 @@ impl Gengo {
         let commit = self.rev(rev)?;
         let tree = commit.tree()?;
         let mut results = IndexMap::new();
+        // TODO Use walk instead of iter
         for entry in tree.iter() {
             match dbg!(entry.kind()) {
                 Some(ObjectType::Blob) => {},
