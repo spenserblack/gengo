@@ -1,3 +1,4 @@
+use clap::Error as ClapError;
 use clap::Parser;
 use std::error::Error;
 use std::io::Write;
@@ -6,8 +7,8 @@ pub fn new() -> Cli {
     Cli::parse()
 }
 
-pub fn new_from(args: &[&str]) -> Cli {
-    Cli::parse_from(args)
+pub fn try_new_from(args: &[&str]) -> Result<Cli, ClapError> {
+    Cli::try_parse_from(args)
 }
 
 /// Fetch language statistics for your source code.
