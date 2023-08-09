@@ -1,4 +1,6 @@
 pub use builder::Builder;
+use documentation::Documentation;
+use generated::Generated;
 use git2::{Blob, Commit, ObjectType, Repository, Tree};
 use indexmap::IndexMap;
 pub use languages::analyzer::Analyzers;
@@ -6,9 +8,13 @@ pub use languages::Language;
 use std::error::Error;
 use std::ffi::OsStr;
 use std::path::Path;
+use vendored::Vendored;
 
 mod builder;
+mod documentation;
+mod generated;
 pub mod languages;
+mod vendored;
 
 /// The main entry point for Gengo.
 pub struct Gengo {
@@ -100,21 +106,18 @@ impl Gengo {
     }
 
     /// Guesses if a file is generated.
-    pub fn is_generated(&self, filepath: &OsStr, _contents: &[u8]) -> bool {
-        filepath.to_str().unwrap_or_default().starts_with("dist/")
+    pub fn is_generated(&self, filepath: &OsStr, contents: &[u8]) -> bool {
+        Generated::is_generated(filepath, contents)
     }
 
     /// Guesses if a file is documentation.
-    pub fn is_documentation(&self, filepath: &OsStr, _contents: &[u8]) -> bool {
-        filepath.to_str().unwrap_or_default().starts_with("docs/")
+    pub fn is_documentation(&self, filepath: &OsStr, contents: &[u8]) -> bool {
+        Documentation::is_documentation(filepath, contents)
     }
 
     /// Guesses if a file is vendored.
-    pub fn is_vendored(&self, filepath: &OsStr, _contents: &[u8]) -> bool {
-        filepath
-            .to_str()
-            .unwrap_or_default()
-            .starts_with("node_modules/")
+    pub fn is_vendored(&self, filepath: &OsStr, contents: &[u8]) -> bool {
+        Vendored::is_vendored(filepath, contents)
     }
 }
 
