@@ -47,6 +47,14 @@
 #
 # WARNING: Please alphabetize!
 ---
+JavaScript:
+  category: programming
+  color: "#F0DC4E"
+  matchers:
+    extensions:
+      - js
+    interpreters:
+      - node
 Plain Text:
   category: prose
   color: "#000000"
@@ -57,3 +65,17 @@ Plain Text:
     filenames:
       - "LICENCE"
       - "LICENSE"
+TypeScript:
+  category: programming
+  color: "#2F74C0"
+  matchers:
+    extensions:
+      - ts
+    interpreters:
+      - deno
+Rust:
+  category: programming
+  color: "#DD3515"
+  matchers:
+    extensions:
+      - rs
