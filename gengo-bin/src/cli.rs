@@ -1,7 +1,7 @@
 use clap::Error as ClapError;
 use clap::Parser;
 use gengo::{languages::Category, Builder};
-use std::collections::HashMap;
+use indexmap::IndexMap;
 use std::io::{self, Write};
 
 pub fn new() -> CLI {
@@ -52,7 +52,7 @@ impl CLI {
             }
         };
 
-        let mut compiled = HashMap::new();
+        let mut compiled = IndexMap::new();
         let mut total = 0;
         for (_, entry) in results.into_iter() {
             if entry.generated() || entry.vendored() || entry.documentation() {
