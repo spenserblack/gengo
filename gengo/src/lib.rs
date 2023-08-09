@@ -3,6 +3,7 @@ use git2::Commit;
 use git2::Repository;
 use git2::ObjectType;
 use indexmap::IndexMap;
+use git2::{TreeWalkMode, TreeWalkResult};
 pub use languages::analyzer::Analyzers;
 pub use languages::Language;
 use std::error::Error;
@@ -29,19 +30,20 @@ impl Gengo {
 
     /// Analyzes each file in the repository at the given revision.
     pub fn analyze(&self, rev: &str) -> Result<IndexMap<String, Entry>, Box<dyn Error>> {
-        let commit = self.rev(rev)?;
-        let tree = commit.tree()?;
         let mut results = IndexMap::new();
-        // TODO Use walk instead of iter
-        for entry in tree.iter() {
-            match dbg!(entry.kind()) {
-                Some(ObjectType::Blob) => {},
-                _ => continue,
+        let commit = self.rev(rev)?;
+        let tree = dbg!(commit.tree()?);
+        tree.walk(TreeWalkMode::PreOrder, |_, entry| {
+            match entry.kind() {
+                Some(ObjectType::Blob) => {}
+                _ => return TreeWalkResult::Ok,
             }
             let path = dbg!(entry.name().ok_or("invalid path").unwrap());
             let filepath = dbg!(OsStr::new(path));
-            // TODO Skip anything that is likely binary
-            let object = entry.to_object(&self.repository)?;
+            let object = match entry.to_object(&self.repository) {
+                Ok(object) => object,
+                Err(_) => return TreeWalkResult::Abort,
+            };
             let blob = dbg!(object.as_blob().expect("object to be a blob"));
             let contents = dbg!(blob.content());
 
@@ -49,7 +51,7 @@ impl Gengo {
             let language = if let Some(language) = language {
                 language.clone()
             } else {
-                continue;
+                return TreeWalkResult::Ok;
             };
 
             let size = contents.len();
@@ -57,6 +59,7 @@ impl Gengo {
             let documentation = self.is_documentation(filepath, contents);
             let vendored = self.is_vendored(filepath, contents);
 
+            let path = String::from(path);
             let entry = Entry {
                 language,
                 size,
@@ -65,9 +68,45 @@ impl Gengo {
                 vendored,
             };
 
-            let path = String::from(path);
             results.insert(path, entry);
-        }
+
+            TreeWalkResult::Ok
+        })?;
+        // for entry in tree.iter() {
+        //     match dbg!(entry.kind()) {
+        //         Some(ObjectType::Blob) => {},
+        //         _ => continue,
+        //     }
+        //     let path = dbg!(entry.name().ok_or("invalid path").unwrap());
+        //     let filepath = dbg!(OsStr::new(path));
+        //     // TODO Skip anything that is likely binary
+        //     let object = entry.to_object(&self.repository)?;
+        //     let blob = dbg!(object.as_blob().expect("object to be a blob"));
+        //     let contents = dbg!(blob.content());
+
+        //     let language = dbg!(self.analyzers.pick(filepath, contents, self.read_limit));
+        //     let language = if let Some(language) = language {
+        //         language.clone()
+        //     } else {
+        //         continue;
+        //     };
+
+        //     let size = contents.len();
+        //     let generated = self.is_generated(filepath, contents);
+        //     let documentation = self.is_documentation(filepath, contents);
+        //     let vendored = self.is_vendored(filepath, contents);
+
+        //     let entry = Entry {
+        //         language,
+        //         size,
+        //         generated,
+        //         documentation,
+        //         vendored,
+        //     };
+
+        //     let path = String::from(path);
+        //     results.insert(path, entry);
+        // }
         Ok(results)
     }
 
