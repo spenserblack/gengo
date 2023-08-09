@@ -65,7 +65,7 @@ impl Analyzers {
     /// 2. by filepath
     pub fn simple(&self, filepath: &OsStr, contents: &[u8]) -> Vec<&Analyzer> {
         let matches = self.by_shebang(contents);
-        if matches.len() > 0 {
+        if !matches.is_empty() {
             return matches;
         }
         self.by_filepath(filepath)

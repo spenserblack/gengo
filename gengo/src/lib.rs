@@ -1,9 +1,5 @@
 pub use builder::Builder;
-use git2::Commit;
-use git2::ObjectType;
-use git2::Repository;
-use git2::Tree;
-use git2::{Blob, TreeEntry, TreeWalkMode, TreeWalkResult};
+use git2::{Blob, Commit, ObjectType, Repository, Tree};
 use indexmap::IndexMap;
 pub use languages::analyzer::Analyzers;
 pub use languages::Language;
