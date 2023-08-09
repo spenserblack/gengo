@@ -1,0 +1,17 @@
+[package]
+name = "gengo-bin"
+version = "0.1.0"
+edition = "2021"
+repository = "https://github.com/spenserblack/gengo"
+readme = "../README.md"
+
+[[bin]]
+name = "gengo"
+
+[dependencies]
+clap = { version = "4", features = ["derive", "wrap_help"] }
+gengo = { path = "../gengo", version = "0.1" }
+indexmap = "2"
+
+[dev-dependencies]
+insta = "1"

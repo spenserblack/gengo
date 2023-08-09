@@ -1,0 +1,87 @@
+# Definition of languages supported by Gengo
+#
+# # Format
+#
+# ```yaml
+# # The name of the language.
+# Language:
+#
+#   # data, markup, programming, or prose
+#   category:
+#
+#   # The color associated with the language (unused).
+#   color:
+#
+#   # Regexes unique to the contents of the file to resolve multiple matches. These will
+#   # be used if the matchers (see below) cannot narrow down a file to a single
+#   # language.
+#   heuristics:
+#     - "(?m)^macro_rules!"
+#
+#   # Entries to match against files. This is the first pass before more expensive
+#   # strategies are used.
+#   matchers:
+#
+#     # The file extensions associated with the language (optional)
+#     extensions:
+#       - "rs"
+#
+#     # The filenames associated with the language (optional)
+#     filenames:
+#       - "Dockerfile"
+#
+#     # Used for checking shebangs.
+#     interpreters: # The interpreter(s) associated with the language (optional)
+#       - "python"
+#       - "python3"
+#
+#     # Advanced regex patterns associated with the language (optional)
+#     patterns:
+#       # See the format of the `regex` crate: https://docs.rs/regex/latest/regex/#syntax
+#       - "(?i)^(?:^|\/)__snapshots__\/.*\.snap$"
+#
+#   # Value between 0 and 100 to pick a language if multiple matches couldn't be
+#   # narrowed down (optional, default: 50)
+#   priority: 50
+# ```
+#
+# WARNING: Please alphabetize!
+---
+HTML:
+  category: markup
+  color: "#E96228"
+  matchers:
+    extensions:
+      - html
+JavaScript:
+  category: programming
+  color: "#F0DC4E"
+  matchers:
+    extensions:
+      - js
+    interpreters:
+      - node
+Plain Text:
+  category: prose
+  color: "#000000"
+  matchers:
+    extensions:
+      - text
+      - txt
+    filenames:
+      - "LICENCE"
+      - "LICENSE"
+Rust:
+  category: programming
+  color: "#DD3515"
+  matchers:
+    extensions:
+      - rs
+TypeScript:
+  category: programming
+  color: "#2F74C0"
+  matchers:
+    extensions:
+      - ts
+    interpreters:
+      - deno

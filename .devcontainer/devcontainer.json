@@ -1,0 +1,19 @@
+{
+  "name": "Rust",
+  "image": "mcr.microsoft.com/devcontainers/rust:1",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "EditorConfig.EditorConfig",
+        "rebornix.ruby",
+        "rust-lang.rust-analyzer"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "files.autoSaveDelay": 1000
+      }
+    }
+  },
+  "postCreateCommand": ".devcontainer/postCreate.sh",
+  "remoteUser": "vscode"
+}

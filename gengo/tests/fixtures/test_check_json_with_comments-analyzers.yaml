@@ -1,0 +1,15 @@
+JSON:
+  category: data
+  color: "#000000"
+  matchers:
+    extensions:
+      - json
+JSON with Comments:
+  category: data
+  color: "#FFFFFF"
+  heuristics:
+    - "(?m)^\\s*?//"
+  matchers:
+    extensions:
+    - json
+    - jsonc

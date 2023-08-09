@@ -1,0 +1,26 @@
+---
+source: gengo/tests/analyzers_tests.rs
+expression: "analyzers.by_filepath(OsStr::new(\"test.sh\"))"
+---
+[
+    Analyzer {
+        language: Language {
+            name: "Shell",
+            category: Programming,
+            color: "#aabbcc",
+        },
+        matchers: [
+            Filepath(
+                FilepathMatcher {
+                    extensions: {
+                        "sh",
+                    },
+                    filenames: {},
+                    patterns: [],
+                },
+            ),
+        ],
+        heuristics: [],
+        priority: 50,
+    },
+]

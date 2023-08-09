@@ -1,0 +1,29 @@
+HTML:
+  category: markup
+  color: "#FF4400"
+  matchers:
+    extensions:
+      - html
+JavaScript:
+  category: programming
+  color: "#FFFF00"
+  matchers:
+    extensions:
+      - js
+    interpreters:
+      - node
+Plain Text:
+  category: prose
+  color: "#000000"
+  matchers:
+    extensions:
+      - text
+      - txt
+TypeScript:
+  category: programming
+  color: "#0000FF"
+  matchers:
+    extensions:
+      - ts
+    interpreters:
+      - deno

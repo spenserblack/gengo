@@ -1,0 +1,25 @@
+---
+source: gengo/tests/analyzers_tests.rs
+expression: results
+---
+[
+    Analyzer {
+        language: Language {
+            name: "Shell",
+            category: Programming,
+            color: "#aabbcc",
+        },
+        matchers: [
+            Shebang(
+                ShebangMatcher {
+                    interpreters: {
+                        "sh",
+                        "bash",
+                    },
+                },
+            ),
+        ],
+        heuristics: [],
+        priority: 50,
+    },
+]
