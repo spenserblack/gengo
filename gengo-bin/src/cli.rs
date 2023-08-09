@@ -55,10 +55,6 @@ impl CLI {
         let mut compiled = IndexMap::new();
         let mut total = 0;
         for (_, entry) in results.into_iter() {
-            if entry.generated() || entry.vendored() || entry.documentation() {
-                continue;
-            }
-
             if !entry.detectable() {
                 continue;
             }

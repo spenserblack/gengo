@@ -2,6 +2,7 @@
 source: gengo-bin/tests/test_cli.rs
 expression: stdout
 ---
-31.11% 28 JavaScript
-68.89% 62 TypeScript
+18.42% 28 JavaScript
+40.79% 62 Plain Text
+40.79% 62 TypeScript
 
