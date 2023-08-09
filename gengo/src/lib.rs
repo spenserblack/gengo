@@ -1,10 +1,10 @@
 pub use builder::Builder;
 use git2::Commit;
-use git2::Repository;
 use git2::ObjectType;
+use git2::Repository;
 use git2::Tree;
+use git2::{Blob, TreeEntry, TreeWalkMode, TreeWalkResult};
 use indexmap::IndexMap;
-use git2::{TreeWalkMode, TreeWalkResult, TreeEntry, Blob};
 pub use languages::analyzer::Analyzers;
 pub use languages::Language;
 use std::error::Error;
@@ -34,38 +34,48 @@ impl Gengo {
     pub fn analyze(&self, rev: &str) -> Result<IndexMap<String, Entry>, Box<dyn Error>> {
         let mut results = IndexMap::new();
         let commit = self.rev(rev)?;
-        let tree = dbg!(commit.tree()?);
+        let tree = commit.tree()?;
         self.analyze_tree("", &tree, &mut results)?;
         Ok(results)
     }
 
-    fn analyze_tree(&self, root: &str, tree: &Tree, results: &mut IndexMap<String, Entry>) -> Result<(), Box<dyn Error>> {
+    fn analyze_tree(
+        &self,
+        root: &str,
+        tree: &Tree,
+        results: &mut IndexMap<String, Entry>,
+    ) -> Result<(), Box<dyn Error>> {
         for entry in tree.iter() {
             let object = entry.to_object(&self.repository)?;
-            match dbg!(entry.kind()) {
+            match entry.kind() {
                 Some(ObjectType::Tree) => {
-                    let path = dbg!(entry.name().ok_or("invalid path"))?;
-                    let tree = dbg!(object.as_tree().expect("object to be a tree"));
+                    let path = entry.name().ok_or("invalid path")?;
+                    let tree = object.as_tree().expect("object to be a tree");
 
                     self.analyze_tree(path, tree, results)?;
-                },
+                }
                 Some(ObjectType::Blob) => {
-                    let path = dbg!(entry.name().ok_or("invalid path").unwrap());
+                    let path = entry.name().ok_or("invalid path").unwrap();
                     let filepath = Path::new(root).join(path);
-                    let filepath = dbg!(filepath.as_os_str());
-                    let blob = dbg!(object.as_blob().expect("object to be a blob"));
+                    let filepath = filepath.as_os_str();
+                    let blob = object.as_blob().expect("object to be a blob");
 
                     self.analyze_blob(filepath, blob, results)?;
-                },
+                }
                 _ => continue,
             }
         }
         Ok(())
     }
 
-    fn analyze_blob(&self, filepath: &OsStr, blob: &Blob, results: &mut IndexMap<String, Entry>) -> Result<(), Box<dyn Error>> {
-        let contents = dbg!(blob.content());
-        let language = dbg!(self.analyzers.pick(filepath, contents, self.read_limit));
+    fn analyze_blob(
+        &self,
+        filepath: &OsStr,
+        blob: &Blob,
+        results: &mut IndexMap<String, Entry>,
+    ) -> Result<(), Box<dyn Error>> {
+        let contents = blob.content();
+        let language = self.analyzers.pick(filepath, contents, self.read_limit);
         let language = if let Some(language) = language {
             language.clone()
         } else {

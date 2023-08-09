@@ -1,9 +1,8 @@
-
-use super::Gengo;
 use super::Analyzers;
-use std::path::Path;
+use super::Gengo;
 use git2::Repository;
 use std::error::Error;
+use std::path::Path;
 
 /// Builds a new `Gengo` instance.
 ///
@@ -49,6 +48,10 @@ impl<P: AsRef<Path>> Builder<P> {
         let repository = Repository::discover(self.repository_path)?;
         let analyzers = self.analyzers.unwrap_or_default();
         let read_limit = self.read_limit.unwrap_or(Self::DEFAULT_READ_LIMIT);
-        Ok(Gengo { repository, analyzers, read_limit })
+        Ok(Gengo {
+            repository,
+            analyzers,
+            read_limit,
+        })
     }
 }

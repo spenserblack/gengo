@@ -76,7 +76,12 @@ impl Analyzers {
     /// If a single language isn't found, narrows down the matches by heuristics.
     ///
     /// Use `limit` to limit the number of bytes to read to match to heuristics.
-    pub fn with_heuristics(&self, filepath: &OsStr, contents: &[u8], limit: usize) -> Vec<&Analyzer> {
+    pub fn with_heuristics(
+        &self,
+        filepath: &OsStr,
+        contents: &[u8],
+        limit: usize,
+    ) -> Vec<&Analyzer> {
         let contents = if contents.len() > limit {
             &contents[..limit]
         } else {
@@ -89,11 +94,7 @@ impl Analyzers {
         let contents: &str = std::str::from_utf8(contents).unwrap_or_default();
         matches
             .into_iter()
-            .filter(|a| {
-                a.heuristics
-                    .iter()
-                    .any(|h| h.is_match(contents))
-            })
+            .filter(|a| a.heuristics.iter().any(|h| h.is_match(contents)))
             .collect()
     }
 
@@ -311,7 +312,8 @@ impl ShebangMatcher {
             first_line
         };
         let first_line = String::from_utf8_lossy(first_line);
-        static RE: Lazy<Regex> = Lazy::new(|| Regex::new(r"^#!(?:/usr(?:/local)?)?/bin/(?:env )?([\w\d]+)$").unwrap());
+        static RE: Lazy<Regex> =
+            Lazy::new(|| Regex::new(r"^#!(?:/usr(?:/local)?)?/bin/(?:env )?([\w\d]+)$").unwrap());
 
         RE.captures(&first_line)
             .and_then(|c| c.get(1))
