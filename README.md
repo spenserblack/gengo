@@ -18,5 +18,31 @@ A bit like [tokei][tokei], a lot like [linguist][linguist].
 | **Detect Language with Heuristics** | Yes | No | Yes |
 | **Detect Language with Classifier** | Yes | No | Not Yet ;) |
 
+## Usage
+
+### Overrides
+
+Like [linguist][linguist], you can override behavior using a `.gitattributes` file.
+Basically, just replace `linguist-FOO` with `gengo-FOO`. *Unlike* linguist,
+`gengo-detectable` will *always* make a file be included in statistics (linguist
+will still exclude them if they're generated or vendored).
+
+```gitattributes
+# boolean attributes:
+
+# These can be *negated* by prefixing with `-` (`-gengo-documentation`).
+# Mark a file as documentation
+*.html gengo-documentation
+# Mark a file as generated
+my-built-files/* gengo-generated
+# Mark a file as vendored
+deps/* gengo-vendored
+
+# string attributes:
+# Override the detected language for a file
+# Spaces must be replaced with hyphens. Case-insensitive.
+templates/*.js gengo-language=Plain-Text
+```
+
 [linguist]: https://github.com/github-linguist/linguist
 [tokei]: https://github.com/xampprocky/tokei
