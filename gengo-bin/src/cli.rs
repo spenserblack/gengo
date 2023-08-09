@@ -80,10 +80,8 @@ impl CLI {
 
         let total = total as f64;
         for (language, size) in compiled.into_iter() {
-            let size = size * 100;
-            let size = size as f64;
-            let percentage = size / total;
-            writeln!(out, "{:.2}% {}", percentage, language)?;
+            let percentage = (size * 100) as f64 / total;
+            writeln!(out, "{:.2}% {} {:>10}", percentage, size, language)?;
         }
 
         Ok(())
