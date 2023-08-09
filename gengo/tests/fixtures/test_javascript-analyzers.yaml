@@ -12,6 +12,13 @@ JavaScript:
       - js
     interpreters:
       - node
+Plain Text:
+  category: prose
+  color: "#000000"
+  matchers:
+    extensions:
+      - text
+      - txt
 TypeScript:
   category: programming
   color: "#0000FF"
