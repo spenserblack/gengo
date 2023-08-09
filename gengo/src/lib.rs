@@ -98,18 +98,18 @@ impl Gengo {
     }
 
     /// Guesses if a file is generated.
-    pub fn is_generated(&self, _filepath: &OsStr, _contents: &[u8]) -> bool {
-        false
+    pub fn is_generated(&self, filepath: &OsStr, _contents: &[u8]) -> bool {
+        filepath.to_str().unwrap_or_default().starts_with("dist/")
     }
 
     /// Guesses if a file is documentation.
-    pub fn is_documentation(&self, _filepath: &OsStr, _contents: &[u8]) -> bool {
-        false
+    pub fn is_documentation(&self, filepath: &OsStr, _contents: &[u8]) -> bool {
+        filepath.to_str().unwrap_or_default().starts_with("docs/")
     }
 
     /// Guesses if a file is vendored.
-    pub fn is_vendored(&self, _filepath: &OsStr, _contents: &[u8]) -> bool {
-        false
+    pub fn is_vendored(&self, filepath: &OsStr, _contents: &[u8]) -> bool {
+        filepath.to_str().unwrap_or_default().starts_with("node_modules/")
     }
 }
 
