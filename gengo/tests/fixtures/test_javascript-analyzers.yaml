@@ -1,3 +1,9 @@
+HTML:
+  category: markup
+  color: "#FF4400"
+  matchers:
+    extensions:
+      - html
 JavaScript:
   category: programming
   color: "#FFFF00"
