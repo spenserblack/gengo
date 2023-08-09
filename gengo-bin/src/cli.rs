@@ -1,8 +1,8 @@
 use clap::Error as ClapError;
 use clap::Parser;
-use std::io::{Write, self};
-use gengo::{Builder, languages::Category};
+use gengo::{languages::Category, Builder};
 use std::collections::HashMap;
+use std::io::{self, Write};
 
 pub fn new() -> CLI {
     CLI::parse()
@@ -17,26 +17,22 @@ pub fn try_new_from(args: &[&str]) -> Result<CLI, ClapError> {
 #[command(version)]
 pub struct CLI {
     /// The path to the repository to analyze.
-    #[arg(short='R', long, default_value = ".")]
+    #[arg(short = 'R', long, default_value = ".")]
     repository: String,
     /// The git revision to analyze.
-    #[arg(short='r', long="rev", default_value = "HEAD")]
+    #[arg(short = 'r', long = "rev", default_value = "HEAD")]
     revision: String,
     /// The maximum number of bytes to read from each file.
     ///
     /// This is useful for large files that can impact performance.
     ///
     /// The format is in bytes. The default is 1 MiB.
-    #[arg(short='l', long, default_value = "1048576")]
+    #[arg(short = 'l', long, default_value = "1048576")]
     read_limit: usize,
 }
 
 impl CLI {
-    pub fn run<Out: Write, Err: Write>(
-        &self,
-        mut out: Out,
-        mut err: Err,
-    ) -> Result<(), io::Error> {
+    pub fn run<Out: Write, Err: Write>(&self, mut out: Out, mut err: Err) -> Result<(), io::Error> {
         let gengo = Builder::new(&self.repository)
             .read_limit(self.read_limit)
             .build();
@@ -44,7 +40,7 @@ impl CLI {
             Ok(gengo) => gengo,
             Err(e) => {
                 writeln!(err, "failed to create instance: {}", e)?;
-                return Ok(())
+                return Ok(());
             }
         };
         let results = gengo.analyze(&self.revision);
@@ -52,7 +48,7 @@ impl CLI {
             Ok(results) => results,
             Err(e) => {
                 writeln!(err, "failed to analyze repository: {}", e)?;
-                return Ok(())
+                return Ok(());
             }
         };
 

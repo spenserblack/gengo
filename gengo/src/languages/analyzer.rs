@@ -18,10 +18,6 @@ impl Analyzers {
         self.0.iter()
     }
 
-    fn iter_mut(&mut self) -> impl Iterator<Item = &mut Analyzer> {
-        self.0.iter_mut()
-    }
-
     /// Returns the analyzers that have matched by filepath.
     pub fn by_filepath(&self, filepath: &OsStr) -> Vec<&Analyzer> {
         self.iter()

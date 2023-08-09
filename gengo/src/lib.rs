@@ -111,7 +111,10 @@ impl Gengo {
 
     /// Guesses if a file is vendored.
     pub fn is_vendored(&self, filepath: &OsStr, _contents: &[u8]) -> bool {
-        filepath.to_str().unwrap_or_default().starts_with("node_modules/")
+        filepath
+            .to_str()
+            .unwrap_or_default()
+            .starts_with("node_modules/")
     }
 }
 
