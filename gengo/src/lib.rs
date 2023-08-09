@@ -83,7 +83,16 @@ impl Gengo {
     ) -> Result<(), Box<dyn Error>> {
         let path = Path::new(filepath);
         let contents = blob.content();
-        let language = self.analyzers.pick(filepath, contents, self.read_limit);
+
+        let lang_override = self
+            .get_str_attr(path, "gengo-language")?
+            .map(|s| s.replace('-', " "))
+            .and_then(|s| self.analyzers.get(&s));
+
+        let language = lang_override.or_else(|| {
+            self.analyzers.pick(filepath, contents, self.read_limit)
+        });
+
         let language = if let Some(language) = language {
             language.clone()
         } else {

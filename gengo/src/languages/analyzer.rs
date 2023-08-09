@@ -11,11 +11,17 @@ use std::path::Path;
 
 /// Analyzes and attempts to identify a language.
 #[derive(Debug)]
-pub struct Analyzers(Vec<Analyzer>);
+pub struct Analyzers(IndexMap<String, Analyzer>);
 
 impl Analyzers {
     fn iter(&self) -> impl Iterator<Item = &Analyzer> {
-        self.0.iter()
+        self.0.iter().map(|(_, a)| a)
+    }
+
+    /// Returns a language by name. This is case insensitive.
+    pub fn get(&self, name: &str) -> Option<&Language> {
+        let name = name.to_lowercase();
+        self.0.get(&name).map(|a| &a.language)
     }
 
     /// Returns the analyzers that have matched by filepath.
@@ -157,6 +163,7 @@ impl Analyzers {
         let analyzers = languages
             .into_iter()
             .map(|(name, args)| {
+                let key = name.to_lowercase();
                 let language = Language {
                     name,
                     category: args.category,
@@ -169,12 +176,13 @@ impl Analyzers {
                     .into_iter()
                     .map(|s| Ok(Regex::new(&s)?))
                     .collect::<Result<_, Box<dyn Error>>>()?;
-                Ok(Analyzer {
+                let analyzer = Analyzer {
                     language,
                     matchers,
                     heuristics,
                     priority: args.priority,
-                })
+                };
+                Ok((key, analyzer))
             })
             .collect::<Result<_, Box<dyn Error>>>()?;
         Ok(Self(analyzers))
