@@ -65,6 +65,12 @@ Plain Text:
     filenames:
       - "LICENCE"
       - "LICENSE"
+Rust:
+  category: programming
+  color: "#DD3515"
+  matchers:
+    extensions:
+      - rs
 TypeScript:
   category: programming
   color: "#2F74C0"
@@ -73,9 +79,3 @@ TypeScript:
       - ts
     interpreters:
       - deno
-Rust:
-  category: programming
-  color: "#DD3515"
-  matchers:
-    extensions:
-      - rs
