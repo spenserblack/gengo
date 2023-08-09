@@ -2,4 +2,4 @@
 /gengo/languages.yaml linguist-detectable
 
 # For tests
-dist/* gengo-detectable
+dist/* gengo-detectable gengo-language=Plain-Text
