@@ -22,7 +22,7 @@ expression: results
             color: "#FFFF00",
         },
         size: 62,
-        detectable: false,
+        detectable: true,
         generated: true,
         documentation: false,
         vendored: false,

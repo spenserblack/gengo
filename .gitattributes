@@ -1,2 +1,5 @@
 *.snap -whitespace linguist-language=Text
 /gengo/languages.yaml linguist-detectable
+
+# For tests
+dist/* gengo-detectable
