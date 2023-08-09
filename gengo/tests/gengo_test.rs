@@ -6,7 +6,7 @@ mod util;
 
 #[test]
 fn test_javascript() {
-    let analyzers = fixture_str!("test_check_json_with_comments-analyzers.yaml");
+    let analyzers = fixture_str!("test_javascript-analyzers.yaml");
     let analyzers = Analyzers::from_yaml(analyzers).unwrap();
     let gengo = Builder::new(ROOT)
         .analyzers(analyzers)

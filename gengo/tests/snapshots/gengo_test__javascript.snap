@@ -1,0 +1,28 @@
+---
+source: gengo/tests/gengo_test.rs
+expression: results
+---
+{
+    "bin.js": Entry {
+        language: Language {
+            name: "JavaScript",
+            category: Programming,
+            color: "#FFFF00",
+        },
+        size: 28,
+        generated: false,
+        documentation: false,
+        vendored: false,
+    },
+    "bin.ts": Entry {
+        language: Language {
+            name: "TypeScript",
+            category: Programming,
+            color: "#0000FF",
+        },
+        size: 62,
+        generated: false,
+        documentation: false,
+        vendored: false,
+    },
+}
