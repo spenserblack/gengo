@@ -13,11 +13,14 @@ jobs:
     name: Build (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macOS-latest]
 
     steps:
       - uses: actions/checkout@v3
+      - name: Fetch Test Branches
+        run: git fetch origin test/javascript:test/javascript
       - uses: actions/cache@v3
         with:
           path: |
