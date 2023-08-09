@@ -1,6 +1,6 @@
 use clap::Error as ClapError;
 use clap::Parser;
-use gengo::{languages::Category, Builder};
+use gengo::Builder;
 use indexmap::IndexMap;
 use std::io::{self, Write};
 
@@ -59,11 +59,11 @@ impl CLI {
                 continue;
             }
 
-            let language = entry.language();
-            match language.category() {
-                Category::Data | Category::Prose => continue,
-                Category::Programming | Category::Markup => (),
+            if !entry.detectable() {
+                continue;
             }
+
+            let language = entry.language();
 
             let language = language.name();
             let language = String::from(language);

@@ -4,6 +4,7 @@ use generated::Generated;
 use git2::{Blob, Commit, ObjectType, Repository, Tree};
 use indexmap::IndexMap;
 pub use languages::analyzer::Analyzers;
+use languages::Category;
 pub use languages::Language;
 use std::error::Error;
 use std::ffi::OsStr;
@@ -91,10 +92,16 @@ impl Gengo {
         let documentation = self.is_documentation(filepath, contents);
         let vendored = self.is_vendored(filepath, contents);
 
+        let detectable = match language.category() {
+            Category::Data | Category::Prose => false,
+            Category::Programming | Category::Markup => !(generated || documentation || vendored),
+        };
+
         let path = String::from(filepath.to_str().ok_or("invalid path")?);
         let entry = Entry {
             language,
             size,
+            detectable,
             generated,
             documentation,
             vendored,
@@ -128,6 +135,8 @@ pub struct Entry {
     language: Language,
     /// The size of the file.
     size: usize,
+    /// If the file is detectable (should not be ignored).
+    detectable: bool,
     /// If the file was generated.
     generated: bool,
     /// If the file is documentation.
@@ -145,6 +154,11 @@ impl Entry {
     /// The size of the file.
     pub fn size(&self) -> usize {
         self.size
+    }
+
+    /// If the file is detectable (should not be ignored).
+    pub fn detectable(&self) -> bool {
+        self.detectable
     }
 
     /// If the file was generated.
