@@ -89,9 +89,8 @@ impl Gengo {
             .map(|s| s.replace('-', " "))
             .and_then(|s| self.analyzers.get(&s));
 
-        let language = lang_override.or_else(|| {
-            self.analyzers.pick(filepath, contents, self.read_limit)
-        });
+        let language =
+            lang_override.or_else(|| self.analyzers.pick(filepath, contents, self.read_limit));
 
         let language = if let Some(language) = language {
             language.clone()
