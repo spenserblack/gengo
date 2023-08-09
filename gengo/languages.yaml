@@ -47,6 +47,12 @@
 #
 # WARNING: Please alphabetize!
 ---
+HTML:
+  category: markup
+  color: "#E96228"
+  matchers:
+    extensions:
+      - html
 JavaScript:
   category: programming
   color: "#F0DC4E"
