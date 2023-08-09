@@ -1,7 +1,7 @@
 pub use builder::Builder;
 use documentation::Documentation;
 use generated::Generated;
-use git2::{Blob, Commit, ObjectType, Repository, Tree};
+use git2::{AttrCheckFlags, AttrValue, Blob, Commit, ObjectType, Repository, Tree};
 use indexmap::IndexMap;
 pub use languages::analyzer::Analyzers;
 use languages::Category;
@@ -26,6 +26,8 @@ pub struct Gengo {
 
 // TODO parse .gitattributes to get language overrides.
 impl Gengo {
+    const ATTR_CHECK_FLAGS: [AttrCheckFlags; 2] =
+        [AttrCheckFlags::NO_SYSTEM, AttrCheckFlags::INDEX_THEN_FILE];
     /// Resolves a revision to a commit.
     fn rev(&self, rev: &str) -> Result<Commit, Box<dyn Error>> {
         let reference = self.repository.revparse_single(rev)?;
@@ -79,6 +81,7 @@ impl Gengo {
         blob: &Blob,
         results: &mut IndexMap<String, Entry>,
     ) -> Result<(), Box<dyn Error>> {
+        let path = Path::new(filepath);
         let contents = blob.content();
         let language = self.analyzers.pick(filepath, contents, self.read_limit);
         let language = if let Some(language) = language {
@@ -88,14 +91,23 @@ impl Gengo {
         };
 
         let size = contents.len();
-        let generated = self.is_generated(filepath, contents);
-        let documentation = self.is_documentation(filepath, contents);
-        let vendored = self.is_vendored(filepath, contents);
+        let generated = self
+            .get_boolean_attr(path, "gengo-generated")?
+            .unwrap_or_else(|| self.is_generated(filepath, contents));
+        let documentation = self
+            .get_boolean_attr(path, "gengo-documentation")?
+            .unwrap_or_else(|| self.is_documentation(filepath, contents));
+        let vendored = self
+            .get_boolean_attr(path, "gengo-vendored")?
+            .unwrap_or_else(|| self.is_vendored(filepath, contents));
 
         let detectable = match language.category() {
             Category::Data | Category::Prose => false,
             Category::Programming | Category::Markup => !(generated || documentation || vendored),
         };
+        let detectable = self
+            .get_boolean_attr(path, "gengo-detectable")?
+            .unwrap_or(detectable);
 
         let path = String::from(filepath.to_str().ok_or("invalid path")?);
         let entry = Entry {
@@ -125,6 +137,39 @@ impl Gengo {
     /// Guesses if a file is vendored.
     pub fn is_vendored(&self, filepath: &OsStr, contents: &[u8]) -> bool {
         Vendored::is_vendored(filepath, contents)
+    }
+
+    fn get_attr(&self, path: &Path, attr: &str) -> Result<AttrValue, Box<dyn Error>> {
+        let flags = Self::ATTR_CHECK_FLAGS
+            .into_iter()
+            .reduce(|a, b| a | b)
+            .unwrap();
+        let attr = self.repository.get_attr(path, attr, flags)?;
+        let attr = AttrValue::from_string(attr);
+        Ok(attr)
+    }
+
+    fn get_boolean_attr(&self, path: &Path, attr: &str) -> Result<Option<bool>, Box<dyn Error>> {
+        let attr = self.get_attr(path, attr)?;
+        let attr = match attr {
+            AttrValue::True => Some(true),
+            AttrValue::False => Some(false),
+            AttrValue::Unspecified => None,
+            // NOTE To avoid being overly strict, we'll just ignore invalid attributes.
+            _ => None,
+        };
+        Ok(attr)
+    }
+
+    fn get_str_attr(&self, path: &Path, attr: &str) -> Result<Option<String>, Box<dyn Error>> {
+        let attr = self.get_attr(path, attr)?;
+        let attr = match attr {
+            AttrValue::String(s) => Some(s),
+            AttrValue::Unspecified => None,
+            // NOTE To avoid being overly strict, we'll just ignore invalid attributes.
+            _ => None,
+        };
+        Ok(attr.map(String::from))
     }
 }
 
