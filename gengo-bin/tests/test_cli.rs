@@ -1,6 +1,8 @@
 use insta::assert_snapshot;
 use std::io::{self, Write};
 
+const ROOT: &str = env!("CARGO_MANIFEST_DIR");
+
 struct NullWriter;
 
 impl Write for NullWriter {
@@ -24,6 +26,6 @@ macro_rules! assert_stdout_snapshot {
 }
 
 #[test]
-fn it_works() {
-    assert_stdout_snapshot!(&["gengo"]);
+fn test_javascript_repo() {
+    assert_stdout_snapshot!(&["gengo", "-r", "test/javascript", "-R", ROOT]);
 }

@@ -2,5 +2,4 @@
 source: gengo-bin/tests/test_cli.rs
 expression: stdout
 ---
-1 + 2 = 3
 
