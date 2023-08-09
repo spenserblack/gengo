@@ -14,7 +14,7 @@ expression: results
         documentation: false,
         vendored: false,
     },
-    "bin.ts": Entry {
+    "src/bin.ts": Entry {
         language: Language {
             name: "TypeScript",
             category: Programming,

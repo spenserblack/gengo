@@ -2,12 +2,14 @@ pub use builder::Builder;
 use git2::Commit;
 use git2::Repository;
 use git2::ObjectType;
+use git2::Tree;
 use indexmap::IndexMap;
-use git2::{TreeWalkMode, TreeWalkResult};
+use git2::{TreeWalkMode, TreeWalkResult, TreeEntry, Blob};
 pub use languages::analyzer::Analyzers;
 pub use languages::Language;
 use std::error::Error;
 use std::ffi::OsStr;
+use std::path::Path;
 
 mod builder;
 pub mod languages;
@@ -33,81 +35,60 @@ impl Gengo {
         let mut results = IndexMap::new();
         let commit = self.rev(rev)?;
         let tree = dbg!(commit.tree()?);
-        tree.walk(TreeWalkMode::PreOrder, |_, entry| {
-            match entry.kind() {
-                Some(ObjectType::Blob) => {}
-                _ => return TreeWalkResult::Ok,
-            }
-            let path = dbg!(entry.name().ok_or("invalid path").unwrap());
-            let filepath = dbg!(OsStr::new(path));
-            let object = match entry.to_object(&self.repository) {
-                Ok(object) => object,
-                Err(_) => return TreeWalkResult::Abort,
-            };
-            let blob = dbg!(object.as_blob().expect("object to be a blob"));
-            let contents = dbg!(blob.content());
-
-            let language = dbg!(self.analyzers.pick(filepath, contents, self.read_limit));
-            let language = if let Some(language) = language {
-                language.clone()
-            } else {
-                return TreeWalkResult::Ok;
-            };
-
-            let size = contents.len();
-            let generated = self.is_generated(filepath, contents);
-            let documentation = self.is_documentation(filepath, contents);
-            let vendored = self.is_vendored(filepath, contents);
-
-            let path = String::from(path);
-            let entry = Entry {
-                language,
-                size,
-                generated,
-                documentation,
-                vendored,
-            };
-
-            results.insert(path, entry);
-
-            TreeWalkResult::Ok
-        })?;
-        // for entry in tree.iter() {
-        //     match dbg!(entry.kind()) {
-        //         Some(ObjectType::Blob) => {},
-        //         _ => continue,
-        //     }
-        //     let path = dbg!(entry.name().ok_or("invalid path").unwrap());
-        //     let filepath = dbg!(OsStr::new(path));
-        //     // TODO Skip anything that is likely binary
-        //     let object = entry.to_object(&self.repository)?;
-        //     let blob = dbg!(object.as_blob().expect("object to be a blob"));
-        //     let contents = dbg!(blob.content());
-
-        //     let language = dbg!(self.analyzers.pick(filepath, contents, self.read_limit));
-        //     let language = if let Some(language) = language {
-        //         language.clone()
-        //     } else {
-        //         continue;
-        //     };
-
-        //     let size = contents.len();
-        //     let generated = self.is_generated(filepath, contents);
-        //     let documentation = self.is_documentation(filepath, contents);
-        //     let vendored = self.is_vendored(filepath, contents);
-
-        //     let entry = Entry {
-        //         language,
-        //         size,
-        //         generated,
-        //         documentation,
-        //         vendored,
-        //     };
-
-        //     let path = String::from(path);
-        //     results.insert(path, entry);
-        // }
+        self.analyze_tree("", &tree, &mut results)?;
         Ok(results)
+    }
+
+    fn analyze_tree(&self, root: &str, tree: &Tree, results: &mut IndexMap<String, Entry>) -> Result<(), Box<dyn Error>> {
+        for entry in tree.iter() {
+            let object = entry.to_object(&self.repository)?;
+            match dbg!(entry.kind()) {
+                Some(ObjectType::Tree) => {
+                    let path = dbg!(entry.name().ok_or("invalid path"))?;
+                    let tree = dbg!(object.as_tree().expect("object to be a tree"));
+
+                    self.analyze_tree(path, tree, results)?;
+                },
+                Some(ObjectType::Blob) => {
+                    let path = dbg!(entry.name().ok_or("invalid path").unwrap());
+                    let filepath = Path::new(root).join(path);
+                    let filepath = dbg!(filepath.as_os_str());
+                    let blob = dbg!(object.as_blob().expect("object to be a blob"));
+
+                    self.analyze_blob(filepath, blob, results)?;
+                },
+                _ => continue,
+            }
+        }
+        Ok(())
+    }
+
+    fn analyze_blob(&self, filepath: &OsStr, blob: &Blob, results: &mut IndexMap<String, Entry>) -> Result<(), Box<dyn Error>> {
+        let contents = dbg!(blob.content());
+        let language = dbg!(self.analyzers.pick(filepath, contents, self.read_limit));
+        let language = if let Some(language) = language {
+            language.clone()
+        } else {
+            return Ok(());
+        };
+
+        let size = contents.len();
+        let generated = self.is_generated(filepath, contents);
+        let documentation = self.is_documentation(filepath, contents);
+        let vendored = self.is_vendored(filepath, contents);
+
+        let path = String::from(filepath.to_str().ok_or("invalid path")?);
+        let entry = Entry {
+            language,
+            size,
+            generated,
+            documentation,
+            vendored,
+        };
+
+        results.insert(path, entry);
+
+        Ok(())
     }
 
     /// Guesses if a file is generated.
