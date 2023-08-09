@@ -14,6 +14,39 @@ expression: results
         documentation: false,
         vendored: false,
     },
+    "dist/bin.js": Entry {
+        language: Language {
+            name: "JavaScript",
+            category: Programming,
+            color: "#FFFF00",
+        },
+        size: 62,
+        generated: true,
+        documentation: false,
+        vendored: false,
+    },
+    "docs/index.html": Entry {
+        language: Language {
+            name: "HTML",
+            category: Markup,
+            color: "#FF4400",
+        },
+        size: 26,
+        generated: false,
+        documentation: true,
+        vendored: false,
+    },
+    "node_modules/my-dependency/index.js": Entry {
+        language: Language {
+            name: "JavaScript",
+            category: Programming,
+            color: "#FFFF00",
+        },
+        size: 29,
+        generated: false,
+        documentation: false,
+        vendored: true,
+    },
     "src/bin.ts": Entry {
         language: Language {
             name: "TypeScript",

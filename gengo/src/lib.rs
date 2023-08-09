@@ -47,6 +47,8 @@ impl Gengo {
                 Some(ObjectType::Tree) => {
                     let path = entry.name().ok_or("invalid path")?;
                     let tree = object.as_tree().expect("object to be a tree");
+                    let path = Path::new(root).join(path);
+                    let path = path.to_str().ok_or("invalid path")?;
 
                     self.analyze_tree(path, tree, results)?;
                 }
