@@ -14,8 +14,8 @@ use std::path::Path;
 pub struct Analyzers(IndexMap<String, Analyzer>);
 
 impl Analyzers {
-    fn iter(&self) -> impl Iterator<Item = &Analyzer> {
-        self.0.iter().map(|(_, a)| a)
+    fn iter(&self) -> impl Iterator<Item = (&String, &Analyzer)> {
+        self.0.iter()
     }
 
     /// Returns a language by name. This is case insensitive.
@@ -25,9 +25,10 @@ impl Analyzers {
     }
 
     /// Returns the analyzers that have matched by filepath.
-    pub fn by_filepath(&self, filepath: &OsStr) -> Vec<&Analyzer> {
-        self.iter()
-            .filter(|a| {
+    pub fn by_filepath(&self, filepath: &OsStr) -> Found {
+        let matches: Vec<_> = self
+            .iter()
+            .filter(|(_, a)| {
                 a.matchers
                     .iter()
                     .filter_map(|m| {
@@ -39,13 +40,16 @@ impl Analyzers {
                     })
                     .any(|m| m.matches(filepath))
             })
-            .collect()
+            .map(|(key, _)| key.to_owned())
+            .collect();
+        matches.into()
     }
 
     /// Returns the analyzers that have matched by shebang (`#!`).
-    pub fn by_shebang(&self, contents: &[u8]) -> Vec<&Analyzer> {
-        self.iter()
-            .filter(|a| {
+    pub fn by_shebang(&self, contents: &[u8]) -> Found {
+        let matches: Vec<_> = self
+            .iter()
+            .filter(|(_, a)| {
                 a.matchers
                     .iter()
                     .filter_map(|m| {
@@ -57,7 +61,9 @@ impl Analyzers {
                     })
                     .any(|m| m.matches(contents))
             })
-            .collect()
+            .map(|(key, _)| key.to_owned())
+            .collect();
+        matches.into()
     }
 
     /// First pass over a file to determine the language.
@@ -65,7 +71,7 @@ impl Analyzers {
     /// It attempts to identify the file in this order:
     /// 1. by shebang (`#!`)
     /// 2. by filepath
-    pub fn simple(&self, filepath: &OsStr, contents: &[u8]) -> Vec<&Analyzer> {
+    pub fn simple(&self, filepath: &OsStr, contents: &[u8]) -> Found {
         let matches = self.by_shebang(contents);
         if !matches.is_empty() {
             return matches;
@@ -76,28 +82,38 @@ impl Analyzers {
     /// Second pass over a file to determine the language.
     ///
     /// If a single language isn't found, narrows down the matches by heuristics.
+    /// If none of the found heuristics match, returns the original matches.
     ///
     /// Use `limit` to limit the number of bytes to read to match to heuristics.
-    pub fn with_heuristics(
-        &self,
-        filepath: &OsStr,
-        contents: &[u8],
-        limit: usize,
-    ) -> Vec<&Analyzer> {
+    pub fn with_heuristics(&self, filepath: &OsStr, contents: &[u8], limit: usize) -> Found {
         let contents = if contents.len() > limit {
             &contents[..limit]
         } else {
             contents
         };
         let matches = self.simple(filepath, contents);
-        if matches.len() < 2 {
-            return matches;
-        }
+        let matches = match matches {
+            Found::None | Found::One(_) => return matches,
+            Found::Multiple(names) => names,
+        };
         let contents: &str = std::str::from_utf8(contents).unwrap_or_default();
-        matches
+        let heuristic_matches: Vec<_> = matches
+            .iter()
+            .map(|key| {
+                let a = self.0.get(key).unwrap();
+                (key, a)
+            })
+            .filter(|(_, a)| a.heuristics.iter().any(|h| h.is_match(contents)))
+            .map(|(key, _)| key)
+            .collect();
+        if heuristic_matches.is_empty() {
+            return matches.into();
+        }
+        heuristic_matches
             .into_iter()
-            .filter(|a| a.heuristics.iter().any(|h| h.is_match(contents)))
-            .collect()
+            .cloned()
+            .collect::<Vec<String>>()
+            .into()
     }
 
     /// Picks the best language to match to a file.
@@ -139,12 +155,21 @@ impl Analyzers {
     /// assert_eq!(language.name(), "Rust");
     /// ```
     pub fn pick(&self, filepath: &OsStr, contents: &[u8], limit: usize) -> Option<&Language> {
+        let matches = self.with_heuristics(filepath, contents, limit);
+        let matches = match matches {
+            Found::None => return None,
+            Found::One(name) => return self.0.get(&name).map(|a| &a.language),
+            Found::Multiple(names) => names,
+        };
         let matches = {
-            let mut matches = self.with_heuristics(filepath, contents, limit);
+            let mut matches: Vec<_> = matches
+                .into_iter()
+                .map(|name| self.0.get(&name).unwrap())
+                .collect();
             matches.sort_by_key(|a| a.priority);
             matches
         };
-        matches.first().map(|a| &a.language)
+        matches.get(0).map(|a| &a.language)
     }
 
     /// Creates analyzers from JSON.
@@ -204,6 +229,65 @@ pub struct Analyzer {
     heuristics: Vec<Regex>,
     /// A value between `0` and `100` that determines the priority of a match.
     priority: u8,
+}
+
+/// The result of an analysis. Either multiple results, one result, or no result.
+#[derive(Debug)]
+pub enum Found {
+    None,
+    /// A key to get a language.
+    One(String),
+    /// Multiple keys to get languages. The contained vec should always have length
+    /// of at least 2.
+    Multiple(Vec<String>),
+}
+
+impl Found {
+    /// Returns the first language.
+    pub fn first(&self) -> Option<&str> {
+        match self {
+            Self::None => None,
+            Self::One(name) => Some(name),
+            Self::Multiple(names) => names.first().map(|s| s.as_str()),
+        }
+    }
+
+    /// Gets the length of the analysis.
+    pub fn len(&self) -> usize {
+        match self {
+            Self::None => 0,
+            Self::One(_) => 1,
+            Self::Multiple(names) => names.len(),
+        }
+    }
+
+    /// Checks if the results are empty.
+    pub fn is_empty(&self) -> bool {
+        matches!(self, Self::None)
+    }
+}
+
+impl From<Vec<String>> for Found {
+    fn from(names: Vec<String>) -> Self {
+        match names.len() {
+            0 => Self::None,
+            1 => Self::One(names.into_iter().next().unwrap()),
+            _ => Self::Multiple(names),
+        }
+    }
+}
+
+impl IntoIterator for Found {
+    type Item = String;
+    type IntoIter = std::vec::IntoIter<Self::Item>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        match self {
+            Self::None => Vec::with_capacity(0).into_iter(),
+            Self::One(name) => vec![name].into_iter(),
+            Self::Multiple(names) => names.into_iter(),
+        }
+    }
 }
 
 trait MatcherTrait {
