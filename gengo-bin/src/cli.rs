@@ -73,7 +73,8 @@ impl CLI {
         let total = total as f64;
         for (language, size) in compiled.into_iter() {
             let percentage = (size * 100) as f64 / total;
-            writeln!(out, "{:.2}% {} {:>10}", percentage, size, language)?;
+            let stats = format!("{:>6.2}% {}", percentage, size);
+            writeln!(out, "{:<15} {}", stats, language)?;
         }
 
         Ok(())
