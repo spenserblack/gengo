@@ -2,30 +2,6 @@
 source: gengo/tests/analyzers_tests.rs
 expression: "analyzers.with_heuristics(filepath, contents, 1 << 20)"
 ---
-[
-    Analyzer {
-        language: Language {
-            name: "JSON with Comments",
-            category: Data,
-            color: "#FFFFFF",
-        },
-        matchers: [
-            Filepath(
-                FilepathMatcher {
-                    extensions: {
-                        "json",
-                        "jsonc",
-                    },
-                    filenames: {},
-                    patterns: [],
-                },
-            ),
-        ],
-        heuristics: [
-            Regex(
-                "(?m)^\\s*?//",
-            ),
-        ],
-        priority: 50,
-    },
-]
+One(
+    "json with comments",
+)
