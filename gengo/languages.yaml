@@ -47,6 +47,12 @@
 #
 # WARNING: Please alphabetize!
 ---
+Go:
+  category: programming
+  color: "#00ADD8"
+  matchers:
+    extensions:
+      - go
 HTML:
   category: markup
   color: "#E96228"
@@ -71,12 +77,52 @@ Plain Text:
     filenames:
       - "LICENCE"
       - "LICENSE"
+Pug:
+  category: markup
+  color: "#A86454"
+  matchers:
+    extensions:
+      - pug
+Python:
+  category: programming
+  color: "#3472A6"
+  matchers:
+    extensions:
+      - py
+    interpreters:
+      - python
+      - python2
+      - python3
+Ruby:
+  category: programming
+  color: "#D21304"
+  matchers:
+    extensions:
+      - gemspec
+      - rb
+    filenames:
+      - Gemfile
+      - Rakefile
+    interpreters:
+      - ruby
 Rust:
   category: programming
   color: "#DD3515"
   matchers:
     extensions:
       - rs
+Shell:
+  category: programming
+  color: "#262E28"
+  matchers:
+    extensions:
+      - bash
+      - fish
+      - sh
+    interpreters:
+      - bash
+      - fish
+      - sh
 TypeScript:
   category: programming
   color: "#2F74C0"
@@ -85,3 +131,9 @@ TypeScript:
       - ts
     interpreters:
       - deno
+Vue:
+  category: programming
+  color: "#3FB27F"
+  matchers:
+    extensions:
+      - vue
