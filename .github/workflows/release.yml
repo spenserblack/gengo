@@ -38,7 +38,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Build Assets
-        run: cargo build --release
+        run: |
+          cargo build --release
+          tar -C target/release/ -czvf gengo-${{ runner.os }}-${{ runner.arch }}.tar.gz gengo${{ runner.os == 'Windows' && '.exe' || '' }}
       - name: Upload Assets
         uses: softprops/action-gh-release@v1
         with:
