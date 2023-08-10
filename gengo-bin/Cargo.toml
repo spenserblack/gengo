@@ -1,5 +1,6 @@
 [package]
 name = "gengo-bin"
+description = { workspace = true }
 readme = "README.md"
 version = { workspace = true }
 edition = { workspace = true }
