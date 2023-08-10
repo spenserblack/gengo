@@ -1,10 +1,12 @@
 [package]
 name = "gengo"
-version = "0.1.0"
-edition = "2021"
-repository = "https://github.com/spenserblack/gengo"
 readme = "README.md"
-license = "MIT OR Apache-2.0"
+version = { workspace = true }
+edition = { workspace = true }
+repository = { workspace = true }
+license = { workspace = true }
+
+keywords = { workspace = true }
 
 [dependencies]
 git2 = "0.17"
