@@ -1,5 +1,7 @@
 # gengo (言語)
 
+[![library](https://img.shields.io/crates/v/gengo.svg?label=gengo)](https://crates.io/crates/gengo)
+[![binary](https://img.shields.io/crates/v/gengo-bin.svg?label=gengo-bin)](https://crates.io/crates/gengo-bin)
 [![CI](https://github.com/spenserblack/gengo/actions/workflows/ci.yml/badge.svg)](https://github.com/spenserblack/gengo/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/spenserblack/gengo/branch/main/graph/badge.svg?token=ihIEUQWwSt)](https://codecov.io/gh/spenserblack/gengo)
 
