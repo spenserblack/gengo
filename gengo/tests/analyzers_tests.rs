@@ -56,6 +56,20 @@ fn test_with_heuristics() {
 }
 
 #[test]
+fn test_no_heuristic_match_returns_original_set() {
+    let fixture = fixture_str!("test_check_json_with_comments-analyzers.yaml");
+    let filepath = OsStr::new("test.json");
+    let contents = br#"{"type": "maybe not JSON with comments"}"#;
+    let analyzers = Analyzers::from_yaml(fixture).unwrap();
+    let result = analyzers.with_heuristics(filepath, contents, 1 << 20);
+    assert_eq!(
+        result.len(),
+        2,
+        "Both JSON and JSON with Comments be returned"
+    );
+}
+
+#[test]
 fn test_pick_find_one() {
     let fixture = fixture_str!("test_check_json_with_comments-analyzers.yaml");
     let filepath = OsStr::new("test.json");

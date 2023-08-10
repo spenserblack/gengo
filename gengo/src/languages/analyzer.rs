@@ -82,6 +82,7 @@ impl Analyzers {
     /// Second pass over a file to determine the language.
     ///
     /// If a single language isn't found, narrows down the matches by heuristics.
+    /// If none of the found heuristics match, returns the original matches.
     ///
     /// Use `limit` to limit the number of bytes to read to match to heuristics.
     pub fn with_heuristics(&self, filepath: &OsStr, contents: &[u8], limit: usize) -> Found {
@@ -91,20 +92,28 @@ impl Analyzers {
             contents
         };
         let matches = self.simple(filepath, contents);
-        if matches.len() < 2 {
-            return matches;
-        }
+        let matches = match matches {
+            Found::None | Found::One(_) => return matches,
+            Found::Multiple(names) => names,
+        };
         let contents: &str = std::str::from_utf8(contents).unwrap_or_default();
-        let matches: Vec<_> = matches
-            .into_iter()
+        let heuristic_matches: Vec<_> = matches
+            .iter()
             .map(|key| {
-                let a = self.0.get(&key).unwrap();
+                let a = self.0.get(key).unwrap();
                 (key, a)
             })
             .filter(|(_, a)| a.heuristics.iter().any(|h| h.is_match(contents)))
             .map(|(key, _)| key)
             .collect();
-        matches.into()
+        if heuristic_matches.is_empty() {
+            return matches.into();
+        }
+        heuristic_matches
+            .into_iter()
+            .cloned()
+            .collect::<Vec<String>>()
+            .into()
     }
 
     /// Picks the best language to match to a file.
