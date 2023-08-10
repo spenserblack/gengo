@@ -44,6 +44,4 @@ jobs:
       - name: Upload Assets
         uses: softprops/action-gh-release@v1
         with:
-          files: |
-            ./target/release/gengo
-            ./target/release/gengo.exe
+          files: '*.tar.gz'
