@@ -401,10 +401,13 @@ impl ShebangMatcher {
             first_line
         };
         let first_line = String::from_utf8_lossy(first_line);
-        static RE: Lazy<Regex> =
-            Lazy::new(|| Regex::new(r"^#!(?:/usr(?:/local)?)?/bin/(?:env )?([\w\d]+)$").unwrap());
+        // NOTE Handle trailing spaces, `\r`, etc.
+        let first_line = first_line.trim_end();
+        static RE: Lazy<Regex> = Lazy::new(|| {
+            Regex::new(r"^#!(?:/usr(?:/local)?)?/bin/(?:env )?([\w\d]+)\r?$").unwrap()
+        });
 
-        RE.captures(&first_line)
+        RE.captures(first_line)
             .and_then(|c| c.get(1))
             .map_or(false, |m| {
                 let interpreter = m.as_str();
