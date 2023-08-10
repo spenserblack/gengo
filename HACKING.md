@@ -9,7 +9,9 @@
 This project uses [insta][insta] for snapshot testing. Review the instructions
 for using insta and installing the `cargo insta` executable.
 
-## Language Support
+## Development
+
+### Language Support
 
 While the library does support providing your own language definitions, the
 "out-of-the-box" language definitions are defined in
@@ -19,7 +21,7 @@ to help identify languages, etc. Pretty much anything involving language
 detection or the returned language data comes from this file (but there are
 a few exceptions).
 
-### The `languages.yaml` file
+#### The `languages.yaml` file
 
 A language looks roughly like this:
 
@@ -61,7 +63,7 @@ All entries in this file should be alphabetized. There is a
 by the CI. But surely you'll run it locally so that the CI passes the first
 time, right? ;)
 
-### File Attributes
+#### File Attributes
 
 This tool also tries to detect if a file is documentation, generated, or vendored.
 These can be a bit too complex to be managed with a data file, so you'll need to
@@ -70,6 +72,12 @@ write some Rust if you want to update the behavior for these.
 Check `documentation.rs`, `generated.rs`, and `vendored.rs` in [`gengo/src`][lib-src]
 to update detection for these. For performance reasons, checks that *don't* require
 reading contents should always be done before checks that *do* read contents.
+
+## Testing
+
+Because this project analyzes git revisions, some of the tests are run
+commits in this project that are unreachable from `main`. Make sure to
+fetch branches that are prefixed with `test/` from this repository.
 
 [check-languages-script]: ./scripts/check-languages-file.rb
 [insta]: https://crates.io/crates/insta
