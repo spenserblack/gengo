@@ -22,3 +22,24 @@ jobs:
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
         run: cargo publish -p gengo-bin
+  github:
+    name: GitHub Assets
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - macos-latest
+          - ubuntu-latest
+          - windows-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build Assets
+        run: cargo build --release
+      - name: Upload Assets
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            ./target/release/gengo
+            ./target/release/gengo.exe
