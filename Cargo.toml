@@ -8,4 +8,4 @@ repository = "https://github.com/spenserblack/gengo"
 readme = "README.md"
 license = "MIT OR Apache-2.0"
 
-keywords = []
+keywords = ["language-statistics"]
