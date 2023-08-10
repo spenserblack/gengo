@@ -20,6 +20,14 @@ A bit like [tokei][tokei], a lot like [linguist][linguist].
 | **Detect Language with Heuristics** | Yes | No | Yes |
 | **Detect Language with Classifier** | Yes | No | Not Yet ;) |
 
+## Installation
+
+The following installs the `gengo` binary.
+
+```shell
+cargo install gengo-bin
+```
+
 ## Usage
 
 ### Overrides
