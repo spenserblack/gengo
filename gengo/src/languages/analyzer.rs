@@ -167,6 +167,7 @@ impl Analyzers {
                 .map(|name| self.0.get(&name).unwrap())
                 .collect();
             matches.sort_by_key(|a| a.priority);
+            matches.reverse();
             matches
         };
         matches.get(0).map(|a| &a.language)

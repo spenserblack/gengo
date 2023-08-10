@@ -88,3 +88,17 @@ fn test_pick_find_none() {
     let language = analyzers.pick(filepath, contents, 1);
     assert!(language.is_none());
 }
+
+#[test]
+fn test_pick_find_multiple() {
+    let fixture = fixture_str!("test_check_json_with_comments-analyzers.yaml");
+    let filepath = OsStr::new("test.json");
+    let contents = br#"{"msg": "Comments? IDK"}"#;
+    let analyzers = Analyzers::from_yaml(fixture).unwrap();
+    let language = analyzers.pick(filepath, contents, 1 << 20).unwrap();
+    assert_eq!(
+        language.name(),
+        "JSON",
+        "It should pick the language with the higher priority"
+    );
+}

@@ -13,3 +13,4 @@ JSON with Comments:
     extensions:
     - json
     - jsonc
+  priority: 25
