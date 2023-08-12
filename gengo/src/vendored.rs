@@ -1,4 +1,4 @@
-use std::ffi::OsStr;
+use std::{ffi::OsStr, path::MAIN_SEPARATOR};
 
 pub struct Vendored;
 
@@ -8,10 +8,8 @@ impl Vendored {
     }
 
     fn is_vendored_no_read(filepath: &OsStr) -> bool {
-        filepath
-            .to_str()
-            .unwrap_or_default()
-            .starts_with("node_modules/")
+        let prefix = format!("node_modules{}", MAIN_SEPARATOR);
+        filepath.to_str().unwrap_or_default().starts_with(&prefix)
     }
 
     fn is_vendored_with_read(_filepath: &OsStr, _contents: &[u8]) -> bool {
