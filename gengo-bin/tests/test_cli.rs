@@ -26,7 +26,6 @@ macro_rules! assert_stdout_snapshot {
 }
 
 #[test]
-#[cfg_attr(target_os = "windows", ignore)]
 fn test_javascript_repo() {
     assert_stdout_snapshot!(&["gengo", "-r", "test/javascript", "-R", ROOT]);
 }
