@@ -292,7 +292,7 @@ dependencies = [
 
 [[package]]
 name = "gengo"
-version = "0.1.3"
+version = "0.1.5"
 dependencies = [
  "git2",
  "indexmap",
@@ -307,7 +307,7 @@ dependencies = [
 
 [[package]]
 name = "gengo-bin"
-version = "0.1.3"
+version = "0.1.5"
 dependencies = [
  "clap",
  "gengo",
