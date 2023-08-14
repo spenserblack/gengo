@@ -22,6 +22,12 @@ A bit like [tokei][tokei], a lot like [linguist][linguist].
 
 ## Installation
 
+### From GitHub Releases
+
+Download the appropriate file from [a release](https://github.com/spenserblack/gengo/releases).
+
+### With `cargo`
+
 The following installs the `gengo` binary.
 
 ```shell
