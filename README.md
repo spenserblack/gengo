@@ -38,6 +38,8 @@ Basically, just replace `linguist-FOO` with `gengo-FOO`. *Unlike* linguist,
 will still exclude them if they're generated or vendored).
 
 ```gitattributes
+# .gitattributes
+
 # boolean attributes:
 
 # These can be *negated* by prefixing with `-` (`-gengo-documentation`).
