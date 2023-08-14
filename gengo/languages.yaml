@@ -137,3 +137,10 @@ Vue:
   matchers:
     extensions:
       - vue
+YAML:
+  category: data
+  color: "#CC1018"
+  matchers:
+    extensions:
+      - yaml
+      - yml
