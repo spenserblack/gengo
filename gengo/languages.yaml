@@ -139,6 +139,12 @@ Shell:
       - bash
       - fish
       - sh
+Svelte:
+  category: programming
+  color: "#FF3E00"
+  matchers:
+    extensions:
+      - svelte
 TypeScript:
   category: programming
   color: "#2F74C0"
