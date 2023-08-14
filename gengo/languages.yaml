@@ -47,6 +47,14 @@
 #
 # WARNING: Please alphabetize!
 ---
+Docker:
+  category: programming
+  color: "#2496ED"
+  matchers:
+    filenames:
+      - "Dockerfile"
+    patterns:
+      - "Dockerfile\\.[\\d\\w]+" # Dockerfile.<extension>
 Go:
   category: programming
   color: "#00ADD8"
