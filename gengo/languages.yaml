@@ -47,6 +47,14 @@
 #
 # WARNING: Please alphabetize!
 ---
+Docker:
+  category: programming
+  color: "#2496ED"
+  matchers:
+    filenames:
+      - "Dockerfile"
+    patterns:
+      - "Dockerfile\\.[\\d\\w]+" # Dockerfile.<extension>
 Go:
   category: programming
   color: "#00ADD8"
@@ -67,6 +75,14 @@ JavaScript:
       - js
     interpreters:
       - node
+Makefile:
+  category: programming
+  color: "#6B482F" # Arbitrary brown color representing a Gnu
+  matchers:
+    filenames:
+      - "Makefile"
+    patterns:
+      - "Makefile\\.[\\d\\w]+" # Makefile.<extension>
 Plain Text:
   category: prose
   color: "#000000"
@@ -123,6 +139,12 @@ Shell:
       - bash
       - fish
       - sh
+Svelte:
+  category: programming
+  color: "#FF3E00"
+  matchers:
+    extensions:
+      - svelte
 TypeScript:
   category: programming
   color: "#2F74C0"
@@ -137,3 +159,10 @@ Vue:
   matchers:
     extensions:
       - vue
+YAML:
+  category: data
+  color: "#CC1018"
+  matchers:
+    extensions:
+      - yaml
+      - yml
