@@ -75,6 +75,14 @@ JavaScript:
       - js
     interpreters:
       - node
+Makefile:
+  category: programming
+  color: "#6B482F" # Arbitrary brown color representing a Gnu
+  matchers:
+    filenames:
+      - "Makefile"
+    patterns:
+      - "Makefile\\.[\\d\\w]+" # Makefile.<extension>
 Plain Text:
   category: prose
   color: "#000000"
