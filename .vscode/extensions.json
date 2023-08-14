@@ -1,5 +1,6 @@
 {
   "recommendations": [
+    "editorconfig.editorconfig",
     "rebornix.ruby",
     "rust-lang.rust-analyzer"
   ]
