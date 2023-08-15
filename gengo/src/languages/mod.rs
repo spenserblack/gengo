@@ -40,4 +40,6 @@ pub enum Category {
     Programming,
     /// Prose. Examples: Plain text, Markdown, etc.
     Prose,
+    /// Query languages. Examples: SQL, GraphQL, etc.
+    Query,
 }
