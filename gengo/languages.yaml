@@ -108,6 +108,14 @@ Plain Text:
     filenames:
       - "LICENCE"
       - "LICENSE"
+PowerShell:
+  category: programming
+  color: "#012456"
+  matchers:
+    extensions:
+      - ps1
+    interpreters:
+      - pwsh
 Pug:
   category: markup
   color: "#A86454"
