@@ -111,7 +111,9 @@ impl Gengo {
 
         let detectable = match language.category() {
             Category::Data | Category::Prose => false,
-            Category::Programming | Category::Markup => !(generated || documentation || vendored),
+            Category::Programming | Category::Markup | Category::Query => {
+                !(generated || documentation || vendored)
+            }
         };
         let detectable = self
             .get_boolean_attr(path, "gengo-detectable")?
