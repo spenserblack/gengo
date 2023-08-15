@@ -152,6 +152,12 @@ Shell:
       - bash
       - fish
       - sh
+SQL:
+  category: query
+  color: "##FFBF1E"
+  matchers:
+    extensions:
+      - sql
 Svelte:
   category: programming
   color: "#FF3E00"
