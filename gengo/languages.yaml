@@ -6,7 +6,7 @@
 # # The name of the language.
 # Language:
 #
-#   # data, markup, programming, or prose
+#   # data, markup, programming, prose, or query
 #   category:
 #
 #   # The color associated with the language (unused).
@@ -69,6 +69,12 @@ Go:
   matchers:
     extensions:
       - go
+GraphQL:
+  category: query
+  color: "#E10098"
+  matchers:
+    extensions:
+      - graphql
 HTML:
   category: markup
   color: "#E96228"
@@ -150,6 +156,12 @@ Rust:
   matchers:
     extensions:
       - rs
+SQL:
+  category: query
+  color: "##FFBF1E"
+  matchers:
+    extensions:
+      - sql
 Shell:
   category: programming
   color: "#262E28"

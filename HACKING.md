@@ -43,7 +43,7 @@ My Language:
   priority: 100
 ```
 
-- `category` - Required. It should be `data`, `markup`, `programming`, or `prose`.
+- `category` - Required. It should be `data`, `markup`, `programming`, `prose`, or `query`.
 - `color` - Required. It should be a hexadecimal color. Since `#` is a comment
   in YAML, make sure to add quotes!
 - `heuristics` - Optional. Should be a list of regexes matching syntax unique to the
