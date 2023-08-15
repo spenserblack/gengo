@@ -83,6 +83,13 @@ Makefile:
       - "Makefile"
     patterns:
       - "Makefile\\.[\\d\\w]+" # Makefile.<extension>
+Markdown:
+  category: prose
+  color: "#03A7DD"
+  matchers:
+    extensions:
+      - markdown
+      - md
 Plain Text:
   category: prose
   color: "#000000"
