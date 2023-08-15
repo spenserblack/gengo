@@ -47,6 +47,14 @@
 #
 # WARNING: Please alphabetize!
 ---
+CoffeeScript:
+  category: programming
+  color: "#3E2723"
+  matchers:
+    extensions:
+      - coffee
+    interpreters:
+      - coffee
 Docker:
   category: programming
   color: "#2496ED"
