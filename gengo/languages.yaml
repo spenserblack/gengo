@@ -61,6 +61,12 @@ Go:
   matchers:
     extensions:
       - go
+GraphQL:
+  category: query
+  color: "#E10098"
+  matchers:
+    extensions:
+      - graphql
 HTML:
   category: markup
   color: "#E96228"
