@@ -103,8 +103,8 @@ Mermaid:
   color: "#FF3670"
   matchers:
     extensions:
-      - mmd
       - mermaid
+      - mmd
 Plain Text:
   category: prose
   color: "#000000"
