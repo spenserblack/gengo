@@ -47,7 +47,7 @@
 #
 # WARNING: Please alphabetize!
 ---
-C#:
+"C#"":
   category: programming
   color: "#178600"
   heuristics:
