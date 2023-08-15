@@ -47,6 +47,14 @@
 #
 # WARNING: Please alphabetize!
 ---
+"C#":
+  category: programming
+  color: "#178600"
+  heuristics:
+    - "^\\s*(using\\s+[A-Z][\\s\\w.]+;|namespace\\s*[\\w\\.]+\\s*(\\{|;)|\\/\\/)"
+  matchers:
+    extensions:
+      - cs
 CoffeeScript:
   category: programming
   color: "#3E2723"

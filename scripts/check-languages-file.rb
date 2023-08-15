@@ -37,13 +37,13 @@ LANGUAGES.each do |langname, langdef|
   end
   next if missing_required
 
-  if langdef.key?('heuristics') && !langdef['hueristics'].is_a?(Array)
-    STDERR.puts "#{langname}: 'hueristics' must be an array"
+  if langdef.key?('heuristics') && !langdef['heuristics'].is_a?(Array)
+    STDERR.puts "#{langname}: 'heuristics' must be an array"
     exit_code = 1
   end
-  hueristics = langdef['hueristics'] || []
-  sorted?(hueristics) do |a, b|
-    STDERR.puts "#{langname}: 'hueristics' are out of order: '#{a}' and '#{b}'"
+  heuristics = langdef['heuristics'] || []
+  sorted?(heuristics) do |a, b|
+    STDERR.puts "#{langname}: 'heuristics' are out of order: '#{a}' and '#{b}'"
     exit_code = 1
   end
 
