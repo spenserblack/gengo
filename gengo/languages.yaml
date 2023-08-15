@@ -104,6 +104,13 @@ Markdown:
     extensions:
       - markdown
       - md
+Mermaid:
+  category: markup
+  color: "#FF3670"
+  matchers:
+    extensions:
+      - mermaid
+      - mmd
 Plain Text:
   category: prose
   color: "#000000"
