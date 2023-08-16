@@ -12,9 +12,12 @@ def sorted?(array)
   sorted
 end
 
-PROJECT_ROOT = File.expand_path(File.join(File.dirname(__FILE__), '..'))
-LANGUAGES_FILEPATH = File.expand_path(File.join(PROJECT_ROOT, './gengo/languages.yaml'))
-LANGUAGES = YAML.load_file(LANGUAGES_FILEPATH)
+if ARGV.empty?
+  warn "Usage: #{$PROGRAM_NAME} <languages.yaml>"
+  exit 1
+end
+
+LANGUAGES = YAML.load_file(ARGV[0])
 
 exit_code = 0
 sorted?(LANGUAGES.keys) do |lang1, lang2|
