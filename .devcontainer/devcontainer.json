@@ -6,7 +6,8 @@
       "extensions": [
         "EditorConfig.EditorConfig",
         "rebornix.ruby",
-        "rust-lang.rust-analyzer"
+        "rust-lang.rust-analyzer",
+        "tomoyukim.vscode-mermaid-editor"
       ],
       "settings": {
         "editor.formatOnSave": true,

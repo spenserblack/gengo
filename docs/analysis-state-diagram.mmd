@@ -1,0 +1,25 @@
+---
+title: Analysis Flowchart
+---
+flowchart TD
+    start[Start]
+    pass1[Check shebangs]
+    pass1part2[Check filenames]
+    result1[Return languages]
+    pass2[Heuristics]
+    result2branch1[Return languages from heuristics]
+    result2branch2[Return languages from first check]
+    pass3[Pick by priority]
+    stop[Stop]
+    start --> pass1
+    pass1 -->|Shebang matches| result1
+    pass1 -->|No matching shebangs| pass1part2
+    pass1part2 --> result1
+    result1 -->|0 or 1 matching languages| stop
+    result1 -->|2 or more matching languages| pass2
+    pass2 -->|1 matching language| stop
+    pass2 -->|2 or more matching languages| result2branch1
+    pass2 -->|No matching languages| result2branch2
+    result2branch1 --> pass3
+    result2branch2 --> pass3
+    pass3 --> stop
