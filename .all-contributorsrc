@@ -1,0 +1,11 @@
+{
+  "projectName": "gengo",
+  "projectOwner": "spenserblack",
+  "files": [
+    "CREDITS.md"
+  ],
+  "commitConvention": "atom",
+  "contributorsSortAlphabetically": true,
+  "contributors": [],
+  "contributorsPerLine": 7
+}
