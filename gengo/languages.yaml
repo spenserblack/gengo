@@ -195,6 +195,12 @@ Svelte:
   matchers:
     extensions:
       - svelte
+TOML:
+  category: data
+  color: "#9C4221"
+  matchers:
+    extensions:
+      - toml
 TypeScript:
   category: programming
   color: "#2F74C0"
