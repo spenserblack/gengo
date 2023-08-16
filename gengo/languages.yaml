@@ -54,9 +54,9 @@
     - "^\\s*(using\\s+[A-Z][\\s\\w.]+;|namespace\\s*[\\w\\.]+\\s*(\\{|;)|\\/\\/)"
   matchers:
     extensions:
+      - cake
       - cs
       - csx
-      - cake
 CoffeeScript:
   category: programming
   color: "#3E2723"
