@@ -6,6 +6,18 @@
   ],
   "commitConvention": "atom",
   "contributorsSortAlphabetically": true,
-  "contributors": [],
-  "contributorsPerLine": 7
+  "contributors": [
+    {
+      "login": "o2sh",
+      "name": "Ossama Hjaji",
+      "avatar_url": "https://avatars.githubusercontent.com/u/13710835?v=4",
+      "profile": "https://github.com/o2sh",
+      "contributions": [
+        "code",
+        "maintenance"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "commitType": "docs"
 }
