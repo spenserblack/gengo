@@ -198,6 +198,9 @@ Svelte:
 TypeScript:
   category: programming
   color: "#2F74C0"
+  heuristics:
+    - "(?m)^export\\s+\\w[\\w\\d_]*?"
+    - "(?m)^import\\s+"
   matchers:
     extensions:
       - ts
@@ -209,6 +212,15 @@ Vue:
   matchers:
     extensions:
       - vue
+XML:
+  category: data
+  color: "#005FAF"
+  heuristics:
+    - "<TS version=\"\\d+(?:\\.d+)+\" language=\""
+  matchers:
+    extensions:
+      - ts
+      - xml
 YAML:
   category: data
   color: "#CC1018"
