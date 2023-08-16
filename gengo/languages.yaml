@@ -55,6 +55,8 @@
   matchers:
     extensions:
       - cs
+      - csx
+      - cake
 CoffeeScript:
   category: programming
   color: "#3E2723"
