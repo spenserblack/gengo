@@ -91,6 +91,31 @@ HTML:
   matchers:
     extensions:
       - html
+JSON:
+  category: data
+  color: "#AAAAAA"
+  matchers:
+    extensions:
+      - json
+    filenames:
+      - .all-contributorsrc
+  priority: 75
+JSON with Comments:
+  category: data
+  color: "#CCCCCC"
+  heuristics:
+    - "(?m)^\\s*/[/\\*]"
+  matchers:
+    extensions:
+      - json
+      - jsonc
+    filenames:
+      - devcontainer.json
+      - tsconfig.json
+    patterns:
+      - .vscode/*.json
+      - tsconfig.*.json
+  priority: 25
 JavaScript:
   category: programming
   color: "#F0DC4E"
