@@ -87,5 +87,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 3
+      - name: Build Benchmarks
+        run: cargo build --benches
       - name: Run Benchmarks
         run: cargo bench
