@@ -302,28 +302,12 @@ impl IntoIterator for Found {
     }
 }
 
-trait MatcherTrait {
-    /// Checks if a file matches.
-    ///
-    /// `self` is mut because some matchers may need to be compiled lazily.
-    fn matches<P: AsRef<Path>>(&self, filename: P, contents: &[u8]) -> bool;
-}
-
 /// Checks if a file matches.
 #[derive(Clone, Debug)]
 #[non_exhaustive]
 pub enum Matcher {
     Filepath(FilepathMatcher),
     Shebang(ShebangMatcher),
-}
-
-impl MatcherTrait for Matcher {
-    fn matches<P: AsRef<Path>>(&self, filename: P, contents: &[u8]) -> bool {
-        match self {
-            Matcher::Filepath(matcher) => FilepathMatcher::matches(matcher, filename),
-            Matcher::Shebang(matcher) => matcher.matches(contents),
-        }
-    }
 }
 
 /// Matches a file path.
@@ -373,12 +357,6 @@ impl FilepathMatcher {
     }
 }
 
-impl MatcherTrait for FilepathMatcher {
-    fn matches<P: AsRef<Path>>(&self, filename: P, _contents: &[u8]) -> bool {
-        FilepathMatcher::matches(self, filename)
-    }
-}
-
 /// Matches a shebang.
 #[derive(Clone, Debug)]
 pub struct ShebangMatcher {
@@ -421,15 +399,6 @@ impl ShebangMatcher {
                 let interpreter = m.as_str();
                 self.interpreters.contains(interpreter)
             })
-    }
-}
-
-impl MatcherTrait for ShebangMatcher {
-    /// Checks if the file contents match a shebang by checking the first line of the contents.
-    ///
-    /// Does not read more than 100 bytes.
-    fn matches<P: AsRef<Path>>(&self, _filename: P, contents: &[u8]) -> bool {
-        ShebangMatcher::matches(self, contents)
     }
 }
 
