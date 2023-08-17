@@ -64,6 +64,12 @@ Assembly:
       - cake
       - cs
       - csx
+CSS:
+  category: markup
+  color: "#AA88AA"
+  matchers:
+    extensions:
+      - css
 CoffeeScript:
   category: programming
   color: "#3E2723"
