@@ -53,7 +53,7 @@ My Language:
   - `extensions` - A list of file extensions that the language is associated with. E.g. `rs` for Rust.
   - `filenames` - A list of filenames that the language is associated with. E.g. `Dockerfile` for Docker.
   - `interpreters` - Executables associated with the language. Used for matching shebangs. E.g. `python3` for Python.
-  - `patterns` - Advanced patterns for the full filepath. This is useful for edge cases, like the containing directory or a sub-extension changing the language.
+  - `patterns` - Glob patterns for the full filepath. This is useful for edge cases, like the containing directory or a sub-extension changing the language.
 - `priority` - Optional, defaulting to `50`. When all else fails, and we fail narrow down to a single language, matching languages are sorted by priority to pick one.
 
 Note that regexes in this file use the syntax from the [`regex` crate][regex-syntax].

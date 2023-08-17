@@ -35,10 +35,10 @@
 #       - "python"
 #       - "python3"
 #
-#     # Advanced regex patterns associated with the language (optional)
+#     # Glob patterns associated with the language (optional)
 #     patterns:
-#       # See the format of the `regex` crate: https://docs.rs/regex/latest/regex/#syntax
-#       - "(?i)^(?:^|\/)__snapshots__\/.*\.snap$"
+#       # See the format of the `glob` crate: https://docs.rs/glob/latest/glob/struct.Pattern.html
+#       - "__snapshots__/*.snap"
 #
 #   # Value between 0 and 100 to pick a language if multiple matches couldn't be
 #   # narrowed down (optional, default: 50)
@@ -72,7 +72,7 @@ Docker:
     filenames:
       - "Dockerfile"
     patterns:
-      - "Dockerfile\\.[\\d\\w]+" # Dockerfile.<extension>
+      - "Dockerfile.*" # Dockerfile.<extension>
 Go:
   category: programming
   color: "#00ADD8"
@@ -91,6 +91,31 @@ HTML:
   matchers:
     extensions:
       - html
+JSON:
+  category: data
+  color: "#AAAAAA"
+  matchers:
+    extensions:
+      - json
+    filenames:
+      - .all-contributorsrc
+  priority: 75
+JSON with Comments:
+  category: data
+  color: "#CCCCCC"
+  heuristics:
+    - "(?m)^\\s*/[/\\*]"
+  matchers:
+    extensions:
+      - json
+      - jsonc
+    filenames:
+      - devcontainer.json
+      - tsconfig.json
+    patterns:
+      - .vscode/*.json
+      - tsconfig.*.json
+  priority: 25
 JavaScript:
   category: programming
   color: "#F0DC4E"
@@ -106,7 +131,7 @@ Makefile:
     filenames:
       - "Makefile"
     patterns:
-      - "Makefile\\.[\\d\\w]+" # Makefile.<extension>
+      - "Makefile.*" # Makefile.<extension>
 Markdown:
   category: prose
   color: "#03A7DD"
