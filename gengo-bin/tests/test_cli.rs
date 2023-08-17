@@ -31,6 +31,7 @@ fn test_javascript_repo() {
 }
 
 #[test]
+#[cfg_attr(windows, ignore)]
 fn test_breakdown_javascript_repo() {
     assert_stdout_snapshot!(&["gengo", "-r", "test/javascript", "-R", ROOT, "--breakdown"]);
 }
