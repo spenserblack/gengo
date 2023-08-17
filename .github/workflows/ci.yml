@@ -12,6 +12,9 @@ jobs:
   build:
     name: Build (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
+    needs:
+      - check-languages-file
+      - lint
     strategy:
       fail-fast: false
       matrix:
