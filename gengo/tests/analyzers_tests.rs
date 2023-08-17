@@ -1,6 +1,5 @@
 use gengo::Analyzers;
 use insta::assert_debug_snapshot;
-use std::ffi::OsStr;
 
 mod util;
 
@@ -8,7 +7,7 @@ mod util;
 fn test_by_filepath_json_with_comments() {
     let fixture = fixture_str!("test_check_json_with_comments-analyzers.yaml");
     let analyzers = Analyzers::from_yaml(fixture).unwrap();
-    let results = analyzers.by_filepath(OsStr::new("test.json"));
+    let results = analyzers.by_filepath("test.json");
     assert_debug_snapshot!(results);
 }
 
@@ -31,18 +30,18 @@ fn test_simple() {
     );
     assert_debug_snapshot!(
         "analyzers_tests__test_simple__by_filepath",
-        analyzers.by_filepath(OsStr::new("test.sh"))
+        analyzers.by_filepath("test.sh")
     );
     assert_debug_snapshot!(
         "analyzers_tests__test_simple",
-        analyzers.simple(OsStr::new("test.sh"), contents)
+        analyzers.simple("test.sh", contents)
     );
 }
 
 #[test]
 fn test_with_heuristics() {
     let fixture = fixture_str!("test_check_json_with_comments-analyzers.yaml");
-    let filepath = OsStr::new("test.json");
+    let filepath = "test.json";
     let contents = fixture_bytes!("test_check_json_with_comments-file.json");
     let analyzers = Analyzers::from_yaml(fixture).unwrap();
     assert_debug_snapshot!(
@@ -58,7 +57,7 @@ fn test_with_heuristics() {
 #[test]
 fn test_no_heuristic_match_returns_original_set() {
     let fixture = fixture_str!("test_check_json_with_comments-analyzers.yaml");
-    let filepath = OsStr::new("test.json");
+    let filepath = "test.json";
     let contents = br#"{"type": "maybe not JSON with comments"}"#;
     let analyzers = Analyzers::from_yaml(fixture).unwrap();
     let result = analyzers.with_heuristics(filepath, contents, 1 << 20);
@@ -72,7 +71,7 @@ fn test_no_heuristic_match_returns_original_set() {
 #[test]
 fn test_pick_find_one() {
     let fixture = fixture_str!("test_check_json_with_comments-analyzers.yaml");
-    let filepath = OsStr::new("test.json");
+    let filepath = "test.json";
     let contents = fixture_bytes!("test_check_json_with_comments-file.json");
     let analyzers = Analyzers::from_yaml(fixture).unwrap();
     let language = analyzers.pick(filepath, contents, 1 << 20).unwrap();
@@ -82,7 +81,7 @@ fn test_pick_find_one() {
 #[test]
 fn test_pick_find_none() {
     let fixture = fixture_str!("test_check_json_with_comments-analyzers.yaml");
-    let filepath = OsStr::new("test.yaml");
+    let filepath = "test.yaml";
     let contents = b"---\nfoo: bar\n";
     let analyzers = Analyzers::from_yaml(fixture).unwrap();
     let language = analyzers.pick(filepath, contents, 1);
@@ -92,7 +91,7 @@ fn test_pick_find_none() {
 #[test]
 fn test_pick_find_multiple() {
     let fixture = fixture_str!("test_check_json_with_comments-analyzers.yaml");
-    let filepath = OsStr::new("test.json");
+    let filepath = "test.json";
     let contents = br#"{"msg": "Comments? IDK"}"#;
     let analyzers = Analyzers::from_yaml(fixture).unwrap();
     let language = analyzers.pick(filepath, contents, 1 << 20).unwrap();

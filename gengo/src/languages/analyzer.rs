@@ -25,7 +25,7 @@ impl Analyzers {
     }
 
     /// Returns the analyzers that have matched by filepath.
-    pub fn by_filepath(&self, filepath: &OsStr) -> Found {
+    pub fn by_filepath<P: AsRef<Path>>(&self, filepath: P) -> Found {
         let matches: Vec<_> = self
             .iter()
             .filter(|(_, a)| {
@@ -38,7 +38,7 @@ impl Analyzers {
                             None
                         }
                     })
-                    .any(|m| m.matches(filepath))
+                    .any(|m| m.matches(&filepath))
             })
             .map(|(key, _)| key.to_owned())
             .collect();
@@ -71,7 +71,7 @@ impl Analyzers {
     /// It attempts to identify the file in this order:
     /// 1. by shebang (`#!`)
     /// 2. by filepath
-    pub fn simple(&self, filepath: &OsStr, contents: &[u8]) -> Found {
+    pub fn simple<P: AsRef<Path>>(&self, filepath: P, contents: &[u8]) -> Found {
         let matches = self.by_shebang(contents);
         if !matches.is_empty() {
             return matches;
@@ -85,7 +85,7 @@ impl Analyzers {
     /// If none of the found heuristics match, returns the original matches.
     ///
     /// Use `limit` to limit the number of bytes to read to match to heuristics.
-    pub fn with_heuristics(&self, filepath: &OsStr, contents: &[u8], limit: usize) -> Found {
+    pub fn with_heuristics<P: AsRef<Path>>(&self, filepath:P, contents: &[u8], limit: usize) -> Found {
         let contents = if contents.len() > limit {
             &contents[..limit]
         } else {
@@ -142,19 +142,19 @@ impl Analyzers {
     /// ```
     ///
     /// ```
-    /// # use std::ffi::OsStr;
+    /// # use std::path::Path;
     /// use gengo::Analyzers;
     ///
     /// // Minified JSON of the above definition.
     /// const DEFINITIONS: &str = r##"{"Rust":{"category":"programming","color":"#FF4400","matchers":{"extensions":["rs"]}}}"##;
     /// let analyzers = Analyzers::from_json(DEFINITIONS).unwrap();
-    /// let filename = OsStr::new("main.rs");
+    /// let filename = Path::new("main.rs");
     /// let contents = b"fn main() {}";
     /// let limit = 1 << 20; // 1 MB
     /// let language = analyzers.pick(filename, contents, limit).unwrap();
     /// assert_eq!(language.name(), "Rust");
     /// ```
-    pub fn pick(&self, filepath: &OsStr, contents: &[u8], limit: usize) -> Option<&Language> {
+    pub fn pick<P: AsRef<Path>>(&self, filepath: P, contents: &[u8], limit: usize) -> Option<&Language> {
         let matches = self.with_heuristics(filepath, contents, limit);
         let matches = match matches {
             Found::None => return None,
@@ -295,7 +295,7 @@ trait MatcherTrait {
     /// Checks if a file matches.
     ///
     /// `self` is mut because some matchers may need to be compiled lazily.
-    fn matches(&self, filename: &OsStr, contents: &[u8]) -> bool;
+    fn matches<P: AsRef<Path>>(&self, filename: P, contents: &[u8]) -> bool;
 }
 
 /// Checks if a file matches.
@@ -307,7 +307,7 @@ pub enum Matcher {
 }
 
 impl MatcherTrait for Matcher {
-    fn matches(&self, filename: &OsStr, contents: &[u8]) -> bool {
+    fn matches<P: AsRef<Path>>(&self, filename: P, contents: &[u8]) -> bool {
         match self {
             Matcher::Filepath(matcher) => FilepathMatcher::matches(matcher, filename),
             Matcher::Shebang(matcher) => matcher.matches(contents),
@@ -339,18 +339,18 @@ impl FilepathMatcher {
         }
     }
 
-    pub fn matches_extension(&self, filename: &OsStr) -> bool {
-        let extension = Path::new(filename).extension().unwrap_or_default();
+    pub fn matches_extension<P: AsRef<Path>>(&self, filename: P) -> bool {
+        let extension = filename.as_ref().extension().unwrap_or_default();
         self.extensions.contains(extension)
     }
 
-    pub fn matches_filename(&self, filename: &OsStr) -> bool {
+    pub fn matches_filename<P: AsRef<Path>>(&self, filename: P) -> bool {
         self.filenames
-            .contains(Path::new(filename).file_name().unwrap_or_default())
+            .contains(filename.as_ref().file_name().unwrap_or_default())
     }
 
-    pub fn matches_pattern(&self, filename: &OsStr) -> bool {
-        let filename = if let Some(filename) = filename.to_str() {
+    pub fn matches_pattern<P: AsRef<Path>>(&self, filename: P) -> bool {
+        let filename = if let Some(filename) = filename.as_ref().to_str() {
             filename
         } else {
             return false;
@@ -358,15 +358,15 @@ impl FilepathMatcher {
         self.patterns.iter().any(|p| p.is_match(filename))
     }
 
-    pub fn matches(&self, filename: &OsStr) -> bool {
-        self.matches_extension(filename)
-            || self.matches_filename(filename)
-            || self.matches_pattern(filename)
+    pub fn matches<P: AsRef<Path>>(&self, filename: P) -> bool {
+        self.matches_extension(&filename)
+            || self.matches_filename(&filename)
+            || self.matches_pattern(&filename)
     }
 }
 
 impl MatcherTrait for FilepathMatcher {
-    fn matches(&self, filename: &OsStr, _contents: &[u8]) -> bool {
+    fn matches<P: AsRef<Path>>(&self, filename: P, _contents: &[u8]) -> bool {
         FilepathMatcher::matches(self, filename)
     }
 }
@@ -420,7 +420,7 @@ impl MatcherTrait for ShebangMatcher {
     /// Checks if the file contents match a shebang by checking the first line of the contents.
     ///
     /// Does not read more than 100 bytes.
-    fn matches(&self, _filename: &OsStr, contents: &[u8]) -> bool {
+    fn matches<P: AsRef<Path>>(&self, _filename: P, contents: &[u8]) -> bool {
         ShebangMatcher::matches(self, contents)
     }
 }
@@ -492,24 +492,24 @@ mod tests {
     #[test]
     fn test_matches_extension() {
         let analyzer = FilepathMatcher::new(&["txt"], &[], &[]);
-        assert!(analyzer.matches(OsStr::new("foo.txt")));
-        assert!(!analyzer.matches(OsStr::new("foo.rs")));
+        assert!(analyzer.matches("foo.txt"));
+        assert!(!analyzer.matches("foo.rs"));
     }
 
     #[test]
     fn test_matches_filename() {
         let analyzer = FilepathMatcher::new(&[], &["LICENSE"], &[]);
-        assert!(analyzer.matches(OsStr::new("LICENSE")));
-        assert!(!analyzer.matches(OsStr::new("Dockerfile")));
+        assert!(analyzer.matches("LICENSE"));
+        assert!(!analyzer.matches("Dockerfile"));
     }
 
     #[test]
     fn test_matches_pattern() {
         let analyzer =
             FilepathMatcher::new::<&str>(&[], &[], &[r"^Makefile(?:\.[\w\d]+)?$".into()]);
-        assert!(analyzer.matches(OsStr::new("Makefile")));
-        assert!(analyzer.matches(OsStr::new("Makefile.in")));
-        assert!(!analyzer.matches(OsStr::new("Cakefile")));
+        assert!(analyzer.matches("Makefile"));
+        assert!(analyzer.matches("Makefile.in"));
+        assert!(!analyzer.matches("Cakefile"));
     }
 
     #[test]
