@@ -47,6 +47,13 @@
 #
 # WARNING: Please alphabetize!
 ---
+Assembly:
+  category: programming
+  color: "#33AA33"
+  matchers:
+    extensions:
+      - asm
+      - s
 "C#":
   category: programming
   color: "#178600"
