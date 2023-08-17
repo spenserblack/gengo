@@ -13,4 +13,8 @@ JSON with Comments:
     extensions:
     - json
     - jsonc
+    filenames:
+    - devcontainer.json
+    patterns:
+    - ".vscode/*.json"
   priority: 25

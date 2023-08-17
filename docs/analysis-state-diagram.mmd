@@ -5,6 +5,8 @@ flowchart TD
     start[Start]
     pass1[Check shebangs]
     pass1part2[Check filenames]
+    pass1part3[Check filepath patterns]
+    pass1part4[Check extensions]
     result1[Return languages]
     pass2[Heuristics]
     result2branch1[Return languages from heuristics]
@@ -14,7 +16,11 @@ flowchart TD
     start --> pass1
     pass1 -->|Shebang matches| result1
     pass1 -->|No matching shebangs| pass1part2
-    pass1part2 --> result1
+    pass1part2 -->|filename matches| result1
+    pass1part2 -->|No matching filenames| pass1part3
+    pass1part3 -->|filepath matches| result1
+    pass1part3 -->|No matching filepaths| pass1part4
+    pass1part4 -->result1
     result1 -->|0 or 1 matching languages| stop
     result1 -->|2 or more matching languages| pass2
     pass2 -->|1 matching language| stop

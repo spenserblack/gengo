@@ -7,7 +7,7 @@ mod util;
 fn test_by_filepath_json_with_comments() {
     let fixture = fixture_str!("test_check_json_with_comments-analyzers.yaml");
     let analyzers = Analyzers::from_yaml(fixture).unwrap();
-    let results = analyzers.by_filepath("test.json");
+    let results = analyzers.by_extension("test.json");
     assert_debug_snapshot!(results);
 }
 
@@ -30,7 +30,7 @@ fn test_simple() {
     );
     assert_debug_snapshot!(
         "analyzers_tests__test_simple__by_filepath",
-        analyzers.by_filepath("test.sh")
+        analyzers.by_extension("test.sh")
     );
     assert_debug_snapshot!(
         "analyzers_tests__test_simple",
@@ -99,5 +99,33 @@ fn test_pick_find_multiple() {
         language.name(),
         "JSON",
         "It should pick the language with the higher priority"
+    );
+}
+
+#[test]
+fn test_pick_filename() {
+    let fixture = fixture_str!("test_check_json_with_comments-analyzers.yaml");
+    let filepath = "devcontainer.json";
+    let contents = b"{}";
+    let analyzers = Analyzers::from_yaml(fixture).unwrap();
+    let language = analyzers.pick(filepath, contents, 1 << 20).unwrap();
+    assert_eq!(
+        language.name(),
+        "JSON with Comments",
+        "It should prioritize filename over extension."
+    );
+}
+
+#[test]
+fn test_pick_filepath_pattern() {
+    let fixture = fixture_str!("test_check_json_with_comments-analyzers.yaml");
+    let filepath = ".vscode/settings.json";
+    let contents = b"{}";
+    let analyzers = Analyzers::from_yaml(fixture).unwrap();
+    let language = analyzers.pick(filepath, contents, 1 << 20).unwrap();
+    assert_eq!(
+        language.name(),
+        "JSON with Comments",
+        "It should prioritize filepath pattern over extension."
     );
 }
