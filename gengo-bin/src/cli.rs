@@ -86,13 +86,14 @@ impl CLI {
 
         if self.breakdown {
             writeln!(out)?;
-            Self::run_breakdown(out, err, results)?;
+            self.run_breakdown(out, err, results)?;
         }
 
         Ok(())
     }
 
     fn run_breakdown<Out: Write, Err: Write>(
+        &self,
         mut out: Out,
         mut _err: Err,
         results: IndexMap<PathBuf, Entry>,
@@ -100,6 +101,9 @@ impl CLI {
         let files_per_language = {
             let mut files_per_language = IndexMap::new();
             for (path, entry) in results.into_iter() {
+                if !(self.all || entry.detectable()) {
+                    continue;
+                }
                 let language = entry.language();
                 let language = language.name();
                 let language = String::from(language);
