@@ -1,5 +1,8 @@
 //! Analyzes a language.
-use super::{Category, Language, LANGUAGE_DEFINITIONS};
+use super::{
+    matcher::{Filename, FilepathPattern},
+    Category, Language, LANGUAGE_DEFINITIONS,
+};
 
 use indexmap::IndexMap;
 
@@ -7,7 +10,7 @@ use regex::Regex;
 use serde::Deserialize;
 use std::error::Error;
 
-use super::matcher::{Filepath, Matcher, Shebang};
+use super::matcher::{Extension, Matcher, Shebang};
 use std::path::Path;
 
 /// Analyzes and attempts to identify a language.
@@ -26,14 +29,74 @@ impl Analyzers {
     }
 
     /// Returns the analyzers that have matched by filepath.
+    #[deprecated(since = "0.3.1")]
     pub fn by_filepath<P: AsRef<Path>>(&self, filepath: P) -> Found {
+        let matches: Vec<_> = self
+            .iter()
+            .filter(|(_, a)| {
+                a.matchers.iter().any(|m| match m {
+                    Matcher::Extension(e) => e.matches(&filepath),
+                    Matcher::Filename(f) => f.matches(&filepath),
+                    Matcher::FilepathPattern(p) => p.matches(&filepath),
+                    Matcher::Shebang(_) => false,
+                })
+            })
+            .map(|(key, _)| key.to_owned())
+            .collect();
+        matches.into()
+    }
+
+    /// Returns the analyzers that have matched by extension.
+    pub fn by_extension<P: AsRef<Path>>(&self, filepath: P) -> Found {
         let matches: Vec<_> = self
             .iter()
             .filter(|(_, a)| {
                 a.matchers
                     .iter()
                     .filter_map(|m| {
-                        if let Matcher::Filepath(m) = m {
+                        if let Matcher::Extension(m) = m {
+                            Some(m)
+                        } else {
+                            None
+                        }
+                    })
+                    .any(|m| m.matches(&filepath))
+            })
+            .map(|(key, _)| key.to_owned())
+            .collect();
+        matches.into()
+    }
+
+    /// Returns the analyzers that have matched by filename.
+    pub fn by_filename<P: AsRef<Path>>(&self, filepath: P) -> Found {
+        let matches: Vec<_> = self
+            .iter()
+            .filter(|(_, a)| {
+                a.matchers
+                    .iter()
+                    .filter_map(|m| {
+                        if let Matcher::Filename(m) = m {
+                            Some(m)
+                        } else {
+                            None
+                        }
+                    })
+                    .any(|m| m.matches(&filepath))
+            })
+            .map(|(key, _)| key.to_owned())
+            .collect();
+        matches.into()
+    }
+
+    /// Returns the analyzers that have matched by filepath pattern.
+    pub fn by_filepath_pattern<P: AsRef<Path>>(&self, filepath: P) -> Found {
+        let matches: Vec<_> = self
+            .iter()
+            .filter(|(_, a)| {
+                a.matchers
+                    .iter()
+                    .filter_map(|m| {
+                        if let Matcher::FilepathPattern(m) = m {
                             Some(m)
                         } else {
                             None
@@ -77,7 +140,15 @@ impl Analyzers {
         if !matches.is_empty() {
             return matches;
         }
-        self.by_filepath(filepath)
+        let matches = self.by_filename(&filepath);
+        if !matches.is_empty() {
+            return matches;
+        }
+        let matches = self.by_filepath_pattern(&filepath);
+        if !matches.is_empty() {
+            return matches;
+        }
+        self.by_extension(&filepath)
     }
 
     /// Second pass over a file to determine the language.
@@ -331,11 +402,20 @@ struct AnalyzerArgMatchers {
 
 impl From<&AnalyzerArgMatchers> for Vec<Matcher> {
     fn from(matchers: &AnalyzerArgMatchers) -> Self {
-        let filepath_matcher = if !matchers.extensions.is_empty()
-            || !matchers.filenames.is_empty()
-            || !matchers.patterns.is_empty()
-        {
-            Some(Matcher::Filepath(matchers.into()))
+        let extension_matcher = if !matchers.extensions.is_empty() {
+            Some(Matcher::Extension(matchers.into()))
+        } else {
+            None
+        };
+        let filename_matcher = if !matchers.filenames.is_empty() {
+            Some(Matcher::Filename(Filename::new(&matchers.filenames)))
+        } else {
+            None
+        };
+        let filepath_pattern_matcher = if !matchers.patterns.is_empty() {
+            Some(Matcher::FilepathPattern(FilepathPattern::new(
+                &matchers.patterns,
+            )))
         } else {
             None
         };
@@ -345,19 +425,32 @@ impl From<&AnalyzerArgMatchers> for Vec<Matcher> {
             let shebang_matcher = Shebang::new(&matchers.interpreters);
             Some(Matcher::Shebang(shebang_matcher))
         };
-        [filepath_matcher, shebang_matcher]
-            .into_iter()
-            .flatten()
-            .collect()
+        [
+            extension_matcher,
+            filename_matcher,
+            filepath_pattern_matcher,
+            shebang_matcher,
+        ]
+        .into_iter()
+        .flatten()
+        .collect()
     }
 }
 
-impl From<&AnalyzerArgMatchers> for Filepath {
+impl From<&AnalyzerArgMatchers> for Extension {
     fn from(matchers: &AnalyzerArgMatchers) -> Self {
-        Self::new(
-            &matchers.extensions,
-            &matchers.filenames,
-            &matchers.patterns,
-        )
+        Self::new(&matchers.extensions)
+    }
+}
+
+impl From<&AnalyzerArgMatchers> for Filename {
+    fn from(matchers: &AnalyzerArgMatchers) -> Self {
+        Self::new(&matchers.filenames)
+    }
+}
+
+impl From<&AnalyzerArgMatchers> for FilepathPattern {
+    fn from(matchers: &AnalyzerArgMatchers) -> Self {
+        Self::new(&matchers.patterns)
     }
 }

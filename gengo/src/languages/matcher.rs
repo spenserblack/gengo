@@ -11,54 +11,70 @@ use std::path::Path;
 #[derive(Clone, Debug)]
 #[non_exhaustive]
 pub enum Matcher {
-    Filepath(Filepath),
+    Extension(Extension),
+    Filename(Filename),
+    FilepathPattern(FilepathPattern),
     Shebang(Shebang),
 }
 
-/// Matches a file path.
+/// Matches a file extension.
 #[derive(Clone, Debug)]
-pub struct Filepath {
+pub struct Extension {
     extensions: IndexSet<OsString>,
+}
+
+impl Extension {
+    /// Create a new filepath matcher.
+    pub fn new<S: AsRef<OsStr>>(extensions: &[S]) -> Self {
+        let extensions = extensions.iter().map(Into::into).collect();
+        Self { extensions }
+    }
+
+    pub fn matches<P: AsRef<Path>>(&self, filename: P) -> bool {
+        self.extensions
+            .contains(filename.as_ref().extension().unwrap_or_default())
+    }
+}
+
+/// Matches a filename.
+#[derive(Clone, Debug)]
+pub struct Filename {
     filenames: IndexSet<OsString>,
+}
+
+impl Filename {
+    /// Create a new filepath matcher.
+    pub fn new<S: AsRef<OsStr>>(filenames: &[S]) -> Self {
+        let filenames = filenames.iter().map(Into::into).collect();
+        Self { filenames }
+    }
+
+    pub fn matches<P: AsRef<Path>>(&self, filename: P) -> bool {
+        self.filenames
+            .contains(filename.as_ref().file_name().unwrap_or_default())
+    }
+}
+
+/// Matches a filepath pattern
+#[derive(Clone, Debug)]
+pub struct FilepathPattern {
     patterns: Vec<Pattern>,
 }
 
-impl Filepath {
+impl FilepathPattern {
     /// Create a new filepath matcher.
-    pub fn new<S: AsRef<OsStr>>(extensions: &[S], filenames: &[S], patterns: &[String]) -> Self {
-        let extensions = extensions.iter().map(Into::into).collect();
-        let filenames = filenames.iter().map(Into::into).collect();
+    pub fn new(patterns: &[String]) -> Self {
         let patterns = patterns
             .iter()
             .map(|s| Pattern::new(s.as_ref()).unwrap())
             .collect();
-        Self {
-            extensions,
-            filenames,
-            patterns,
-        }
-    }
-
-    pub fn matches_extension<P: AsRef<Path>>(&self, filename: P) -> bool {
-        let extension = filename.as_ref().extension().unwrap_or_default();
-        self.extensions.contains(extension)
-    }
-
-    pub fn matches_filename<P: AsRef<Path>>(&self, filename: P) -> bool {
-        self.filenames
-            .contains(filename.as_ref().file_name().unwrap_or_default())
-    }
-
-    pub fn matches_pattern<P: AsRef<Path>>(&self, filename: P) -> bool {
-        self.patterns
-            .iter()
-            .any(|p| p.matches_path(filename.as_ref()))
+        Self { patterns }
     }
 
     pub fn matches<P: AsRef<Path>>(&self, filename: P) -> bool {
-        self.matches_extension(&filename)
-            || self.matches_filename(&filename)
-            || self.matches_pattern(&filename)
+        self.patterns
+            .iter()
+            .any(|p| p.matches_path(filename.as_ref()))
     }
 }
 
@@ -114,14 +130,14 @@ mod tests {
 
     #[test]
     fn test_matches_extension() {
-        let analyzer = Filepath::new(&["txt"], &[], &[]);
+        let analyzer = Extension::new(&["txt"]);
         assert!(analyzer.matches("foo.txt"));
         assert!(!analyzer.matches("foo.rs"));
     }
 
     #[test]
     fn test_matches_filename() {
-        let analyzer = Filepath::new(&[], &["LICENSE"], &[]);
+        let analyzer = Filename::new(&["LICENSE"]);
         assert!(analyzer.matches("LICENSE"));
         assert!(!analyzer.matches("Dockerfile"));
     }
@@ -133,7 +149,7 @@ mod tests {
         case(".vscode/*.json", ".vscode/extensions.json")
     )]
     fn test_matches_pattern(pattern: &str, filename: &str) {
-        let analyzer = Filepath::new::<&str>(&[], &[], &[pattern.into()]);
+        let analyzer = FilepathPattern::new(&[pattern.into()]);
         assert!(analyzer.matches(filename));
     }
 
