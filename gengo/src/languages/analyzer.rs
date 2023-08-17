@@ -85,7 +85,12 @@ impl Analyzers {
     /// If none of the found heuristics match, returns the original matches.
     ///
     /// Use `limit` to limit the number of bytes to read to match to heuristics.
-    pub fn with_heuristics<P: AsRef<Path>>(&self, filepath:P, contents: &[u8], limit: usize) -> Found {
+    pub fn with_heuristics<P: AsRef<Path>>(
+        &self,
+        filepath: P,
+        contents: &[u8],
+        limit: usize,
+    ) -> Found {
         let contents = if contents.len() > limit {
             &contents[..limit]
         } else {
@@ -154,7 +159,12 @@ impl Analyzers {
     /// let language = analyzers.pick(filename, contents, limit).unwrap();
     /// assert_eq!(language.name(), "Rust");
     /// ```
-    pub fn pick<P: AsRef<Path>>(&self, filepath: P, contents: &[u8], limit: usize) -> Option<&Language> {
+    pub fn pick<P: AsRef<Path>>(
+        &self,
+        filepath: P,
+        contents: &[u8],
+        limit: usize,
+    ) -> Option<&Language> {
         let matches = self.with_heuristics(filepath, contents, limit);
         let matches = match matches {
             Found::None => return None,

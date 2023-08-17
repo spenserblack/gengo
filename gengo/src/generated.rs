@@ -8,7 +8,8 @@ impl Generated {
     }
 
     fn is_generated_no_read<P: AsRef<Path>>(filepath: P) -> bool {
-        filepath.as_ref()
+        filepath
+            .as_ref()
             .components()
             .next()
             .map_or(false, |c| c.as_os_str() == "dist")
@@ -34,9 +35,6 @@ mod tests {
         case("dist", true)
     )]
     fn test_is_generated_no_read(filepath: &str, expected: bool) {
-        assert_eq!(
-            Generated::is_generated_no_read(filepath),
-            expected
-        );
+        assert_eq!(Generated::is_generated_no_read(filepath), expected);
     }
 }

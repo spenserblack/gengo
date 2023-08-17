@@ -8,7 +8,8 @@ impl Vendored {
     }
 
     fn is_vendored_no_read<P: AsRef<Path>>(filepath: P) -> bool {
-        filepath.as_ref()
+        filepath
+            .as_ref()
             .components()
             .next()
             .map_or(false, |c| c.as_os_str() == "node_modules")
@@ -34,9 +35,6 @@ mod tests {
         case("node_modules", true)
     )]
     fn test_is_vendored_no_read(filepath: &str, expected: bool) {
-        assert_eq!(
-            Vendored::is_vendored_no_read(filepath),
-            expected
-        );
+        assert_eq!(Vendored::is_vendored_no_read(filepath), expected);
     }
 }

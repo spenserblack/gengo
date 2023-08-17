@@ -157,7 +157,11 @@ impl Gengo {
         Ok(attr)
     }
 
-    fn get_boolean_attr<P: AsRef<Path>>(&self, path: P, attr: &str) -> Result<Option<bool>, Box<dyn Error>> {
+    fn get_boolean_attr<P: AsRef<Path>>(
+        &self,
+        path: P,
+        attr: &str,
+    ) -> Result<Option<bool>, Box<dyn Error>> {
         let attr = self.get_attr(path, attr)?;
         let attr = match attr {
             AttrValue::True => Some(true),
@@ -169,7 +173,11 @@ impl Gengo {
         Ok(attr)
     }
 
-    fn get_str_attr<P: AsRef<Path>>(&self, path: P, attr: &str) -> Result<Option<String>, Box<dyn Error>> {
+    fn get_str_attr<P: AsRef<Path>>(
+        &self,
+        path: P,
+        attr: &str,
+    ) -> Result<Option<String>, Box<dyn Error>> {
         let attr = self.get_attr(path, attr)?;
         let attr = match attr {
             AttrValue::String(s) => Some(s),
