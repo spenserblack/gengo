@@ -116,6 +116,12 @@ JSON with Comments:
       - .vscode/*.json
       - tsconfig.*.json
   priority: 25
+Java:
+  category: programming
+  color: "#5283A2"
+  matchers:
+    extensions:
+      - java
 JavaScript:
   category: programming
   color: "#F0DC4E"
