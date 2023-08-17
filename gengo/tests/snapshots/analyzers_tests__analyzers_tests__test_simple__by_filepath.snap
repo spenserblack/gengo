@@ -1,6 +1,6 @@
 ---
 source: gengo/tests/analyzers_tests.rs
-expression: "analyzers.by_filepath(OsStr::new(\"test.sh\"))"
+expression: "analyzers.by_filepath(\"test.sh\")"
 ---
 One(
     "shell",

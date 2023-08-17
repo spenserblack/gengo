@@ -15,7 +15,7 @@ name = "gengo"
 
 [dependencies]
 clap = { version = "4", features = ["derive", "wrap_help"] }
-gengo = { path = "../gengo", version = "0.2" }
+gengo = { path = "../gengo", version = "0.3" }
 indexmap = "2"
 
 [dev-dependencies]

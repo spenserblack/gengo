@@ -1,6 +1,6 @@
 ---
 source: gengo/tests/analyzers_tests.rs
-expression: "analyzers.simple(OsStr::new(\"test.sh\"), contents)"
+expression: "analyzers.simple(\"test.sh\", contents)"
 ---
 One(
     "fish",

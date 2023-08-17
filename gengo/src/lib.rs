@@ -7,8 +7,7 @@ pub use languages::analyzer::Analyzers;
 use languages::Category;
 pub use languages::Language;
 use std::error::Error;
-use std::ffi::OsStr;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use vendored::Vendored;
 
 mod builder;
@@ -36,7 +35,7 @@ impl Gengo {
     }
 
     /// Analyzes each file in the repository at the given revision.
-    pub fn analyze(&self, rev: &str) -> Result<IndexMap<String, Entry>, Box<dyn Error>> {
+    pub fn analyze(&self, rev: &str) -> Result<IndexMap<PathBuf, Entry>, Box<dyn Error>> {
         let mut results = IndexMap::new();
         let commit = self.rev(rev)?;
         let tree = commit.tree()?;
@@ -48,7 +47,7 @@ impl Gengo {
         &self,
         root: &str,
         tree: &Tree,
-        results: &mut IndexMap<String, Entry>,
+        results: &mut IndexMap<PathBuf, Entry>,
     ) -> Result<(), Box<dyn Error>> {
         for entry in tree.iter() {
             let object = entry.to_object(&self.repository)?;
@@ -75,22 +74,21 @@ impl Gengo {
         Ok(())
     }
 
-    fn analyze_blob(
+    fn analyze_blob<P: AsRef<Path>>(
         &self,
-        filepath: &OsStr,
+        filepath: P,
         blob: &Blob,
-        results: &mut IndexMap<String, Entry>,
+        results: &mut IndexMap<PathBuf, Entry>,
     ) -> Result<(), Box<dyn Error>> {
-        let path = Path::new(filepath);
         let contents = blob.content();
 
         let lang_override = self
-            .get_str_attr(path, "gengo-language")?
+            .get_str_attr(&filepath, "gengo-language")?
             .map(|s| s.replace('-', " "))
             .and_then(|s| self.analyzers.get(&s));
 
         let language =
-            lang_override.or_else(|| self.analyzers.pick(filepath, contents, self.read_limit));
+            lang_override.or_else(|| self.analyzers.pick(&filepath, contents, self.read_limit));
 
         let language = if let Some(language) = language {
             language.clone()
@@ -100,14 +98,14 @@ impl Gengo {
 
         let size = contents.len();
         let generated = self
-            .get_boolean_attr(path, "gengo-generated")?
-            .unwrap_or_else(|| self.is_generated(filepath, contents));
+            .get_boolean_attr(&filepath, "gengo-generated")?
+            .unwrap_or_else(|| self.is_generated(&filepath, contents));
         let documentation = self
-            .get_boolean_attr(path, "gengo-documentation")?
-            .unwrap_or_else(|| self.is_documentation(filepath, contents));
+            .get_boolean_attr(&filepath, "gengo-documentation")?
+            .unwrap_or_else(|| self.is_documentation(&filepath, contents));
         let vendored = self
-            .get_boolean_attr(path, "gengo-vendored")?
-            .unwrap_or_else(|| self.is_vendored(filepath, contents));
+            .get_boolean_attr(&filepath, "gengo-vendored")?
+            .unwrap_or_else(|| self.is_vendored(&filepath, contents));
 
         let detectable = match language.category() {
             Category::Data | Category::Prose => false,
@@ -116,10 +114,10 @@ impl Gengo {
             }
         };
         let detectable = self
-            .get_boolean_attr(path, "gengo-detectable")?
+            .get_boolean_attr(&filepath, "gengo-detectable")?
             .unwrap_or(detectable);
 
-        let path = String::from(filepath.to_str().ok_or("invalid path")?);
+        let path_buf = filepath.as_ref().to_path_buf();
         let entry = Entry {
             language,
             size,
@@ -129,37 +127,41 @@ impl Gengo {
             vendored,
         };
 
-        results.insert(path, entry);
+        results.insert(path_buf, entry);
 
         Ok(())
     }
 
     /// Guesses if a file is generated.
-    pub fn is_generated(&self, filepath: &OsStr, contents: &[u8]) -> bool {
+    pub fn is_generated<P: AsRef<Path>>(&self, filepath: P, contents: &[u8]) -> bool {
         Generated::is_generated(filepath, contents)
     }
 
     /// Guesses if a file is documentation.
-    pub fn is_documentation(&self, filepath: &OsStr, contents: &[u8]) -> bool {
+    pub fn is_documentation<P: AsRef<Path>>(&self, filepath: P, contents: &[u8]) -> bool {
         Documentation::is_documentation(filepath, contents)
     }
 
     /// Guesses if a file is vendored.
-    pub fn is_vendored(&self, filepath: &OsStr, contents: &[u8]) -> bool {
+    pub fn is_vendored<P: AsRef<Path>>(&self, filepath: P, contents: &[u8]) -> bool {
         Vendored::is_vendored(filepath, contents)
     }
 
-    fn get_attr(&self, path: &Path, attr: &str) -> Result<AttrValue, Box<dyn Error>> {
+    fn get_attr<P: AsRef<Path>>(&self, path: P, attr: &str) -> Result<AttrValue, Box<dyn Error>> {
         let flags = Self::ATTR_CHECK_FLAGS
             .into_iter()
             .reduce(|a, b| a | b)
             .unwrap();
-        let attr = self.repository.get_attr(path, attr, flags)?;
+        let attr = self.repository.get_attr(path.as_ref(), attr, flags)?;
         let attr = AttrValue::from_string(attr);
         Ok(attr)
     }
 
-    fn get_boolean_attr(&self, path: &Path, attr: &str) -> Result<Option<bool>, Box<dyn Error>> {
+    fn get_boolean_attr<P: AsRef<Path>>(
+        &self,
+        path: P,
+        attr: &str,
+    ) -> Result<Option<bool>, Box<dyn Error>> {
         let attr = self.get_attr(path, attr)?;
         let attr = match attr {
             AttrValue::True => Some(true),
@@ -171,7 +173,11 @@ impl Gengo {
         Ok(attr)
     }
 
-    fn get_str_attr(&self, path: &Path, attr: &str) -> Result<Option<String>, Box<dyn Error>> {
+    fn get_str_attr<P: AsRef<Path>>(
+        &self,
+        path: P,
+        attr: &str,
+    ) -> Result<Option<String>, Box<dyn Error>> {
         let attr = self.get_attr(path, attr)?;
         let attr = match attr {
             AttrValue::String(s) => Some(s),
