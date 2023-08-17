@@ -29,6 +29,9 @@ pub struct CLI {
     /// The format is in bytes. The default is 1 MiB.
     #[arg(short = 'l', long, default_value = "1048576")]
     read_limit: usize,
+    /// Report on all files, even if they are not detectable.
+    #[arg(short = 'a', long)]
+    all: bool,
 }
 
 impl CLI {
@@ -55,7 +58,7 @@ impl CLI {
         let mut compiled = IndexMap::new();
         let mut total = 0;
         for (_, entry) in results.into_iter() {
-            if !entry.detectable() {
+            if !(self.all || entry.detectable()) {
                 continue;
             }
 
