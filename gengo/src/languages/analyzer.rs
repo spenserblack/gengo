@@ -1,5 +1,6 @@
 //! Analyzes a language.
 use super::{Category, Language, LANGUAGE_DEFINITIONS};
+use glob::Pattern;
 use indexmap::{IndexMap, IndexSet};
 use once_cell::sync::Lazy;
 use regex::Regex;
@@ -330,7 +331,7 @@ impl MatcherTrait for Matcher {
 pub struct FilepathMatcher {
     extensions: IndexSet<OsString>,
     filenames: IndexSet<OsString>,
-    patterns: Vec<Regex>,
+    patterns: Vec<Pattern>,
 }
 
 impl FilepathMatcher {
@@ -340,7 +341,7 @@ impl FilepathMatcher {
         let filenames = filenames.iter().map(Into::into).collect();
         let patterns = patterns
             .iter()
-            .map(|s| Regex::new(s.as_ref()).unwrap())
+            .map(|s| Pattern::new(s.as_ref()).unwrap())
             .collect();
         Self {
             extensions,
@@ -360,12 +361,9 @@ impl FilepathMatcher {
     }
 
     pub fn matches_pattern<P: AsRef<Path>>(&self, filename: P) -> bool {
-        let filename = if let Some(filename) = filename.as_ref().to_str() {
-            filename
-        } else {
-            return false;
-        };
-        self.patterns.iter().any(|p| p.is_match(filename))
+        self.patterns
+            .iter()
+            .any(|p| p.matches_path(filename.as_ref()))
     }
 
     pub fn matches<P: AsRef<Path>>(&self, filename: P) -> bool {
@@ -515,9 +513,7 @@ mod tests {
 
     #[test]
     fn test_matches_pattern() {
-        let analyzer =
-            FilepathMatcher::new::<&str>(&[], &[], &[r"^Makefile(?:\.[\w\d]+)?$".into()]);
-        assert!(analyzer.matches("Makefile"));
+        let analyzer = FilepathMatcher::new::<&str>(&[], &[], &["Makefile.*".into()]);
         assert!(analyzer.matches("Makefile.in"));
         assert!(!analyzer.matches("Cakefile"));
     }
