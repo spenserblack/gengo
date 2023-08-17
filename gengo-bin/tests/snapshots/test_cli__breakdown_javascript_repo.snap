@@ -8,13 +8,9 @@ expression: stdout
 
 JavaScript
   bin.js
-  node_modules/my-dependency/index.js
 
 Plain Text
   dist/bin.js
-
-HTML
-  docs/index.html
 
 TypeScript
   src/bin.ts
