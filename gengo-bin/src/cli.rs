@@ -92,7 +92,11 @@ impl CLI {
         Ok(())
     }
 
-    fn run_breakdown<Out: Write, Err: Write>(mut out: Out, mut _err: Err, results: IndexMap<PathBuf, Entry>) -> Result<(), io::Error> {
+    fn run_breakdown<Out: Write, Err: Write>(
+        mut out: Out,
+        mut _err: Err,
+        results: IndexMap<PathBuf, Entry>,
+    ) -> Result<(), io::Error> {
         let files_per_language = {
             let mut files_per_language = IndexMap::new();
             for (path, entry) in results.into_iter() {
