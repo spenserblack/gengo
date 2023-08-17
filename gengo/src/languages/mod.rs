@@ -1,5 +1,6 @@
 use serde::Deserialize;
 pub mod analyzer;
+mod matcher;
 
 const LANGUAGE_DEFINITIONS: &str = include_str!(concat!(env!("OUT_DIR"), "/languages.json"));
 
