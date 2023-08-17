@@ -47,6 +47,13 @@
 #
 # WARNING: Please alphabetize!
 ---
+Assembly:
+  category: programming
+  color: "#33AA33"
+  matchers:
+    extensions:
+      - asm
+      - s
 "C#":
   category: programming
   color: "#178600"
@@ -57,6 +64,12 @@
       - cake
       - cs
       - csx
+CSS:
+  category: markup
+  color: "#AA88AA"
+  matchers:
+    extensions:
+      - css
 CoffeeScript:
   category: programming
   color: "#3E2723"
