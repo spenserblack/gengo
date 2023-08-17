@@ -29,5 +29,11 @@ macro_rules! assert_stdout_snapshot {
 fn test_javascript_repo() {
     assert_stdout_snapshot!(&["gengo", "-r", "test/javascript", "-R", ROOT]);
 }
+
+#[test]
+fn test_breakdown_javascript_repo() {
+    assert_stdout_snapshot!(&["gengo", "-r", "test/javascript", "-R", ROOT, "--breakdown"]);
+}
+
 //
 // TODO Add test_javascript_repo_windows
