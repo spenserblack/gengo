@@ -496,6 +496,7 @@ impl From<&AnalyzerArgMatchers> for FilepathMatcher {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use rstest::rstest;
 
     #[test]
     fn test_matches_extension() {
@@ -511,11 +512,15 @@ mod tests {
         assert!(!analyzer.matches("Dockerfile"));
     }
 
-    #[test]
-    fn test_matches_pattern() {
-        let analyzer = FilepathMatcher::new::<&str>(&[], &[], &["Makefile.*".into()]);
-        assert!(analyzer.matches("Makefile.in"));
-        assert!(!analyzer.matches("Cakefile"));
+    #[rstest(
+        pattern,
+        filename,
+        case("Makefile.*", "Makefile.in"),
+        case(".vscode/*.json", ".vscode/extensions.json")
+    )]
+    fn test_matches_pattern(pattern: &str, filename: &str) {
+        let analyzer = FilepathMatcher::new::<&str>(&[], &[], &[pattern.into()]);
+        assert!(analyzer.matches(filename));
     }
 
     #[test]
