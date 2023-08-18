@@ -21,6 +21,9 @@ pub struct Gengo {
     repository: Repository,
     analyzers: Analyzers,
     read_limit: usize,
+    documentation: Documentation,
+    generated: Generated,
+    vendored: Vendored,
 }
 
 // TODO parse .gitattributes to get language overrides.
@@ -134,17 +137,17 @@ impl Gengo {
 
     /// Guesses if a file is generated.
     pub fn is_generated<P: AsRef<Path>>(&self, filepath: P, contents: &[u8]) -> bool {
-        Generated::is_generated(filepath, contents)
+        self.generated.is_generated(filepath, contents)
     }
 
     /// Guesses if a file is documentation.
     pub fn is_documentation<P: AsRef<Path>>(&self, filepath: P, contents: &[u8]) -> bool {
-        Documentation::is_documentation(filepath, contents)
+        self.documentation.is_documentation(filepath, contents)
     }
 
     /// Guesses if a file is vendored.
     pub fn is_vendored<P: AsRef<Path>>(&self, filepath: P, contents: &[u8]) -> bool {
-        Vendored::is_vendored(filepath, contents)
+        self.vendored.is_vendored(filepath, contents)
     }
 
     fn get_attr<P: AsRef<Path>>(&self, path: P, attr: &str) -> Result<AttrValue, Box<dyn Error>> {

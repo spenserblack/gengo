@@ -3,11 +3,15 @@ use std::path::Path;
 pub struct Vendored;
 
 impl Vendored {
-    pub fn is_vendored<P: AsRef<Path>>(filepath: P, contents: &[u8]) -> bool {
-        Self::is_vendored_no_read(&filepath) || Self::is_vendored_with_read(&filepath, contents)
+    pub fn new() -> Self {
+        Self
     }
 
-    fn is_vendored_no_read<P: AsRef<Path>>(filepath: P) -> bool {
+    pub fn is_vendored<P: AsRef<Path>>(&self, filepath: P, contents: &[u8]) -> bool {
+        self.is_vendored_no_read(&filepath) || self.is_vendored_with_read(&filepath, contents)
+    }
+
+    fn is_vendored_no_read<P: AsRef<Path>>(&self, filepath: P) -> bool {
         filepath
             .as_ref()
             .components()
@@ -15,7 +19,7 @@ impl Vendored {
             .map_or(false, |c| c.as_os_str() == "node_modules")
     }
 
-    fn is_vendored_with_read<P: AsRef<Path>>(_filepath: P, _contents: &[u8]) -> bool {
+    fn is_vendored_with_read<P: AsRef<Path>>(&self, _filepath: P, _contents: &[u8]) -> bool {
         false
     }
 }
@@ -35,6 +39,7 @@ mod tests {
         case("node_modules", true)
     )]
     fn test_is_vendored_no_read(filepath: &str, expected: bool) {
-        assert_eq!(Vendored::is_vendored_no_read(filepath), expected);
+        let vendored = Vendored::new();
+        assert_eq!(vendored.is_vendored_no_read(filepath), expected);
     }
 }
