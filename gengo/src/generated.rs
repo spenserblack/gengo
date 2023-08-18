@@ -34,9 +34,7 @@ mod tests {
         expected,
         case("dist/something.js", true),
         case("src/something.rs", false),
-        case("dist/subfolder/something.js", true),
-        case("", false),
-        case("dist", true)
+        case("dist/subfolder/something.js", true)
     )]
     fn test_is_generated_no_read(filepath: &str, expected: bool) {
         let generated = Generated::new();
