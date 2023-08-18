@@ -189,6 +189,12 @@ Mermaid:
     extensions:
       - mermaid
       - mmd
+PHP:
+  category: programming
+  color: "#7A86B8"
+  matchers:
+    extensions:
+      - php
 Plain Text:
   category: prose
   color: "#000000"
