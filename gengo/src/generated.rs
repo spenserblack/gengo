@@ -25,7 +25,10 @@ impl Generated {
 
     fn likely_minified(&self, contents: &[u8]) -> bool {
         // NOTE If the first 10 lines are really long, it's probably minified.
-        contents.split(|&b| b == b'\n').take(10).any(|line| line.len() > 250)
+        contents
+            .split(|&b| b == b'\n')
+            .take(10)
+            .any(|line| line.len() > 250)
     }
 }
 
@@ -51,9 +54,9 @@ mod tests {
     #[test]
     fn test_likely_minified() {
         let generated = Generated::new();
-        let header: Vec<u8> = b"/*!\n  * This is my license etc etc\n */".into_iter()
-        .map(|&b| b)
-        .collect();
+        let header: Vec<u8> = b"/*!\n  * This is my license etc etc\n */"
+            .iter().copied()
+            .collect();
         let contents = b"console.log('hello, world!');".repeat(50);
         let contents = [header, contents].concat();
         assert!(generated.likely_minified(&contents));
