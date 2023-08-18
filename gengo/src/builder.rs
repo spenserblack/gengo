@@ -1,3 +1,6 @@
+use super::documentation::Documentation;
+use super::generated::Generated;
+use super::vendored::Vendored;
 use super::Analyzers;
 use super::Gengo;
 use git2::Repository;
@@ -48,10 +51,16 @@ impl<P: AsRef<Path>> Builder<P> {
         let repository = Repository::discover(self.repository_path)?;
         let analyzers = self.analyzers.unwrap_or_default();
         let read_limit = self.read_limit.unwrap_or(Self::DEFAULT_READ_LIMIT);
+        let documentation = Documentation::new();
+        let generated = Generated::new();
+        let vendored = Vendored::new();
         Ok(Gengo {
             repository,
             analyzers,
             read_limit,
+            documentation,
+            generated,
+            vendored,
         })
     }
 }
