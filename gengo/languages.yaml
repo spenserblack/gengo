@@ -79,6 +79,17 @@ C:
       - cake
       - cs
       - csx
+"C++":
+  category: programming
+  color: "#88CC88"
+  matchers:
+    extensions:
+      - c++
+      - cpp
+      - h
+      - h++
+      - hh
+      - hpp
 CMake:
   category: programming
   color: "#CCCCCC"
