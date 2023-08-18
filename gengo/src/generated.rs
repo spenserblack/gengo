@@ -1,3 +1,4 @@
+use super::GLOB_MATCH_OPTIONS;
 use glob::Pattern;
 use std::path::Path;
 
@@ -17,7 +18,9 @@ impl Generated {
     }
 
     fn is_generated_no_read<P: AsRef<Path>>(&self, filepath: P) -> bool {
-        self.globs.iter().any(|g| g.matches_path(filepath.as_ref()))
+        self.globs
+            .iter()
+            .any(|g| g.matches_path_with(filepath.as_ref(), GLOB_MATCH_OPTIONS))
     }
 
     fn is_generated_with_read<P: AsRef<Path>>(&self, _filepath: P, contents: &[u8]) -> bool {
@@ -33,7 +36,7 @@ impl Generated {
     }
 
     fn globs() -> Vec<Pattern> {
-        ["dist/**", "*.min.css", "*.min.js"]
+        ["dist/**", "**/*.min.css", "**/*.min.js"]
             .into_iter()
             .map(|s| Pattern::new(s).unwrap())
             .collect()
