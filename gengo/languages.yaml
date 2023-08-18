@@ -151,6 +151,14 @@ JavaScript:
       - js
     interpreters:
       - node
+Lua:
+  category: programming
+  color: "#02027D"
+  matchers:
+    extensions:
+      - lua
+    interpreters:
+      - lua
 Makefile:
   category: programming
   color: "#6B482F" # Arbitrary brown color representing a Gnu
