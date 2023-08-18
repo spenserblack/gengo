@@ -1,10 +1,15 @@
+use glob::Pattern;
 use std::path::Path;
 
-pub struct Generated;
+pub struct Generated {
+    globs: Vec<Pattern>,
+}
 
 impl Generated {
     pub fn new() -> Self {
-        Self
+        let globs = Self::globs();
+
+        Self { globs }
     }
 
     pub fn is_generated<P: AsRef<Path>>(&self, filepath: P, contents: &[u8]) -> bool {
@@ -12,15 +17,18 @@ impl Generated {
     }
 
     fn is_generated_no_read<P: AsRef<Path>>(&self, filepath: P) -> bool {
-        filepath
-            .as_ref()
-            .components()
-            .next()
-            .map_or(false, |c| c.as_os_str() == "dist")
+        self.globs.iter().any(|g| g.matches_path(filepath.as_ref()))
     }
 
     fn is_generated_with_read<P: AsRef<Path>>(&self, _filepath: P, _contents: &[u8]) -> bool {
         false
+    }
+
+    fn globs() -> Vec<Pattern> {
+        ["dist/**", "*.min.css", "*.min.js"]
+            .into_iter()
+            .map(|s| Pattern::new(s).unwrap())
+            .collect()
     }
 }
 
@@ -35,8 +43,10 @@ mod tests {
         case("dist/something.js", true),
         case("src/something.rs", false),
         case("dist/subfolder/something.js", true),
-        case("", false),
-        case("dist", true)
+        case("something.min.js", true),
+        case("something.min.css", true),
+        case("path/to/something.min.js", true),
+        case("path/to/something.min.css", true)
     )]
     fn test_is_generated_no_read(filepath: &str, expected: bool) {
         let generated = Generated::new();
