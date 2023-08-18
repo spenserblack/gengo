@@ -3,6 +3,7 @@ use indexmap::IndexSet;
 use once_cell::sync::Lazy;
 use regex::Regex;
 
+use crate::GLOB_MATCH_OPTIONS;
 use std::ffi::{OsStr, OsString};
 use std::fmt::Display;
 use std::path::Path;
@@ -74,7 +75,7 @@ impl FilepathPattern {
     pub fn matches<P: AsRef<Path>>(&self, filename: P) -> bool {
         self.patterns
             .iter()
-            .any(|p| p.matches_path(filename.as_ref()))
+            .any(|p| p.matches_path_with(filename.as_ref(), GLOB_MATCH_OPTIONS))
     }
 }
 
@@ -151,6 +152,12 @@ mod tests {
     fn test_matches_pattern(pattern: &str, filename: &str) {
         let analyzer = FilepathPattern::new(&[pattern.into()]);
         assert!(analyzer.matches(filename));
+    }
+
+    #[rstest(pattern, filename, case("Makefile.*", "Makefile.in/foo"))]
+    fn test_rejects_pattern(pattern: &str, filename: &str) {
+        let analyzer = FilepathPattern::new(&[pattern.into()]);
+        assert!(!analyzer.matches(filename));
     }
 
     #[test]
