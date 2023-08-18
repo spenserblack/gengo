@@ -47,6 +47,14 @@
 #
 # WARNING: Please alphabetize!
 ---
+Ada:
+  category: programming
+  color: "#005A00"
+  matchers:
+    extensions:
+      - ada
+      - adb
+      - ads
 Assembly:
   category: programming
   color: "#33AA33"
