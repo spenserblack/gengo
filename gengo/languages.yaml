@@ -149,6 +149,7 @@ JavaScript:
   matchers:
     extensions:
       - js
+      - jsx
     interpreters:
       - node
 Makefile:
@@ -264,6 +265,7 @@ TypeScript:
   matchers:
     extensions:
       - ts
+      - tsx
     interpreters:
       - deno
 Vue:
