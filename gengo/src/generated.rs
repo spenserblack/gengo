@@ -1,3 +1,4 @@
+use super::GLOB_MATCH_OPTIONS;
 use glob::Pattern;
 use std::path::Path;
 
@@ -17,15 +18,25 @@ impl Generated {
     }
 
     fn is_generated_no_read<P: AsRef<Path>>(&self, filepath: P) -> bool {
-        self.globs.iter().any(|g| g.matches_path(filepath.as_ref()))
+        self.globs
+            .iter()
+            .any(|g| g.matches_path_with(filepath.as_ref(), GLOB_MATCH_OPTIONS))
     }
 
-    fn is_generated_with_read<P: AsRef<Path>>(&self, _filepath: P, _contents: &[u8]) -> bool {
-        false
+    fn is_generated_with_read<P: AsRef<Path>>(&self, _filepath: P, contents: &[u8]) -> bool {
+        self.likely_minified(contents)
+    }
+
+    fn likely_minified(&self, contents: &[u8]) -> bool {
+        // NOTE If the first 10 lines are really long, it's probably minified.
+        contents
+            .split(|&b| b == b'\n')
+            .take(10)
+            .any(|line| line.len() > 250)
     }
 
     fn globs() -> Vec<Pattern> {
-        ["dist/**", "*.min.css", "*.min.js"]
+        ["dist/**", "**/*.min.css", "**/*.min.js"]
             .into_iter()
             .map(|s| Pattern::new(s).unwrap())
             .collect()
@@ -51,5 +62,14 @@ mod tests {
     fn test_is_generated_no_read(filepath: &str, expected: bool) {
         let generated = Generated::new();
         assert_eq!(generated.is_generated_no_read(filepath), expected);
+    }
+
+    #[test]
+    fn test_likely_minified() {
+        let generated = Generated::new();
+        let header: Vec<u8> = b"/*!\n  * This is my license etc etc\n */".to_vec();
+        let contents = b"console.log('hello, world!');".repeat(50);
+        let contents = [header, contents].concat();
+        assert!(generated.likely_minified(&contents));
     }
 }

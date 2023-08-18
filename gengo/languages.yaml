@@ -62,6 +62,13 @@ Assembly:
     extensions:
       - asm
       - s
+C:
+  category: programming
+  color: "#8888CC"
+  matchers:
+    extensions:
+      - c
+      - h
 "C#":
   category: programming
   color: "#178600"
@@ -83,6 +90,14 @@ Assembly:
       - h++
       - hh
       - hpp
+CMake:
+  category: programming
+  color: "#CCCCCC"
+  matchers:
+    extensions:
+      - cmake
+    filenames:
+      - CMakeLists.txt
 CSS:
   category: markup
   color: "#AA88AA"
@@ -160,6 +175,7 @@ JavaScript:
   matchers:
     extensions:
       - js
+      - jsx
     interpreters:
       - node
 Makefile:
@@ -184,6 +200,12 @@ Mermaid:
     extensions:
       - mermaid
       - mmd
+PHP:
+  category: programming
+  color: "#7A86B8"
+  matchers:
+    extensions:
+      - php
 Plain Text:
   category: prose
   color: "#000000"
@@ -275,6 +297,7 @@ TypeScript:
   matchers:
     extensions:
       - ts
+      - tsx
     interpreters:
       - deno
 Vue:
