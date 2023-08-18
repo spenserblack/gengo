@@ -2,6 +2,7 @@ pub use builder::Builder;
 use documentation::Documentation;
 use generated::Generated;
 use git2::{AttrCheckFlags, AttrValue, Blob, Commit, ObjectType, Repository, Tree};
+use glob::MatchOptions;
 use indexmap::IndexMap;
 pub use languages::analyzer::Analyzers;
 use languages::Category;
@@ -15,6 +16,13 @@ mod documentation;
 mod generated;
 pub mod languages;
 mod vendored;
+
+/// Shared match options for consistent behavior.
+const GLOB_MATCH_OPTIONS: MatchOptions = MatchOptions {
+    case_sensitive: true,
+    require_literal_separator: true,
+    require_literal_leading_dot: false,
+};
 
 /// The main entry point for Gengo.
 pub struct Gengo {
