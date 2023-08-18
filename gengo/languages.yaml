@@ -120,6 +120,13 @@ Docker:
       - "Dockerfile"
     patterns:
       - "Dockerfile.*" # Dockerfile.<extension>
+Emojicode:
+  category: programming
+  color: "#FCEA2B"
+  matchers:
+    extensions:
+      - emojic
+      - "🍇"
 Go:
   category: programming
   color: "#00ADD8"
