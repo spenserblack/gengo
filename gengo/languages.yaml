@@ -62,6 +62,16 @@ Assembly:
     extensions:
       - asm
       - s
+"C#":
+  category: programming
+  color: "#178600"
+  heuristics:
+    - "^\\s*(using\\s+[A-Z][\\s\\w.]+;|namespace\\s*[\\w\\.]+\\s*(\\{|;)|\\/\\/)"
+  matchers:
+    extensions:
+      - cake
+      - cs
+      - csx
 "C++":
   category: programming
   color: "#88CC88"
@@ -73,16 +83,6 @@ Assembly:
       - h++
       - hh
       - hpp
-"C#":
-  category: programming
-  color: "#178600"
-  heuristics:
-    - "^\\s*(using\\s+[A-Z][\\s\\w.]+;|namespace\\s*[\\w\\.]+\\s*(\\{|;)|\\/\\/)"
-  matchers:
-    extensions:
-      - cake
-      - cs
-      - csx
 CSS:
   category: markup
   color: "#AA88AA"
