@@ -72,6 +72,14 @@ Assembly:
       - cake
       - cs
       - csx
+CMake:
+  category: programming
+  color: "#CCCCCC"
+  matchers:
+    extensions:
+      - cmake
+    filenames:
+      - CMakeLists.txt
 CSS:
   category: markup
   color: "#AA88AA"
@@ -149,6 +157,7 @@ JavaScript:
   matchers:
     extensions:
       - js
+      - jsx
     interpreters:
       - node
 Lua:
@@ -272,6 +281,7 @@ TypeScript:
   matchers:
     extensions:
       - ts
+      - tsx
     interpreters:
       - deno
 Vue:
