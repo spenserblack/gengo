@@ -112,6 +112,12 @@ CoffeeScript:
       - coffee
     interpreters:
       - coffee
+ColdFusion:
+  category: programming
+  color: "##001C57"
+  matchers:
+    extensions:
+      - cfm
 Docker:
   category: programming
   color: "#2496ED"
