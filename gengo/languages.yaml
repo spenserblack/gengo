@@ -62,6 +62,13 @@ Assembly:
     extensions:
       - asm
       - s
+C:
+  category: programming
+  color: "#8888CC"
+  matchers:
+    extensions:
+      - c
+      - h
 "C#":
   category: programming
   color: "#178600"
