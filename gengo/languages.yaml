@@ -47,6 +47,12 @@
 #
 # WARNING: Please alphabetize!
 ---
+ABAP:
+  category: programming
+  color: "#3C3C3C"
+  matchers:
+    extensions:
+      - abap
 Ada:
   category: programming
   color: "#005A00"
