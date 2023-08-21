@@ -146,7 +146,7 @@ CoffeeScript:
       - coffee
 ColdFusion:
   category: programming
-  color: "##001C57"
+  color: "#001C57"
   matchers:
     extensions:
       - cfm
@@ -335,7 +335,7 @@ Rust:
       - rs
 SQL:
   category: query
-  color: "##FFBF1E"
+  color: "#FFBF1E"
   matchers:
     extensions:
       - sql
