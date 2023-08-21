@@ -126,7 +126,7 @@ Clojure:
       - cljs
 CoffeeScript:
   category: programming
-  color: "#3E2723"
+  color: "#C0FFEE"
   matchers:
     extensions:
       - coffee
