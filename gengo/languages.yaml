@@ -144,6 +144,14 @@ ColdFusion:
   matchers:
     extensions:
       - cfm
+Crystal:
+  category: programming
+  color: "#000000"
+  matchers:
+    extensions:
+      - cr
+    interpreters:
+      - crystal
 Docker:
   category: programming
   color: "#2496ED"
