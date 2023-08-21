@@ -116,6 +116,14 @@ Ceylon:
   matchers:
     extensions:
       - ceylon
+Clojure:
+  category: programming
+  color: "#77F212"
+  matchers:
+    extensions:
+      - clj
+      - cljc
+      - cljs
 CoffeeScript:
   category: programming
   color: "#3E2723"
