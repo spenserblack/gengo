@@ -68,6 +68,12 @@ Assembly:
     extensions:
       - asm
       - s
+AutoHotkey:
+  category: programming
+  color: "#334455"
+  matchers:
+    extensions:
+      - ahk
 C:
   category: programming
   color: "#8888CC"
