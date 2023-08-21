@@ -309,6 +309,12 @@ Python:
       - python
       - python2
       - python3
+Regex:
+  category: data
+  color: "#44E03F"
+  matchers:
+    extensions:
+      - regex
 Ruby:
   category: programming
   color: "#D21304"
