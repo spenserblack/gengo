@@ -2,6 +2,12 @@ version: 2
 updates:
   - package-ecosystem: cargo
     directory: "/"
+    groups:
+      serde:
+        patterns:
+          - serde
+          - "serde_*"
+          - "serde-*"
     schedule:
       interval: "weekly"
   - package-ecosystem: "github-actions"
