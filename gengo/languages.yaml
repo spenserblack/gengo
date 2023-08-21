@@ -150,6 +150,12 @@ ColdFusion:
   matchers:
     extensions:
       - cfm
+Coq:
+  category: programming
+  color: "#D0B68C"
+  matchers:
+    extensions:
+      - v
 Crystal:
   category: programming
   color: "#000000"
