@@ -53,6 +53,12 @@ ABAP:
   matchers:
     extensions:
       - abap
+ABNF:
+  category: data
+  color: "#ABFABF"
+  matchers:
+    extensions:
+      - abnf
 Ada:
   category: programming
   color: "#005A00"
