@@ -61,8 +61,15 @@ impl Gengo {
         results: &mut IndexMap<PathBuf, Entry>,
     ) -> Result<(), Box<dyn Error>> {
         for entry in tree.iter() {
-            let object = entry.to_object(&self.repository)?;
-            match entry.kind() {
+            let kind = entry.kind();
+            // HACK Skip submodules. Might want to refactor this later.
+            let object = if let Some(ObjectType::Commit) = kind {
+                // NOTE This is a submodule.
+                continue;
+            } else {
+                entry.to_object(&self.repository)?
+            };
+            match kind {
                 Some(ObjectType::Tree) => {
                     let path = entry.name().ok_or("invalid path")?;
                     let tree = object.as_tree().expect("object to be a tree");
