@@ -159,6 +159,14 @@ Emojicode:
     extensions:
       - emojic
       - "🍇"
+GitHub Workflow:
+  category: programming
+  color: "#2088FF"
+  matchers:
+    patterns:
+      - ".github/workflows/*.yaml"
+      - ".github/workflows/*.yml"
+  priority: 75
 Go:
   category: programming
   color: "#00ADD8"
