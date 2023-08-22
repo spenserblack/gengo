@@ -1,6 +1,6 @@
-use serde::Deserialize;
 #[cfg(feature = "owo-colors")]
 use owo_colors::Rgb;
+use serde::Deserialize;
 #[cfg(feature = "owo-colors")]
 use std::error::Error;
 pub mod analyzer;
