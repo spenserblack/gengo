@@ -164,6 +164,12 @@ Crystal:
       - cr
     interpreters:
       - crystal
+Dart:
+  category: programming
+  color: "#238BDA"
+  matchers:
+    extensions:
+      - dart
 Docker:
   category: programming
   color: "#2496ED"
