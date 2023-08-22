@@ -269,6 +269,12 @@ JavaScript:
       - jsx
     interpreters:
       - node
+Julia:
+  category: programming
+  color: "#9558B2"
+  matchers:
+    extensions:
+      - jl
 Lua:
   category: programming
   color: "#02027D"
