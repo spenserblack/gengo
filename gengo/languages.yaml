@@ -190,6 +190,12 @@ Elm:
   matchers:
     extensions:
       - elm
+Emacs Lisp:
+  category: programming
+  color: "#7F5AB6"
+  matchers:
+    extensions:
+      - el
 Emojicode:
   category: programming
   color: "#FCEA2B"
