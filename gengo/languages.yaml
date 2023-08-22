@@ -333,6 +333,14 @@ Python:
       - python
       - python2
       - python3
+Python Requirements File:
+  category: data
+  color: "#FFD342"
+  matchers:
+    filenames:
+      - "requirements.txt"
+    patterns:
+      - "requirements-*.txt"
 Regex:
   category: data
   color: "#44E03F"
