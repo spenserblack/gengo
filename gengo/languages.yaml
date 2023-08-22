@@ -184,6 +184,12 @@ Docker:
       - "Dockerfile"
     patterns:
       - "Dockerfile.*" # Dockerfile.<extension>
+Elm:
+  category: programming
+  color: "#1293D8"
+  matchers:
+    extensions:
+      - elm
 Emacs Lisp:
   category: programming
   color: "#7F5AB6"
@@ -378,6 +384,14 @@ SQL:
   matchers:
     extensions:
       - sql
+Sass:
+  category: markup
+  color: "#CF649A"
+  # NOTE: Sass has two syntaxes. See https://sass-lang.com/guide/
+  matchers:
+    extensions:
+      - sass
+      - scss
 Shell:
   category: programming
   color: "#262E28"
