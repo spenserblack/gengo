@@ -184,6 +184,12 @@ Docker:
       - "Dockerfile"
     patterns:
       - "Dockerfile.*" # Dockerfile.<extension>
+Elm:
+  category: programming
+  color: "#1293D8"
+  matchers:
+    extensions:
+      - elm
 Emacs Lisp:
   category: programming
   color: "#7F5AB6"
