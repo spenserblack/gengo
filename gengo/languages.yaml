@@ -164,6 +164,12 @@ Crystal:
       - cr
     interpreters:
       - crystal
+D:
+  category: programming
+  color: "#B03931"
+  matchers:
+    extensions:
+      - d
 Docker:
   category: programming
   color: "#2496ED"
