@@ -1,0 +1,6 @@
+docs/
+scripts/
+target/
+
+*.md
+CODEOWNERS
