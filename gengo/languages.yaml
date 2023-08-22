@@ -347,6 +347,7 @@ Python Requirements File:
       - "requirements.txt"
     patterns:
       - "requirements-*.txt"
+    priority: 75
 Regex:
   category: data
   color: "#44E03F"
