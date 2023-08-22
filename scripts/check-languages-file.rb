@@ -40,6 +40,8 @@ LANGUAGES.each do |langname, langdef|
   end
   next if missing_required
 
+  warn "#{langname}: color should be in format #RRGGBB" unless langdef['color'] =~ /^#[0-9a-f]{6}$/i
+
   if langdef.key?('heuristics') && !langdef['heuristics'].is_a?(Array)
     STDERR.puts "#{langname}: 'heuristics' must be an array"
     exit_code = 1
