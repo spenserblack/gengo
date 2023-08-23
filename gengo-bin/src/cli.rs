@@ -36,6 +36,10 @@ pub struct CLI {
     /// Include detailed statistics for each language.
     #[arg(short = 'b', long)]
     breakdown: bool,
+    /// Force the output to not have colors.
+    #[cfg(feature = "color")]
+    #[arg(long)]
+    no_color: bool,
 }
 
 impl CLI {
@@ -88,7 +92,7 @@ impl CLI {
             let percentage = (size * 100) as f64 / total;
             let stats = format!("{:>6.2}% {}", percentage, size);
             let line = format!("{:<15} {}", stats, language);
-            let line = Self::colorize(&line, color);
+            let line = self.colorize(&line, color);
             writeln!(out, "{}", line)?;
         }
 
@@ -122,13 +126,13 @@ impl CLI {
 
                 let language = language.name();
 
-                let language = Self::colorize(language, color);
+                let language = self.colorize(language, color);
 
                 let language_files = files_per_language.entry(language).or_insert_with(Vec::new);
                 let path_str = path.display().to_string();
 
                 #[cfg(feature = "color")]
-                let path_str = Self::colorize(&path_str, color);
+                let path_str = self.colorize(&path_str, color);
 
                 language_files.push(path_str);
             }
@@ -146,8 +150,13 @@ impl CLI {
     }
 
     #[cfg(feature = "color")]
-    fn colorize(s: &str, color: owo_colors::Rgb) -> String {
+    fn colorize(&self, s: &str, color: owo_colors::Rgb) -> String {
         use owo_colors::OwoColorize;
+
+        if self.no_color {
+            return String::from(s);
+        }
+
         let r = color.0;
         let g = color.1;
         let b = color.2;
@@ -162,7 +171,7 @@ impl CLI {
     }
 
     #[cfg(not(feature = "color"))]
-    fn colorize<Anything>(s: &str, _: Anything) -> String {
+    fn colorize<Anything>(&self, s: &str, _: Anything) -> String {
         String::from(s)
     }
 }
