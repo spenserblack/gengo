@@ -128,7 +128,7 @@ impl CLI {
                 let path_str = path.display().to_string();
 
                 #[cfg(feature = "color")]
-                let path_str = Self::colorize(&path_str, entry.language().owo_color().unwrap());
+                let path_str = Self::colorize(&path_str, color);
 
                 language_files.push(path_str);
             }
