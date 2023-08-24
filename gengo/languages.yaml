@@ -500,6 +500,7 @@ XML:
     extensions:
       - ts
       - xml
+  priority: 25
 YAML:
   category: data
   color: "#CC1018"
