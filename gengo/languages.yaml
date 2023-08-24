@@ -440,6 +440,12 @@ Shell:
       - bash
       - fish
       - sh
+Solidity:
+  category: programming
+  color: "#2B247C"
+  matchers:
+    extensions:
+      - sol
 Svelte:
   category: programming
   color: "#FF3E00"
