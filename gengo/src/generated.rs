@@ -40,6 +40,7 @@ impl Generated {
             "dist/**",
             "**/*.min.css",
             "**/*.min.js",
+            ".yarn/**",
             "**/migrations/*.py",
         ]
         .into_iter()
@@ -63,6 +64,7 @@ mod tests {
         case("something.min.css", true),
         case("path/to/something.min.js", true),
         case("path/to/something.min.css", true),
+        case(".yarn/releases/yarn-1.2.3.cjs", true),
         case("migrations/0001_initial.py", true),
         case("myapp/migrations/0001_initial.py", true)
     )]
