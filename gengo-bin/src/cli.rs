@@ -157,11 +157,15 @@ impl CLI {
             return String::from(s);
         }
 
+        // NOTE Adapted from https://css-tricks.com/converting-color-spaces-in-javascript/#aa-rgb-to-hsl
         let r = color.0;
         let g = color.1;
         let b = color.2;
-        let avg: u16 = [r, g, b].into_iter().map(u16::from).sum::<u16>() / 3u16;
-        let bright = avg > 127;
+        let min: u16 = [r, g, b].into_iter().min().unwrap().into();
+        let max: u16 = [r, g, b].into_iter().max().unwrap().into();
+        let lightness = (max + min) / 2;
+        let bright = lightness > 0x7F;
+
         let line = s.on_color(color);
         if bright {
             line.black().to_string()
