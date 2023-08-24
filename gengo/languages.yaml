@@ -452,6 +452,14 @@ TypeScript:
       - tsx
     interpreters:
       - deno
+Vim Script:
+  category: programming
+  color: "#019833"
+  matchers:
+    extensions:
+      - vim
+    filenames:
+      - ".vimrc"
 Vue:
   category: programming
   color: "#3FB27F"
