@@ -1,5 +1,6 @@
 [workspace]
 members = ["gengo", "gengo-bin"]
+resolver = "2"
 
 [workspace.package]
 description = "Get the language distribution stats of your repository"
