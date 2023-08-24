@@ -469,6 +469,7 @@ TypeScript:
   category: programming
   color: "#2F74C0"
   heuristics:
+    - "(?m)^/// <reference "
     - "(?m)^export\\s+\\w[\\w\\d_]*?"
     - "(?m)^import\\s+"
   matchers:
