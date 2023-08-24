@@ -36,7 +36,7 @@ impl Generated {
     }
 
     fn globs() -> Vec<Pattern> {
-        ["dist/**", "**/*.min.css", "**/*.min.js"]
+        ["dist/**", "**/*.min.css", "**/*.min.js", ".yarn/**"]
             .into_iter()
             .map(|s| Pattern::new(s).unwrap())
             .collect()
@@ -57,7 +57,8 @@ mod tests {
         case("something.min.js", true),
         case("something.min.css", true),
         case("path/to/something.min.js", true),
-        case("path/to/something.min.css", true)
+        case("path/to/something.min.css", true),
+        case(".yarn/releases/yarn-1.2.3.cjs", true)
     )]
     fn test_is_generated_no_read(filepath: &str, expected: bool) {
         let generated = Generated::new();
