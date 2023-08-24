@@ -293,6 +293,12 @@ Julia:
   matchers:
     extensions:
       - jl
+Jupyter Notebook:
+  category: markup
+  color: "#F37726"
+  matchers:
+    extensions:
+      - ipynb
 Lua:
   category: programming
   color: "#02027D"
