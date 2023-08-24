@@ -335,6 +335,12 @@ Mermaid:
     extensions:
       - mermaid
       - mmd
+Nim:
+  category: programming
+  color: "#ffe953"
+  matchers:
+    extensions:
+      - nim
 PHP:
   category: programming
   color: "#7A86B8"
