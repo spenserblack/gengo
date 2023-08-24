@@ -299,6 +299,13 @@ Jupyter Notebook:
   matchers:
     extensions:
       - ipynb
+Kotlin:
+  category: programming
+  color: "#7F52FF"
+  matchers:
+    extensions:
+      - kt
+      - kts
 Lua:
   category: programming
   color: "#02027D"
