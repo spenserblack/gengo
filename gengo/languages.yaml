@@ -238,6 +238,12 @@ HTML:
   matchers:
     extensions:
       - html
+Haskell:
+  category: programming
+  color: "#5E5086"
+  matchers:
+    extensions:
+      - hs
 Ignore List:
   category: data
   color: "#330000"
