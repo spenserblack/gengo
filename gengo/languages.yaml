@@ -507,3 +507,9 @@ YAML:
     extensions:
       - yaml
       - yml
+Zig:
+  category: programming
+  color: "#F7A41D"
+  matchers:
+    extensions:
+      - zig
