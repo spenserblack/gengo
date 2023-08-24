@@ -36,6 +36,10 @@ pub struct CLI {
     /// Include detailed statistics for each language.
     #[arg(short = 'b', long)]
     breakdown: bool,
+    /// Force the output to not have colors.
+    #[cfg(feature = "color")]
+    #[arg(long)]
+    no_color: bool,
 }
 
 impl CLI {
@@ -68,20 +72,28 @@ impl CLI {
 
             let language = entry.language();
 
-            let language = language.name();
-            let language = String::from(language);
+            let language_str = language.name();
+            let language_str = String::from(language_str);
             let size = entry.size();
 
-            let entry = compiled.entry(language).or_insert(0);
-            *entry += size;
+            #[cfg(feature = "color")]
+            let color = language.owo_color().unwrap();
+
+            #[cfg(not(feature = "color"))]
+            let color = ();
+
+            let entry = compiled.entry(language_str).or_insert((0, color));
+            entry.0 += size;
             total += size;
         }
 
         let total = total as f64;
-        for (language, size) in compiled.into_iter() {
+        for (language, (size, color)) in compiled.into_iter() {
             let percentage = (size * 100) as f64 / total;
             let stats = format!("{:>6.2}% {}", percentage, size);
-            writeln!(out, "{:<15} {}", stats, language)?;
+            let line = format!("{:<15} {}", stats, language);
+            let line = self.colorize(&line, color);
+            writeln!(out, "{}", line)?;
         }
 
         if self.breakdown {
@@ -105,11 +117,24 @@ impl CLI {
                     continue;
                 }
                 let language = entry.language();
+
+                #[cfg(feature = "color")]
+                let color = language.owo_color().unwrap();
+
+                #[cfg(not(feature = "color"))]
+                let color = ();
+
                 let language = language.name();
-                let language = String::from(language);
+
+                let language = self.colorize(language, color);
 
                 let language_files = files_per_language.entry(language).or_insert_with(Vec::new);
-                language_files.push(path);
+                let path_str = path.display().to_string();
+
+                #[cfg(feature = "color")]
+                let path_str = self.colorize(&path_str, color);
+
+                language_files.push(path_str);
             }
             files_per_language
         };
@@ -117,10 +142,36 @@ impl CLI {
         for (language, files) in files_per_language.into_iter() {
             writeln!(out, "{}", language)?;
             for file in files {
-                writeln!(out, "  {}", file.display())?;
+                writeln!(out, "  {}", file)?;
             }
             writeln!(out)?;
         }
         Ok(())
+    }
+
+    #[cfg(feature = "color")]
+    fn colorize(&self, s: &str, color: owo_colors::Rgb) -> String {
+        use owo_colors::OwoColorize;
+
+        if self.no_color {
+            return String::from(s);
+        }
+
+        let r = color.0;
+        let g = color.1;
+        let b = color.2;
+        let avg: u16 = [r, g, b].into_iter().map(u16::from).sum::<u16>() / 3u16;
+        let bright = avg > 127;
+        let line = s.on_color(color);
+        if bright {
+            line.black().to_string()
+        } else {
+            line.white().to_string()
+        }
+    }
+
+    #[cfg(not(feature = "color"))]
+    fn colorize<Anything>(&self, s: &str, _: Anything) -> String {
+        String::from(s)
     }
 }

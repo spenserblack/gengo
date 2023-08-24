@@ -1,0 +1,18 @@
+---
+source: gengo-bin/tests/test_cli.rs
+expression: stdout
+---
+[30m[48;2;240;220;78m 18.42% 28      JavaScript[49m[39m
+[37m[48;2;0;0;0m 40.79% 62      Plain Text[49m[39m
+[37m[48;2;47;116;192m 40.79% 62      TypeScript[49m[39m
+
+[30m[48;2;240;220;78mJavaScript[49m[39m
+  [30m[48;2;240;220;78mbin.js[49m[39m
+
+[37m[48;2;0;0;0mPlain Text[49m[39m
+  [37m[48;2;0;0;0mdist/bin.js[49m[39m
+
+[37m[48;2;47;116;192mTypeScript[49m[39m
+  [37m[48;2;47;116;192msrc/bin.ts[49m[39m
+
+
