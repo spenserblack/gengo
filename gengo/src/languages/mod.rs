@@ -1,4 +1,8 @@
+#[cfg(feature = "owo-colors")]
+use owo_colors::Rgb;
 use serde::Deserialize;
+#[cfg(feature = "owo-colors")]
+use std::error::Error;
 pub mod analyzer;
 mod matcher;
 
@@ -26,6 +30,20 @@ impl Language {
     /// Returns the color of the language.
     pub fn color(&self) -> &str {
         &self.color
+    }
+
+    /// Tries to convert the color to RGB.
+    #[cfg(feature = "owo-colors")]
+    pub fn owo_color(&self) -> Result<Rgb, Box<dyn Error>> {
+        let hex_string = self.color.strip_prefix('#').ok_or("Expected '#' prefix")?;
+        if hex_string.len() != 6 {
+            return Err("Expected 6 characters".into());
+        }
+        let bytes = u32::from_str_radix(hex_string, 16)?;
+        let r = ((bytes >> 16) & 0xFF) as u8;
+        let g = ((bytes >> 8) & 0xFF) as u8;
+        let b = (bytes & 0xFF) as u8;
+        Ok(Rgb(r, g, b))
     }
 }
 

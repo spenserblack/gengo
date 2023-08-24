@@ -229,6 +229,15 @@ HTML:
   matchers:
     extensions:
       - html
+Ignore List:
+  category: data
+  color: "#330000"
+  matchers:
+    filenames:
+      - ".dockerignore"
+      - ".gitignore"
+      - ".npmignore"
+      - ".vercelignore"
 JSON:
   category: data
   color: "#AAAAAA"
