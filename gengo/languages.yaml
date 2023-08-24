@@ -184,6 +184,15 @@ Docker:
       - "Dockerfile"
     patterns:
       - "Dockerfile.*" # Dockerfile.<extension>
+Elixir:
+  category: programming
+  color: "#6B5674"
+  matchers:
+    extensions:
+      - ex
+      - exs
+    interpreters:
+      - elixir
 Elm:
   category: programming
   color: "#1293D8"
