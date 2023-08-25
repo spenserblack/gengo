@@ -350,7 +350,7 @@ Nim:
       - nim
 Nix:
   category: programming
-  color: "#6898D3"
+  color: "#6898D3" # Average of the two colors in the logo
   matchers:
     extensions:
       - nix
