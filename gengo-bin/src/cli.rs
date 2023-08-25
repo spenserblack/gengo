@@ -151,7 +151,7 @@ impl CLI {
 
     #[cfg(feature = "color")]
     fn colorize(&self, s: &str, color: owo_colors::Rgb) -> String {
-        use owo_colors::OwoColorize;
+        use owo_colors::{OwoColorize, Rgb};
 
         if self.no_color {
             return String::from(s);
@@ -167,11 +167,12 @@ impl CLI {
         let bright = lightness > 0x7F;
 
         let line = s.on_color(color);
-        if bright {
-            line.black().to_string()
+        let fg = if bright {
+            Rgb(0, 0, 0)
         } else {
-            line.white().to_string()
-        }
+            Rgb(0xFF, 0xFF, 0xFF)
+        };
+        line.color(fg).to_string()
     }
 
     #[cfg(not(feature = "color"))]
