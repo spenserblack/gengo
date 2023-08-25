@@ -348,6 +348,12 @@ Nim:
   matchers:
     extensions:
       - nim
+Nix:
+  category: programming
+  color: "#6898D3"
+  matchers:
+    extensions:
+      - nix
 PHP:
   category: programming
   color: "#7A86B8"
