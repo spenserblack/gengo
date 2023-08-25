@@ -403,6 +403,12 @@ Regex:
   matchers:
     extensions:
       - regex
+R:
+  category: programming
+  color: "#1F66B7" # Average of the two colors used in the logo gradient: https://www.r-project.org/logo/Rlogo.svg
+  matchers:
+    extensions:
+      - R
 Ruby:
   category: programming
   color: "#D21304"
