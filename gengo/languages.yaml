@@ -391,6 +391,12 @@ Pug:
   matchers:
     extensions:
       - pug
+PureScript:
+  category: programming
+  color: "#1D222D"
+  matchers:
+    extensions:
+      - purs
 Python:
   category: programming
   color: "#3472A6"
