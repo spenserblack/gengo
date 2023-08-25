@@ -239,6 +239,14 @@ GraphQL:
   matchers:
     extensions:
       - graphql
+Groovy:
+  category: programming
+  color: "#4298B8"
+  matchers:
+    extensions:
+      - groovy
+    interpreters:
+      - groovy
 HTML:
   category: markup
   color: "#E96228"
