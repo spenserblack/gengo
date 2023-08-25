@@ -212,6 +212,13 @@ Emojicode:
     extensions:
       - emojic
       - "🍇"
+"F#":
+  category: programming
+  color: "#F8008F"
+  matchers:
+    extensions:
+      - fs
+      - fsx
 GitHub Workflow:
   category: programming
   color: "#2088FF"
