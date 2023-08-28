@@ -485,10 +485,12 @@ Shell:
       - bash
       - fish
       - sh
+      - zsh
     interpreters:
       - bash
       - fish
       - sh
+      - zsh
 Solidity:
   category: programming
   color: "#2B247C"
