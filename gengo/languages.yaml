@@ -369,6 +369,15 @@ Nix:
   matchers:
     extensions:
       - nix
+Perl:
+  category: programming
+  color: "#51547F"
+  matchers:
+    extensions:
+      - cow # cowsay files are Perl
+      - pl
+    interpreters:
+      - perl
 PHP:
   category: programming
   color: "#7A86B8"
