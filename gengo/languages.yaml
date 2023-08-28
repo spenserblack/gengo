@@ -212,6 +212,13 @@ Emojicode:
     extensions:
       - emojic
       - "🍇"
+Erlang:
+  category: programming
+  color: "#A90433"
+  matchers:
+    extensions:
+      - erl
+      - hrl
 "F#":
   category: programming
   color: "#F8008F"
