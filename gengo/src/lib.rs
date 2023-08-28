@@ -1,3 +1,4 @@
+pub use analysis::Analysis;
 pub use builder::Builder;
 use documentation::Documentation;
 use generated::Generated;
@@ -11,6 +12,7 @@ use std::error::Error;
 use std::path::{Path, PathBuf};
 use vendored::Vendored;
 
+mod analysis;
 mod builder;
 mod documentation;
 mod generated;
@@ -46,12 +48,12 @@ impl Gengo {
     }
 
     /// Analyzes each file in the repository at the given revision.
-    pub fn analyze(&self, rev: &str) -> Result<IndexMap<PathBuf, Entry>, Box<dyn Error>> {
+    pub fn analyze(&self, rev: &str) -> Result<Analysis, Box<dyn Error>> {
         let mut results = IndexMap::new();
         let commit = self.rev(rev)?;
         let tree = commit.tree()?;
         self.analyze_tree("", &tree, &mut results)?;
-        Ok(results)
+        Ok(Analysis(results))
     }
 
     fn analyze_tree(
