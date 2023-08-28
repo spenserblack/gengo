@@ -375,6 +375,15 @@ PHP:
   matchers:
     extensions:
       - php
+Perl:
+  category: programming
+  color: "#51547F"
+  matchers:
+    extensions:
+      - cow # cowsay files are Perl
+      - pl
+    interpreters:
+      - perl
 Plain Text:
   category: prose
   color: "#000000"
