@@ -1,9 +1,8 @@
 use clap::Error as ClapError;
 use clap::Parser;
-use gengo::{Builder, Entry};
+use gengo::{Analysis, Builder};
 use indexmap::IndexMap;
 use std::io::{self, Write};
-use std::path::PathBuf;
 
 pub fn new() -> CLI {
     CLI::parse()
@@ -108,7 +107,7 @@ impl CLI {
         &self,
         mut out: Out,
         mut _err: Err,
-        results: IndexMap<PathBuf, Entry>,
+        results: Analysis,
     ) -> Result<(), io::Error> {
         let files_per_language = {
             let mut files_per_language = IndexMap::new();
