@@ -219,6 +219,25 @@ Erlang:
     extensions:
       - erl
       - hrl
+"FORTRAN Legacy":
+  category: programming
+  color: "#716152"
+  matchers:
+    extensions:
+      - f
+      - for
+      - ftn
+      - f77
+      - pfo
+"Fortran Modern":
+  category: programming
+  color: "#725196"
+  matchers:
+    extensions:
+      - f90
+      - f95
+      - f03
+      - f08
 "F#":
   category: programming
   color: "#F8008F"
