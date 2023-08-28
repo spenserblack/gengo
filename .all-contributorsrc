@@ -17,6 +17,15 @@
         "maintenance",
         "data"
       ]
+    },
+    {
+      "login": "jake-87",
+      "name": "j",
+      "avatar_url": "https://avatars.githubusercontent.com/u/68929154?v=4",
+      "profile": "https://github.com/jake-87",
+      "contributions": [
+        "data"
+      ]
     }
   ],
   "contributorsPerLine": 7,
