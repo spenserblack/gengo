@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Fetch Test Branches
         run: git fetch origin test/javascript:test/javascript
-      - name: Install tarpaulin
+      - name: Install insta
         uses: actions-rs/install@v0.1
         continue-on-error: true
         with:
