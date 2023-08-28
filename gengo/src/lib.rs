@@ -1,4 +1,5 @@
 pub use analysis::Analysis;
+pub use analysis::Iter as AnalysisIter;
 pub use builder::Builder;
 use documentation::Documentation;
 use generated::Generated;
