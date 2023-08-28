@@ -507,6 +507,8 @@ TOML:
   matchers:
     extensions:
       - toml
+    filenames:
+      - Cargo.lock
 TypeScript:
   category: programming
   color: "#2F74C0"
