@@ -369,6 +369,12 @@ Nix:
   matchers:
     extensions:
       - nix
+PHP:
+  category: programming
+  color: "#7A86B8"
+  matchers:
+    extensions:
+      - php
 Perl:
   category: programming
   color: "#51547F"
@@ -378,12 +384,6 @@ Perl:
       - pl
     interpreters:
       - perl
-PHP:
-  category: programming
-  color: "#7A86B8"
-  matchers:
-    extensions:
-      - php
 Plain Text:
   category: prose
   color: "#000000"
