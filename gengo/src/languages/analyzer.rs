@@ -6,7 +6,7 @@ use super::{
 
 use indexmap::IndexMap;
 
-use regex::Regex;
+use regex::RegexSet;
 use serde::Deserialize;
 use std::error::Error;
 
@@ -180,7 +180,7 @@ impl Analyzers {
                 let a = self.0.get(key).unwrap();
                 (key, a)
             })
-            .filter(|(_, a)| a.heuristics.iter().any(|h| h.is_match(contents)))
+            .filter(|(_, a)| a.heuristics.is_match(contents))
             .map(|(key, _)| key)
             .collect();
         if heuristic_matches.is_empty() {
@@ -279,11 +279,7 @@ impl Analyzers {
                 };
                 let matchers = &args.matchers;
                 let matchers = matchers.into();
-                let heuristics = args
-                    .heuristics
-                    .into_iter()
-                    .map(|s| Ok(Regex::new(&s)?))
-                    .collect::<Result<_, Box<dyn Error>>>()?;
+                let heuristics = RegexSet::new(args.heuristics)?;
                 let analyzer = Analyzer {
                     language,
                     matchers,
@@ -309,7 +305,7 @@ impl Default for Analyzers {
 pub struct Analyzer {
     language: Language,
     matchers: Vec<Matcher>,
-    heuristics: Vec<Regex>,
+    heuristics: RegexSet,
     /// A value between `0` and `100` that determines the priority of a match.
     priority: u8,
 }
