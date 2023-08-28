@@ -2,65 +2,67 @@
 source: gengo/tests/gengo_test.rs
 expression: results
 ---
-{
-    "bin.js": Entry {
-        language: Language {
-            name: "JavaScript",
-            category: Programming,
-            color: "#FFFF00",
+Analysis(
+    {
+        "bin.js": Entry {
+            language: Language {
+                name: "JavaScript",
+                category: Programming,
+                color: "#FFFF00",
+            },
+            size: 28,
+            detectable: true,
+            generated: false,
+            documentation: false,
+            vendored: false,
         },
-        size: 28,
-        detectable: true,
-        generated: false,
-        documentation: false,
-        vendored: false,
-    },
-    "dist\\bin.js": Entry {
-        language: Language {
-            name: "Plain Text",
-            category: Prose,
-            color: "#000000",
+        "dist\\bin.js": Entry {
+            language: Language {
+                name: "Plain Text",
+                category: Prose,
+                color: "#000000",
+            },
+            size: 62,
+            detectable: true,
+            generated: true,
+            documentation: false,
+            vendored: false,
         },
-        size: 62,
-        detectable: true,
-        generated: true,
-        documentation: false,
-        vendored: false,
-    },
-    "docs\\index.html": Entry {
-        language: Language {
-            name: "HTML",
-            category: Markup,
-            color: "#FF4400",
+        "docs\\index.html": Entry {
+            language: Language {
+                name: "HTML",
+                category: Markup,
+                color: "#FF4400",
+            },
+            size: 26,
+            detectable: false,
+            generated: false,
+            documentation: true,
+            vendored: false,
         },
-        size: 26,
-        detectable: false,
-        generated: false,
-        documentation: true,
-        vendored: false,
-    },
-    "node_modules\\my-dependency\\index.js": Entry {
-        language: Language {
-            name: "JavaScript",
-            category: Programming,
-            color: "#FFFF00",
+        "node_modules\\my-dependency\\index.js": Entry {
+            language: Language {
+                name: "JavaScript",
+                category: Programming,
+                color: "#FFFF00",
+            },
+            size: 29,
+            detectable: false,
+            generated: false,
+            documentation: false,
+            vendored: true,
         },
-        size: 29,
-        detectable: false,
-        generated: false,
-        documentation: false,
-        vendored: true,
-    },
-    "src\\bin.ts": Entry {
-        language: Language {
-            name: "TypeScript",
-            category: Programming,
-            color: "#0000FF",
+        "src\\bin.ts": Entry {
+            language: Language {
+                name: "TypeScript",
+                category: Programming,
+                color: "#0000FF",
+            },
+            size: 62,
+            detectable: true,
+            generated: false,
+            documentation: false,
+            vendored: false,
         },
-        size: 62,
-        detectable: true,
-        generated: false,
-        documentation: false,
-        vendored: false,
     },
-}
+)

@@ -395,6 +395,13 @@ Nix:
   matchers:
     extensions:
       - nix
+OCaml:
+  category: programming
+  color: "#f48904"
+  matchers:
+    extensions:
+      - ml
+      - mli
 PHP:
   category: programming
   color: "#7A86B8"
