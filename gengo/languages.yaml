@@ -285,6 +285,12 @@ Haskell:
   matchers:
     extensions:
       - hs
+HolyC:
+  category: programming
+  color: "#FFFF00"
+  matchers:
+    extensions:
+      - hc
 Ignore List:
   category: data
   color: "#330000"
