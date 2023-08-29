@@ -484,6 +484,12 @@ Regex:
   matchers:
     extensions:
       - regex
+"Ren'Py":
+  category: programming
+  color: "#FF7F7F"
+  matchers:
+    extensions:
+      - rpy
 Ruby:
   category: programming
   color: "#D21304"
