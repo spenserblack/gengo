@@ -36,3 +36,11 @@ impl<'map> IntoIterator for &'map Summary {
         self.iter()
     }
 }
+
+/// Options to use when creating a summary.
+#[derive(Debug, Default)]
+#[non_exhaustive]
+pub struct Opts {
+    /// Include all files, even if they are not detectable.
+    pub all: bool,
+}

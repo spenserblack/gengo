@@ -1,6 +1,6 @@
 use clap::Error as ClapError;
 use clap::Parser;
-use gengo::{Analysis, Builder};
+use gengo::{analysis::SummaryOpts, Analysis, Builder};
 use indexmap::IndexMap;
 use std::io::{self, Write};
 
@@ -62,7 +62,9 @@ impl CLI {
             }
         };
 
-        let summary = results.summary();
+        let mut summary_opts: SummaryOpts = Default::default();
+        summary_opts.all = self.all;
+        let summary = results.summary_with(summary_opts);
         let total = summary.total();
         let total = total as f64;
 
