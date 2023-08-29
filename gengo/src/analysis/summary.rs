@@ -1,0 +1,38 @@
+use crate::Language;
+use indexmap::map::Iter as IndexMapIter;
+use indexmap::IndexMap;
+
+/// The summary of an analysis.
+#[derive(Debug)]
+pub struct Summary(pub(super) IndexMap<Language, usize>);
+
+impl Summary {
+    /// Returns the total size of all languages.
+    pub fn total(&self) -> usize {
+        self.0.values().sum()
+    }
+
+    /// Returns an iterator over the languages and their sizes.
+    pub fn iter(&self) -> Iter<'_> {
+        Iter(self.0.iter())
+    }
+}
+
+pub struct Iter<'map>(IndexMapIter<'map, Language, usize>);
+
+impl<'map> Iterator for Iter<'map> {
+    type Item = (&'map Language, &'map usize);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.0.next()
+    }
+}
+
+impl<'map> IntoIterator for &'map Summary {
+    type Item = (&'map Language, &'map usize);
+    type IntoIter = Iter<'map>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.iter()
+    }
+}

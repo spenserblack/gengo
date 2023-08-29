@@ -3,6 +3,11 @@ use indexmap::map::Iter as IndexMapIter;
 use indexmap::IndexMap;
 use std::path::PathBuf;
 
+pub use summary::Iter as SummaryIter;
+pub use summary::Summary;
+
+mod summary;
+
 /// The result of analyzing a directory.
 #[derive(Debug)]
 pub struct Analysis(pub(super) IndexMap<PathBuf, Entry>);
@@ -10,6 +15,17 @@ pub struct Analysis(pub(super) IndexMap<PathBuf, Entry>);
 impl Analysis {
     pub fn iter(&self) -> Iter<'_> {
         Iter(self.0.iter())
+    }
+
+    /// Summarizes the analysis by language and size. Includes only
+    /// the entries that are detectable.
+    pub fn summary(&self) -> Summary {
+        let mut summary = IndexMap::new();
+        for entry in self.0.values().filter(|e| e.detectable()) {
+            let language = entry.language().clone();
+            *summary.entry(language).or_insert(0) += entry.size();
+        }
+        Summary(summary)
     }
 }
 

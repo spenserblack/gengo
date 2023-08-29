@@ -13,7 +13,7 @@ use std::error::Error;
 use std::path::{Path, PathBuf};
 use vendored::Vendored;
 
-mod analysis;
+pub mod analysis;
 mod builder;
 mod documentation;
 mod generated;
