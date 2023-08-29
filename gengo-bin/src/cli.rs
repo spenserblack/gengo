@@ -62,35 +62,19 @@ impl CLI {
             }
         };
 
-        let mut compiled = IndexMap::new();
-        let mut total = 0;
-        for (_, entry) in results.iter() {
-            if !(self.all || entry.detectable()) {
-                continue;
-            }
+        let summary = results.summary();
+        let total = summary.total();
+        let total = total as f64;
 
-            let language = entry.language();
-
-            let language_str = language.name();
-            let language_str = String::from(language_str);
-            let size = entry.size();
-
+        for (language, size) in summary.iter() {
+            let percentage = (size * 100) as f64 / total;
             #[cfg(feature = "color")]
             let color = language.owo_color().unwrap();
-
             #[cfg(not(feature = "color"))]
             let color = ();
 
-            let entry = compiled.entry(language_str).or_insert((0, color));
-            entry.0 += size;
-            total += size;
-        }
-
-        let total = total as f64;
-        for (language, (size, color)) in compiled.into_iter() {
-            let percentage = (size * 100) as f64 / total;
             let stats = format!("{:>6.2}% {}", percentage, size);
-            let line = format!("{:<15} {}", stats, language);
+            let line = format!("{:<15} {}", stats, language.name());
             let line = self.colorize(&line, color);
             writeln!(out, "{}", line)?;
         }
