@@ -101,33 +101,27 @@ impl CLI {
                 if !(self.all || entry.detectable()) {
                     continue;
                 }
+
                 let language = entry.language();
-
-                #[cfg(feature = "color")]
-                let color = language.owo_color().unwrap();
-
-                #[cfg(not(feature = "color"))]
-                let color = ();
-
-                let language = language.name();
-
-                let language = self.colorize(language, color);
-
                 let language_files = files_per_language.entry(language).or_insert_with(Vec::new);
-                let path_str = path.display().to_string();
-
-                #[cfg(feature = "color")]
-                let path_str = self.colorize(&path_str, color);
-
-                language_files.push(path_str);
+                language_files.push(path);
             }
             files_per_language
         };
 
         for (language, files) in files_per_language.into_iter() {
-            writeln!(out, "{}", language)?;
+            #[cfg(feature = "color")]
+            let color = language.owo_color().unwrap();
+            #[cfg(not(feature = "color"))]
+            let color = ();
+
+            writeln!(out, "{}", self.colorize(language.name(), color))?;
             for file in files {
-                writeln!(out, "  {}", file)?;
+                writeln!(
+                    out,
+                    "  {}",
+                    self.colorize(&file.display().to_string(), color)
+                )?;
             }
             writeln!(out)?;
         }
