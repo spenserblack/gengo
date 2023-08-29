@@ -1,5 +1,5 @@
 //! Gengo is a language detection library for Git repositories.
-//! While it is possible to provide your own definitions for,
+//! While it is possible to provide your own definitions for
 //! language detection, Gengo comes with a set of built-in
 //! definitions.
 //!
