@@ -1,6 +1,6 @@
 #[cfg(feature = "owo-colors")]
 use owo_colors::Rgb;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 #[cfg(feature = "owo-colors")]
 use std::error::Error;
 pub mod analyzer;
@@ -9,7 +9,7 @@ mod matcher;
 const LANGUAGE_DEFINITIONS: &str = include_str!(concat!(env!("OUT_DIR"), "/languages.json"));
 
 /// A programming language.
-#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct Language {
     name: String,
     category: Category,
@@ -48,7 +48,7 @@ impl Language {
 }
 
 /// A category for a language.
-#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 #[serde(rename_all = "lowercase")]
 pub enum Category {
     /// Data files. Examples: JSON, YAML, XML, CSV, etc.
