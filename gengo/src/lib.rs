@@ -1,3 +1,10 @@
+//! Gengo is a language detection library for Git repositories.
+//! While it is possible to provide your own definitions for,
+//! language detection, Gengo comes with a set of built-in
+//! definitions.
+//!
+//! # Built-in Languages
+#![doc = include_str!(concat!(env!("OUT_DIR"), "/language-list.md"))]
 pub use analysis::Analysis;
 pub use analysis::Iter as AnalysisIter;
 pub use builder::Builder;
