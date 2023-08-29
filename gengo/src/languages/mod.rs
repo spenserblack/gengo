@@ -9,7 +9,7 @@ mod matcher;
 const LANGUAGE_DEFINITIONS: &str = include_str!(concat!(env!("OUT_DIR"), "/languages.json"));
 
 /// A programming language.
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq)]
 pub struct Language {
     name: String,
     category: Category,
@@ -48,7 +48,7 @@ impl Language {
 }
 
 /// A category for a language.
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq)]
 #[serde(rename_all = "lowercase")]
 pub enum Category {
     /// Data files. Examples: JSON, YAML, XML, CSV, etc.
