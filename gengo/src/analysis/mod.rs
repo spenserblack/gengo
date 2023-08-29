@@ -4,6 +4,7 @@ use indexmap::IndexMap;
 use std::path::PathBuf;
 
 pub use summary::Iter as SummaryIter;
+pub use summary::Opts as SummaryOpts;
 pub use summary::Summary;
 
 mod summary;
@@ -20,8 +21,20 @@ impl Analysis {
     /// Summarizes the analysis by language and size. Includes only
     /// the entries that are detectable.
     pub fn summary(&self) -> Summary {
+        let opts = SummaryOpts {
+            all: false,
+            ..Default::default()
+        };
+        self.summary_with(opts)
+    }
+
+    /// Summarizes the analysis by language and size.
+    pub fn summary_with(&self, opts: SummaryOpts) -> Summary {
         let mut summary = IndexMap::new();
-        for entry in self.0.values().filter(|e| e.detectable()) {
+        for entry in self.0.values() {
+            if !(opts.all || entry.detectable()) {
+                continue;
+            }
             let language = entry.language().clone();
             *summary.entry(language).or_insert(0) += entry.size();
         }
