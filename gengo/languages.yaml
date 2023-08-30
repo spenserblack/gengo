@@ -325,13 +325,6 @@ JSON with Comments:
       - .vscode/*.json
       - tsconfig.*.json
   priority: 25
-Jsonnet:
-  category: programming
-  color: "#0064BD"
-  matchers:
-    extensions:
-      - jsonnet
-      - libsonnet
 Java:
   category: programming
   color: "#5283A2"
@@ -347,6 +340,13 @@ JavaScript:
       - jsx
     interpreters:
       - node
+Jsonnet:
+  category: programming
+  color: "#0064BD"
+  matchers:
+    extensions:
+      - jsonnet
+      - libsonnet
 Julia:
   category: programming
   color: "#9558B2"
