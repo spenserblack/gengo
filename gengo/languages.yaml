@@ -340,6 +340,13 @@ JavaScript:
       - jsx
     interpreters:
       - node
+Jsonnet:
+  category: programming
+  color: "#0064BD"
+  matchers:
+    extensions:
+      - jsonnet
+      - libsonnet
 Julia:
   category: programming
   color: "#9558B2"
