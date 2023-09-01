@@ -19,6 +19,7 @@ pub use languages::Language;
 use std::error::Error;
 use std::path::{Path, PathBuf};
 use vendored::Vendored;
+pub use file_source::FileSource;
 
 pub mod analysis;
 mod builder;
@@ -26,6 +27,7 @@ mod documentation;
 mod generated;
 pub mod languages;
 mod vendored;
+mod file_source;
 
 /// Shared match options for consistent behavior.
 const GLOB_MATCH_OPTIONS: MatchOptions = MatchOptions {
