@@ -27,7 +27,7 @@ mod documentation;
 mod generated;
 pub mod languages;
 mod vendored;
-mod file_source;
+pub mod file_source;
 
 /// Shared match options for consistent behavior.
 const GLOB_MATCH_OPTIONS: MatchOptions = MatchOptions {
