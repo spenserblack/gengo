@@ -9,6 +9,7 @@ pub use analysis::Analysis;
 pub use analysis::Iter as AnalysisIter;
 pub use builder::Builder;
 use documentation::Documentation;
+pub use error::{Error, ErrorKind};
 use generated::Generated;
 use git2::{AttrCheckFlags, AttrValue, Blob, Commit, ObjectType, Repository, Tree};
 use glob::MatchOptions;
@@ -16,16 +17,18 @@ use indexmap::IndexMap;
 pub use languages::analyzer::Analyzers;
 use languages::Category;
 pub use languages::Language;
-use std::error::Error;
 use std::path::{Path, PathBuf};
 use vendored::Vendored;
 
 pub mod analysis;
 mod builder;
 mod documentation;
+mod error;
 mod generated;
 pub mod languages;
 mod vendored;
+
+type Result<T, E = Box<dyn std::error::Error>> = std::result::Result<T, E>;
 
 /// Shared match options for consistent behavior.
 const GLOB_MATCH_OPTIONS: MatchOptions = MatchOptions {
@@ -49,14 +52,14 @@ impl Gengo {
     const ATTR_CHECK_FLAGS: [AttrCheckFlags; 2] =
         [AttrCheckFlags::NO_SYSTEM, AttrCheckFlags::INDEX_THEN_FILE];
     /// Resolves a revision to a commit.
-    fn rev(&self, rev: &str) -> Result<Commit, Box<dyn Error>> {
+    fn rev(&self, rev: &str) -> Result<Commit> {
         let reference = self.repository.revparse_single(rev)?;
         let commit = reference.peel_to_commit()?;
         Ok(commit)
     }
 
     /// Analyzes each file in the repository at the given revision.
-    pub fn analyze(&self, rev: &str) -> Result<Analysis, Box<dyn Error>> {
+    pub fn analyze(&self, rev: &str) -> Result<Analysis> {
         let mut results = IndexMap::new();
         let commit = self.rev(rev)?;
         let tree = commit.tree()?;
@@ -69,7 +72,7 @@ impl Gengo {
         root: &str,
         tree: &Tree,
         results: &mut IndexMap<PathBuf, Entry>,
-    ) -> Result<(), Box<dyn Error>> {
+    ) -> Result<()> {
         for entry in tree.iter() {
             let kind = entry.kind();
             // HACK Skip submodules. Might want to refactor this later.
@@ -107,7 +110,7 @@ impl Gengo {
         filepath: P,
         blob: &Blob,
         results: &mut IndexMap<PathBuf, Entry>,
-    ) -> Result<(), Box<dyn Error>> {
+    ) -> Result<()> {
         let contents = blob.content();
 
         let lang_override = self
@@ -175,7 +178,7 @@ impl Gengo {
         self.vendored.is_vendored(filepath, contents)
     }
 
-    fn get_attr<P: AsRef<Path>>(&self, path: P, attr: &str) -> Result<AttrValue, Box<dyn Error>> {
+    fn get_attr<P: AsRef<Path>>(&self, path: P, attr: &str) -> Result<AttrValue> {
         let flags = Self::ATTR_CHECK_FLAGS
             .into_iter()
             .reduce(|a, b| a | b)
@@ -185,11 +188,7 @@ impl Gengo {
         Ok(attr)
     }
 
-    fn get_boolean_attr<P: AsRef<Path>>(
-        &self,
-        path: P,
-        attr: &str,
-    ) -> Result<Option<bool>, Box<dyn Error>> {
+    fn get_boolean_attr<P: AsRef<Path>>(&self, path: P, attr: &str) -> Result<Option<bool>> {
         let attr = self.get_attr(path, attr)?;
         let attr = match attr {
             AttrValue::True => Some(true),
@@ -201,11 +200,7 @@ impl Gengo {
         Ok(attr)
     }
 
-    fn get_str_attr<P: AsRef<Path>>(
-        &self,
-        path: P,
-        attr: &str,
-    ) -> Result<Option<String>, Box<dyn Error>> {
+    fn get_str_attr<P: AsRef<Path>>(&self, path: P, attr: &str) -> Result<Option<String>> {
         let attr = self.get_attr(path, attr)?;
         let attr = match attr {
             AttrValue::String(s) => Some(s),

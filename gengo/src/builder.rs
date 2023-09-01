@@ -3,8 +3,10 @@ use super::generated::Generated;
 use super::vendored::Vendored;
 use super::Analyzers;
 use super::Gengo;
+use super::{Error, ErrorKind};
+use git2::ErrorCode;
 use git2::Repository;
-use std::error::Error;
+use std::error::Error as ErrorTrait;
 use std::path::Path;
 
 /// Builds a new `Gengo` instance.
@@ -47,8 +49,18 @@ impl<P: AsRef<Path>> Builder<P> {
         self
     }
 
-    pub fn build(self) -> Result<Gengo, Box<dyn Error>> {
-        let repository = Repository::discover(self.repository_path)?;
+    pub fn build(self) -> Result<Gengo, Box<dyn ErrorTrait>> {
+        let repository = match Repository::discover(self.repository_path) {
+            Ok(r) => r,
+            Err(e) => {
+                match e.code() {
+                    ErrorCode::NotFound => {
+                        return Err(Box::new(Error::with_source(ErrorKind::NoRepository, e)));
+                    }
+                    _ => return Err(Box::new(e)),
+                }
+            },
+        };
         let analyzers = self.analyzers.unwrap_or_default();
         let read_limit = self.read_limit.unwrap_or(Self::DEFAULT_READ_LIMIT);
         let documentation = Documentation::new();
