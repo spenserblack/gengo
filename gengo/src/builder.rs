@@ -52,13 +52,11 @@ impl<P: AsRef<Path>> Builder<P> {
     pub fn build(self) -> Result<Gengo, Box<dyn ErrorTrait>> {
         let repository = match Repository::discover(self.repository_path) {
             Ok(r) => r,
-            Err(e) => {
-                match e.code() {
-                    ErrorCode::NotFound => {
-                        return Err(Box::new(Error::with_source(ErrorKind::NoRepository, e)));
-                    }
-                    _ => return Err(Box::new(e)),
+            Err(e) => match e.code() {
+                ErrorCode::NotFound => {
+                    return Err(Box::new(Error::with_source(ErrorKind::NoRepository, e)));
                 }
+                _ => return Err(Box::new(e)),
             },
         };
         let analyzers = self.analyzers.unwrap_or_default();

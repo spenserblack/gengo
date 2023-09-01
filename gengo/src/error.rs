@@ -1,5 +1,5 @@
-use std::fmt;
 use std::error::Error as ErrorTrait;
+use std::fmt;
 
 macro_rules! error_kind {
     ($($name:ident, $message:literal),*) => {
