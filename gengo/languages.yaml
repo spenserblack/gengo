@@ -74,6 +74,15 @@ Assembly:
     extensions:
       - asm
       - s
+ATS:
+  category: programming
+  color: "#0005FB"
+  matchers:
+    extensions:
+      - dats
+      - hats
+      - sats
+      - atxt
 AutoHotkey:
   category: programming
   color: "#334455"
