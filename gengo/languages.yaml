@@ -59,6 +59,15 @@ ABNF:
   matchers:
     extensions:
       - abnf
+ATS:
+  category: programming
+  color: "#0005FB"
+  matchers:
+    extensions:
+      - atxt
+      - dats
+      - hats
+      - sats
 Ada:
   category: programming
   color: "#005A00"
