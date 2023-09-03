@@ -61,7 +61,7 @@ impl GitState {
         let index = repo.index_from_tree(tree_id)?;
         let attr_stack = repo.attributes_only(
             &index,
-            gix::worktree::stack::state::attributes::Source::IdMappingThenWorktree,
+            gix::worktree::stack::state::attributes::Source::IdMapping,
         )?;
         let attr_matches = attr_stack.selected_attribute_matches([
             "gengo-language",
