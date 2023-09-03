@@ -11,7 +11,10 @@ pub use builder::Builder;
 use documentation::Documentation;
 pub use error::{Error, ErrorKind};
 use generated::Generated;
-use git2::{AttrCheckFlags, AttrValue, Blob, Commit, ObjectType, Repository, Tree};
+use gix::attrs::StateRef;
+use gix::bstr::ByteSlice;
+use gix::object::tree::EntryMode;
+use gix::prelude::FindExt;
 use glob::MatchOptions;
 use indexmap::IndexMap;
 pub use languages::analyzer::Analyzers;
@@ -39,7 +42,7 @@ const GLOB_MATCH_OPTIONS: MatchOptions = MatchOptions {
 
 /// The main entry point for Gengo.
 pub struct Gengo {
-    repository: Repository,
+    repository: gix::Repository,
     analyzers: Analyzers,
     read_limit: usize,
     documentation: Documentation,
@@ -47,96 +50,138 @@ pub struct Gengo {
     vendored: Vendored,
 }
 
-// TODO parse .gitattributes to get language overrides.
-impl Gengo {
-    const ATTR_CHECK_FLAGS: [AttrCheckFlags; 2] =
-        [AttrCheckFlags::NO_SYSTEM, AttrCheckFlags::INDEX_THEN_FILE];
-    /// Resolves a revision to a commit.
-    fn rev(&self, rev: &str) -> Result<Commit> {
-        let reference = self.repository.revparse_single(rev)?;
-        let commit = reference.peel_to_commit()?;
-        Ok(commit)
-    }
+#[derive(Clone)]
+struct GitState {
+    attr_stack: gix::worktree::Stack,
+    attr_matches: gix::attrs::search::Outcome,
+    tree_id: gix::ObjectId,
+}
 
+impl GitState {
+    fn new(repo: &gix::Repository, rev: &str) -> Result<Self> {
+        let tree_id = repo.rev_parse_single(rev)?.object()?.peel_to_tree()?.id;
+        let index = repo.index_from_tree(&tree_id)?;
+        let attr_stack = repo.attributes_only(
+            &index,
+            gix::worktree::stack::state::attributes::Source::IdMappingThenWorktree,
+        )?;
+        let attr_matches = attr_stack.selected_attribute_matches([
+            "gengo-language",
+            "gengo-generated",
+            "gengo-documentation",
+            "gengo-vendored",
+            "gengo-detectable",
+        ]);
+        Ok(Self {
+            attr_stack,
+            attr_matches,
+            tree_id,
+        })
+    }
+}
+
+impl Gengo {
     /// Analyzes each file in the repository at the given revision.
     pub fn analyze(&self, rev: &str) -> Result<Analysis> {
         let mut results = IndexMap::new();
-        let commit = self.rev(rev)?;
-        let tree = commit.tree()?;
-        self.analyze_tree("", &tree, &mut results)?;
+        let mut state = GitState::new(&self.repository, rev)?;
+        self.analyze_tree("", state.tree_id, &mut state, &mut results)?;
         Ok(Analysis(results))
     }
 
     fn analyze_tree(
         &self,
         root: &str,
-        tree: &Tree,
+        tree: gix::ObjectId,
+        state: &mut GitState,
         results: &mut IndexMap<PathBuf, Entry>,
     ) -> Result<()> {
+        let tree = self.repository.find_object(tree)?.into_tree();
         for entry in tree.iter() {
-            let kind = entry.kind();
-            // HACK Skip submodules. Might want to refactor this later.
-            let object = if let Some(ObjectType::Commit) = kind {
-                // NOTE This is a submodule.
-                continue;
-            } else {
-                entry.to_object(&self.repository)?
-            };
-            match kind {
-                Some(ObjectType::Tree) => {
-                    let path = entry.name().ok_or("invalid path")?;
-                    let tree = object.as_tree().expect("object to be a tree");
-                    let path = Path::new(root).join(path);
-                    let path = path.to_str().ok_or("invalid path")?;
+            let entry = entry?;
+            match entry.mode() {
+                EntryMode::Tree => {
+                    let path = Path::new(root).join(entry.filename().to_str_lossy().as_ref());
+                    let path = path
+                        .to_str()
+                        .expect("created by lossy conversion - cannot fail");
 
-                    self.analyze_tree(path, tree, results)?;
+                    self.analyze_tree(path, entry.object_id(), state, results)?;
                 }
-                Some(ObjectType::Blob) => {
-                    let path = entry.name().ok_or("invalid path").unwrap();
-                    let filepath = Path::new(root).join(path);
-                    let filepath = filepath.as_os_str();
-                    let blob = object.as_blob().expect("object to be a blob");
+                EntryMode::Blob | EntryMode::BlobExecutable => {
+                    let path = Path::new(root).join(entry.filename().to_str_lossy().as_ref());
+                    let path = path
+                        .to_str()
+                        .expect("created by lossy conversion - cannot fail");
 
-                    self.analyze_blob(filepath, blob, results)?;
+                    self.analyze_blob(path, entry.oid(), state, results)?;
                 }
-                _ => continue,
+                EntryMode::Link => {}
+                EntryMode::Commit => {
+                    // TODO: recurse submodules
+                    continue;
+                }
             }
         }
         Ok(())
     }
 
-    fn analyze_blob<P: AsRef<Path>>(
+    fn analyze_blob(
         &self,
-        filepath: P,
-        blob: &Blob,
+        filepath: impl AsRef<Path>,
+        blob: &gix::oid,
+        state: &mut GitState,
         results: &mut IndexMap<PathBuf, Entry>,
     ) -> Result<()> {
-        let contents = blob.content();
+        let filepath = filepath.as_ref();
+        let blob = self.repository.find_object(blob)?;
+        let contents = blob.data.as_slice();
+        state
+            .attr_stack
+            .at_path(filepath, Some(false), |id, buf| {
+                self.repository.objects.find_blob(id, buf)
+            })?
+            .matching_attributes(&mut state.attr_matches);
 
-        let lang_override = self
-            .get_str_attr(&filepath, "gengo-language")?
-            .map(|s| s.replace('-', " "))
+        let mut attrs = [None, None, None, None, None];
+        state
+            .attr_matches
+            .iter_selected()
+            .zip(attrs.iter_mut())
+            .for_each(|(info, slot)| {
+                *slot =
+                    (info.assignment.state != gix::attrs::StateRef::Unspecified).then_some(info);
+            });
+
+        let lang_override = attrs[0]
+            .as_ref()
+            .and_then(|info| match info.assignment.state {
+                StateRef::Value(v) => v.as_bstr().to_str().ok().map(|s| s.replace('-', " ")),
+                _ => None,
+            })
             .and_then(|s| self.analyzers.get(&s));
 
         let language =
-            lang_override.or_else(|| self.analyzers.pick(&filepath, contents, self.read_limit));
+            lang_override.or_else(|| self.analyzers.pick(filepath, contents, self.read_limit));
 
         let language = if let Some(language) = language {
-            language.clone()
+            language
         } else {
             return Ok(());
         };
 
-        let size = contents.len();
-        let generated = self
-            .get_boolean_attr(&filepath, "gengo-generated")?
-            .unwrap_or_else(|| self.is_generated(&filepath, contents));
-        let documentation = self
-            .get_boolean_attr(&filepath, "gengo-documentation")?
-            .unwrap_or_else(|| self.is_documentation(&filepath, contents));
-        let vendored = self
-            .get_boolean_attr(&filepath, "gengo-vendored")?
-            .unwrap_or_else(|| self.is_vendored(&filepath, contents));
+        let generated = attrs[1]
+            .as_ref()
+            .map(|info| info.assignment.state.is_set())
+            .unwrap_or_else(|| self.is_generated(filepath, contents));
+        let documentation = attrs[2]
+            .as_ref()
+            .map(|info| info.assignment.state.is_set())
+            .unwrap_or_else(|| self.is_documentation(filepath, contents));
+        let vendored = attrs[3]
+            .as_ref()
+            .map(|info| info.assignment.state.is_set())
+            .unwrap_or_else(|| self.is_vendored(filepath, contents));
 
         let detectable = match language.category() {
             Category::Data | Category::Prose => false,
@@ -144,22 +189,21 @@ impl Gengo {
                 !(generated || documentation || vendored)
             }
         };
-        let detectable = self
-            .get_boolean_attr(&filepath, "gengo-detectable")?
+        let detectable = attrs[4]
+            .as_ref()
+            .map(|info| info.assignment.state.is_set())
             .unwrap_or(detectable);
 
-        let path_buf = filepath.as_ref().to_path_buf();
+        let size = contents.len();
         let entry = Entry {
-            language,
+            language: language.clone(),
             size,
             detectable,
             generated,
             documentation,
             vendored,
         };
-
-        results.insert(path_buf, entry);
-
+        results.insert(filepath.to_path_buf(), entry);
         Ok(())
     }
 
@@ -176,39 +220,6 @@ impl Gengo {
     /// Guesses if a file is vendored.
     pub fn is_vendored<P: AsRef<Path>>(&self, filepath: P, contents: &[u8]) -> bool {
         self.vendored.is_vendored(filepath, contents)
-    }
-
-    fn get_attr<P: AsRef<Path>>(&self, path: P, attr: &str) -> Result<AttrValue> {
-        let flags = Self::ATTR_CHECK_FLAGS
-            .into_iter()
-            .reduce(|a, b| a | b)
-            .unwrap();
-        let attr = self.repository.get_attr(path.as_ref(), attr, flags)?;
-        let attr = AttrValue::from_string(attr);
-        Ok(attr)
-    }
-
-    fn get_boolean_attr<P: AsRef<Path>>(&self, path: P, attr: &str) -> Result<Option<bool>> {
-        let attr = self.get_attr(path, attr)?;
-        let attr = match attr {
-            AttrValue::True => Some(true),
-            AttrValue::False => Some(false),
-            AttrValue::Unspecified => None,
-            // NOTE To avoid being overly strict, we'll just ignore invalid attributes.
-            _ => None,
-        };
-        Ok(attr)
-    }
-
-    fn get_str_attr<P: AsRef<Path>>(&self, path: P, attr: &str) -> Result<Option<String>> {
-        let attr = self.get_attr(path, attr)?;
-        let attr = match attr {
-            AttrValue::String(s) => Some(s),
-            AttrValue::Unspecified => None,
-            // NOTE To avoid being overly strict, we'll just ignore invalid attributes.
-            _ => None,
-        };
-        Ok(attr.map(String::from))
     }
 }
 
