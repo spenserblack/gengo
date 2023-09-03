@@ -5,18 +5,20 @@
 //!
 //! # Built-in Languages
 #![doc = include_str!(concat!(env!("OUT_DIR"), "/language-list.md"))]
+
 pub use analysis::Analysis;
 pub use builder::Builder;
 use documentation::Documentation;
 pub use error::{Error, ErrorKind};
 use generated::Generated;
 use gix::attrs::StateRef;
-use gix::bstr::ByteSlice;
+use gix::bstr::{BString, ByteSlice};
 use gix::prelude::FindExt;
 use glob::MatchOptions;
 pub use languages::analyzer::Analyzers;
 use languages::Category;
 pub use languages::Language;
+use std::collections::HashMap;
 use std::path::Path;
 use std::sync::atomic::Ordering;
 use vendored::Vendored;
@@ -55,9 +57,8 @@ struct GitState {
 }
 
 impl GitState {
-    fn new(repo: &gix::Repository, rev: &str) -> Result<(Self, gix::index::State)> {
-        let tree_id = repo.rev_parse_single(rev)?.object()?.peel_to_tree()?.id;
-        let index = repo.index_from_tree(&tree_id)?;
+    fn new(repo: &gix::Repository, tree_id: &gix::oid) -> Result<(Self, gix::index::State)> {
+        let index = repo.index_from_tree(tree_id)?;
         let attr_stack = repo.attributes_only(
             &index,
             gix::worktree::stack::state::attributes::Source::IdMappingThenWorktree,
@@ -85,18 +86,30 @@ struct BlobEntry {
     result: Option<Entry>,
 }
 
-/// The result of analyzing a directory.
+/// The result of analyzing a repository or a single submodule
 struct Results {
+    /// If this is a submodule, the root is not empty and the full path to where our paths start.
+    root: BString,
     entries: Vec<BlobEntry>,
     path_storage: gix::index::PathStorage,
 }
 
 impl Results {
-    fn from_index(index: gix::index::State) -> Self {
+    /// Create a data structure that holds index entries as well as our results per entry.
+    /// Return a list of paths at which submodules can be found, along with their
+    /// commit ids.
+    fn from_index(
+        root: BString,
+        index: gix::index::State,
+    ) -> (Self, Vec<(BString, gix::ObjectId)>) {
         let (entries, path_storage) = index.into_entries();
+        let mut submodules = Vec::new();
         let entries: Vec<_> = entries
             .into_iter()
             .filter(|e| {
+                if e.mode == gix::index::entry::Mode::COMMIT {
+                    submodules.push((e.path_in(&path_storage).to_owned(), e.id))
+                }
                 e.mode == gix::index::entry::Mode::FILE
                     || e.mode == gix::index::entry::Mode::FILE_EXECUTABLE
             })
@@ -105,24 +118,68 @@ impl Results {
                 result: None,
             })
             .collect();
-        Results {
-            entries,
-            path_storage,
-        }
+        (
+            Results {
+                root,
+                entries,
+                path_storage,
+            },
+            submodules,
+        )
     }
 }
 
 impl Gengo {
     /// Analyzes each file in the repository at the given revision.
     pub fn analyze(&self, rev: &str) -> Result<Analysis> {
-        let (state, index) = GitState::new(&self.repository.to_thread_local(), rev)?;
-        let mut results = Results::from_index(index);
-        self.analyze_index(&mut results, state)?;
-        Ok(Analysis(results))
+        let repo = self.repository.to_thread_local();
+        let tree_id = repo.rev_parse_single(rev)?.object()?.peel_to_tree()?.id;
+        let mut stack = vec![(BString::default(), repo, tree_id)];
+
+        let mut all_results = Vec::new();
+        while let Some((root, repo, tree_id)) = stack.pop() {
+            let (state, index) = GitState::new(&repo, &tree_id)?;
+            let (mut results, submodule_id_by_path) = Results::from_index(root.clone(), index);
+
+            let submodules = repo.submodules()?.map(|sms| {
+                sms.filter_map(|sm| {
+                    let path = sm.path().ok()?;
+                    let sm_repo = sm.open().ok().flatten()?;
+                    Some((path.into_owned(), sm_repo))
+                })
+                .collect::<HashMap<_, _>>()
+            });
+            self.analyze_index(&repo.into_sync(), &mut results, state)?;
+            all_results.push(results);
+
+            if let Some(mut submodules_by_path) = submodules {
+                stack.extend(
+                    submodule_id_by_path
+                        .into_iter()
+                        .filter_map(|(path, sm_commit)| {
+                            let sm_repo = submodules_by_path.remove(&path)?;
+                            let tree_id =
+                                sm_repo.find_object(sm_commit).ok()?.peel_to_tree().ok()?.id;
+                            let mut abs_root = root.clone();
+                            if !abs_root.is_empty() {
+                                abs_root.push(b'/');
+                            }
+                            abs_root.extend_from_slice(&path);
+                            Some((abs_root, sm_repo, tree_id))
+                        }),
+                );
+            }
+        }
+
+        Ok(Analysis(all_results))
     }
 
-    fn analyze_index(&self, results: &mut Results, state: GitState) -> Result<()> {
-        let repo = &self.repository;
+    fn analyze_index(
+        &self,
+        repo: &gix::ThreadSafeRepository,
+        results: &mut Results,
+        state: GitState,
+    ) -> Result<()> {
         gix::parallel::in_parallel_with_slice(
             &mut results.entries,
             None,
@@ -131,7 +188,11 @@ impl Gengo {
                 if should_interrupt.load(Ordering::Relaxed) {
                     return Ok(());
                 }
-                let path = gix::path::from_bstr(entry.index_entry.path_in(&results.path_storage));
+                let Ok(path) =
+                    gix::path::try_from_bstr(entry.index_entry.path_in(&results.path_storage))
+                else {
+                    return Ok(());
+                };
                 self.analyze_blob(path, repo, state, entry)
             },
             || Some(std::time::Duration::from_micros(5)),

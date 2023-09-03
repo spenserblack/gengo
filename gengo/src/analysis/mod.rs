@@ -10,17 +10,29 @@ pub use summary::Summary;
 
 mod summary;
 
-/// The result of analyzing a directory.
-pub struct Analysis(pub(super) crate::Results);
+/// The result of analyzing a repository along with all of its submodules.
+pub struct Analysis(pub(super) Vec<crate::Results>);
 
 impl Analysis {
     pub fn iter(&self) -> impl Iterator<Item = (Cow<'_, Path>, &Entry)> + '_ {
-        self.0.entries.iter().filter_map(|entry| {
-            entry.result.as_ref().map(|result| {
-                (
-                    gix::path::from_bstr(entry.index_entry.path_in(&self.0.path_storage)),
-                    result,
-                )
+        self.0.iter().flat_map(|results| {
+            results.entries.iter().filter_map(|entry| {
+                entry.result.as_ref().and_then(|result| {
+                    Some((
+                        {
+                            let p = entry.index_entry.path_in(&results.path_storage);
+                            if !results.root.is_empty() {
+                                let mut base = results.root.clone();
+                                base.push(b'/');
+                                base.extend_from_slice(p);
+                                gix::path::try_from_bstring(base).ok()?.into()
+                            } else {
+                                gix::path::try_from_bstr(p).ok()?
+                            }
+                        },
+                        result,
+                    ))
+                })
             })
         })
     }
@@ -38,7 +50,11 @@ impl Analysis {
     /// Summarizes the analysis by language and size.
     pub fn summary_with(&self, opts: SummaryOpts) -> Summary {
         let mut summary = IndexMap::new();
-        for entry in self.0.entries.iter().filter_map(|e| e.result.as_ref()) {
+        for entry in self
+            .0
+            .iter()
+            .flat_map(|results| results.entries.iter().filter_map(|e| e.result.as_ref()))
+        {
             if !(opts.all || entry.detectable()) {
                 continue;
             }
@@ -51,14 +67,6 @@ impl Analysis {
 
 impl std::fmt::Debug for Analysis {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        let map = f
-            .debug_map()
-            .entries(self.0.entries.iter().filter_map(|e| {
-                e.result
-                    .as_ref()
-                    .map(|result| (e.index_entry.path_in(&self.0.path_storage), result))
-            }))
-            .finish()?;
-        f.debug_tuple("Analysis").field(&map).finish()
+        f.debug_map().entries(self.iter()).finish()
     }
 }
