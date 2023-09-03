@@ -62,7 +62,7 @@ impl<P: AsRef<Path>> Builder<P> {
         let generated = Generated::new();
         let vendored = Vendored::new();
         Ok(Gengo {
-            repository,
+            repository: repository.into_sync(),
             analyzers,
             read_limit,
             documentation,

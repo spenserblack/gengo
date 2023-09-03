@@ -18,6 +18,7 @@ pub use languages::analyzer::Analyzers;
 use languages::Category;
 pub use languages::Language;
 use std::path::Path;
+use std::sync::atomic::Ordering;
 use vendored::Vendored;
 
 pub mod analysis;
@@ -28,7 +29,7 @@ mod generated;
 pub mod languages;
 mod vendored;
 
-type Result<T, E = Box<dyn std::error::Error>> = std::result::Result<T, E>;
+type Result<T, E = Box<dyn std::error::Error + Send + Sync + 'static>> = std::result::Result<T, E>;
 
 /// Shared match options for consistent behavior.
 const GLOB_MATCH_OPTIONS: MatchOptions = MatchOptions {
@@ -39,7 +40,7 @@ const GLOB_MATCH_OPTIONS: MatchOptions = MatchOptions {
 
 /// The main entry point for Gengo.
 pub struct Gengo {
-    repository: gix::Repository,
+    repository: gix::ThreadSafeRepository,
     analyzers: Analyzers,
     read_limit: usize,
     documentation: Documentation,
@@ -114,33 +115,45 @@ impl Results {
 impl Gengo {
     /// Analyzes each file in the repository at the given revision.
     pub fn analyze(&self, rev: &str) -> Result<Analysis> {
-        let (mut state, index) = GitState::new(&self.repository, rev)?;
+        let (state, index) = GitState::new(&self.repository.to_thread_local(), rev)?;
         let mut results = Results::from_index(index);
-        self.analyze_index(&mut results, &mut state)?;
+        self.analyze_index(&mut results, state)?;
         Ok(Analysis(results))
     }
 
-    fn analyze_index(&self, results: &mut Results, state: &mut GitState) -> Result<()> {
-        for entry in &mut results.entries {
-            let path = gix::path::from_bstr(entry.index_entry.path_in(&results.path_storage));
-            self.analyze_blob(path, state, entry)?;
-        }
+    fn analyze_index(&self, results: &mut Results, state: GitState) -> Result<()> {
+        let repo = &self.repository;
+        gix::parallel::in_parallel_with_slice(
+            &mut results.entries,
+            None,
+            move |_| (state.clone(), repo.to_thread_local()),
+            |entry, (state, repo), _, should_interrupt| {
+                if should_interrupt.load(Ordering::Relaxed) {
+                    return Ok(());
+                }
+                let path = gix::path::from_bstr(entry.index_entry.path_in(&results.path_storage));
+                self.analyze_blob(path, repo, state, entry)
+            },
+            || Some(std::time::Duration::from_micros(5)),
+            std::convert::identity,
+        )?;
         Ok(())
     }
 
     fn analyze_blob(
         &self,
         filepath: impl AsRef<Path>,
+        repo: &gix::Repository,
         state: &mut GitState,
         result: &mut BlobEntry,
     ) -> Result<()> {
         let filepath = filepath.as_ref();
-        let blob = self.repository.find_object(result.index_entry.id)?;
+        let blob = repo.find_object(result.index_entry.id)?;
         let contents = blob.data.as_slice();
         state
             .attr_stack
             .at_path(filepath, Some(false), |id, buf| {
-                self.repository.objects.find_blob(id, buf)
+                repo.objects.find_blob(id, buf)
             })?
             .matching_attributes(&mut state.attr_matches);
 
