@@ -1,7 +1,8 @@
 use super::Entry;
-use indexmap::map::Iter as IndexMapIter;
 use indexmap::IndexMap;
-use std::path::PathBuf;
+use std::borrow::Cow;
+use std::fmt::Formatter;
+use std::path::Path;
 
 pub use summary::Iter as SummaryIter;
 pub use summary::Opts as SummaryOpts;
@@ -10,12 +11,18 @@ pub use summary::Summary;
 mod summary;
 
 /// The result of analyzing a directory.
-#[derive(Debug)]
-pub struct Analysis(pub(super) IndexMap<PathBuf, Entry>);
+pub struct Analysis(pub(super) crate::Results);
 
 impl Analysis {
-    pub fn iter(&self) -> Iter<'_> {
-        Iter(self.0.iter())
+    pub fn iter(&self) -> impl Iterator<Item = (Cow<'_, Path>, &Entry)> + '_ {
+        self.0.entries.iter().filter_map(|entry| {
+            entry.result.as_ref().map(|result| {
+                (
+                    gix::path::from_bstr(entry.index_entry.path_in(&self.0.path_storage)),
+                    result,
+                )
+            })
+        })
     }
 
     /// Summarizes the analysis by language and size. Includes only
@@ -31,7 +38,7 @@ impl Analysis {
     /// Summarizes the analysis by language and size.
     pub fn summary_with(&self, opts: SummaryOpts) -> Summary {
         let mut summary = IndexMap::new();
-        for entry in self.0.values() {
+        for entry in self.0.entries.iter().filter_map(|e| e.result.as_ref()) {
             if !(opts.all || entry.detectable()) {
                 continue;
             }
@@ -42,21 +49,16 @@ impl Analysis {
     }
 }
 
-pub struct Iter<'map>(IndexMapIter<'map, PathBuf, Entry>);
-
-impl<'map> Iterator for Iter<'map> {
-    type Item = (&'map PathBuf, &'map Entry);
-
-    fn next(&mut self) -> Option<Self::Item> {
-        self.0.next()
-    }
-}
-
-impl<'map> IntoIterator for &'map Analysis {
-    type Item = (&'map PathBuf, &'map Entry);
-    type IntoIter = Iter<'map>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.iter()
+impl std::fmt::Debug for Analysis {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let map = f
+            .debug_map()
+            .entries(self.0.entries.iter().filter_map(|e| {
+                e.result
+                    .as_ref()
+                    .map(|result| (e.index_entry.path_in(&self.0.path_storage), result))
+            }))
+            .finish()?;
+        f.debug_tuple("Analysis").field(&map).finish()
     }
 }

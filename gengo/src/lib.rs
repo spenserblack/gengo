@@ -6,21 +6,18 @@
 //! # Built-in Languages
 #![doc = include_str!(concat!(env!("OUT_DIR"), "/language-list.md"))]
 pub use analysis::Analysis;
-pub use analysis::Iter as AnalysisIter;
 pub use builder::Builder;
 use documentation::Documentation;
 pub use error::{Error, ErrorKind};
 use generated::Generated;
 use gix::attrs::StateRef;
 use gix::bstr::ByteSlice;
-use gix::object::tree::EntryMode;
 use gix::prelude::FindExt;
 use glob::MatchOptions;
-use indexmap::IndexMap;
 pub use languages::analyzer::Analyzers;
 use languages::Category;
 pub use languages::Language;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use vendored::Vendored;
 
 pub mod analysis;
@@ -54,11 +51,10 @@ pub struct Gengo {
 struct GitState {
     attr_stack: gix::worktree::Stack,
     attr_matches: gix::attrs::search::Outcome,
-    tree_id: gix::ObjectId,
 }
 
 impl GitState {
-    fn new(repo: &gix::Repository, rev: &str) -> Result<Self> {
+    fn new(repo: &gix::Repository, rev: &str) -> Result<(Self, gix::index::State)> {
         let tree_id = repo.rev_parse_single(rev)?.object()?.peel_to_tree()?.id;
         let index = repo.index_from_tree(&tree_id)?;
         let attr_stack = repo.attributes_only(
@@ -72,56 +68,62 @@ impl GitState {
             "gengo-vendored",
             "gengo-detectable",
         ]);
-        Ok(Self {
-            attr_stack,
-            attr_matches,
-            tree_id,
-        })
+        Ok((
+            Self {
+                attr_stack,
+                attr_matches,
+            },
+            index.into_parts().0,
+        ))
+    }
+}
+
+struct BlobEntry {
+    // Just for path and id access
+    index_entry: gix::index::Entry,
+    result: Option<Entry>,
+}
+
+/// The result of analyzing a directory.
+struct Results {
+    entries: Vec<BlobEntry>,
+    path_storage: gix::index::PathStorage,
+}
+
+impl Results {
+    fn from_index(index: gix::index::State) -> Self {
+        let (entries, path_storage) = index.into_entries();
+        let entries: Vec<_> = entries
+            .into_iter()
+            .filter(|e| {
+                e.mode == gix::index::entry::Mode::FILE
+                    || e.mode == gix::index::entry::Mode::FILE_EXECUTABLE
+            })
+            .map(|e| BlobEntry {
+                index_entry: e,
+                result: None,
+            })
+            .collect();
+        Results {
+            entries,
+            path_storage,
+        }
     }
 }
 
 impl Gengo {
     /// Analyzes each file in the repository at the given revision.
     pub fn analyze(&self, rev: &str) -> Result<Analysis> {
-        let mut results = IndexMap::new();
-        let mut state = GitState::new(&self.repository, rev)?;
-        self.analyze_tree("", state.tree_id, &mut state, &mut results)?;
+        let (mut state, index) = GitState::new(&self.repository, rev)?;
+        let mut results = Results::from_index(index);
+        self.analyze_index(&mut results, &mut state)?;
         Ok(Analysis(results))
     }
 
-    fn analyze_tree(
-        &self,
-        root: &str,
-        tree: gix::ObjectId,
-        state: &mut GitState,
-        results: &mut IndexMap<PathBuf, Entry>,
-    ) -> Result<()> {
-        let tree = self.repository.find_object(tree)?.into_tree();
-        for entry in tree.iter() {
-            let entry = entry?;
-            match entry.mode() {
-                EntryMode::Tree => {
-                    let path = Path::new(root).join(entry.filename().to_str_lossy().as_ref());
-                    let path = path
-                        .to_str()
-                        .expect("created by lossy conversion - cannot fail");
-
-                    self.analyze_tree(path, entry.object_id(), state, results)?;
-                }
-                EntryMode::Blob | EntryMode::BlobExecutable => {
-                    let path = Path::new(root).join(entry.filename().to_str_lossy().as_ref());
-                    let path = path
-                        .to_str()
-                        .expect("created by lossy conversion - cannot fail");
-
-                    self.analyze_blob(path, entry.oid(), state, results)?;
-                }
-                EntryMode::Link => {}
-                EntryMode::Commit => {
-                    // TODO: recurse submodules
-                    continue;
-                }
-            }
+    fn analyze_index(&self, results: &mut Results, state: &mut GitState) -> Result<()> {
+        for entry in &mut results.entries {
+            let path = gix::path::from_bstr(entry.index_entry.path_in(&results.path_storage));
+            self.analyze_blob(path, state, entry)?;
         }
         Ok(())
     }
@@ -129,12 +131,11 @@ impl Gengo {
     fn analyze_blob(
         &self,
         filepath: impl AsRef<Path>,
-        blob: &gix::oid,
         state: &mut GitState,
-        results: &mut IndexMap<PathBuf, Entry>,
+        result: &mut BlobEntry,
     ) -> Result<()> {
         let filepath = filepath.as_ref();
-        let blob = self.repository.find_object(blob)?;
+        let blob = self.repository.find_object(result.index_entry.id)?;
         let contents = blob.data.as_slice();
         state
             .attr_stack
@@ -203,7 +204,7 @@ impl Gengo {
             documentation,
             vendored,
         };
-        results.insert(filepath.to_path_buf(), entry);
+        result.result = Some(entry);
         Ok(())
     }
 

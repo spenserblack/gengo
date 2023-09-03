@@ -97,7 +97,7 @@ impl CLI {
     ) -> Result<(), io::Error> {
         let files_per_language = {
             let mut files_per_language = IndexMap::new();
-            for (path, entry) in results.into_iter() {
+            for (path, entry) in results.iter() {
                 if !(self.all || entry.detectable()) {
                     continue;
                 }
