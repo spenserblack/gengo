@@ -17,12 +17,12 @@ expression: results
     },
     "dist/bin.js": Entry {
         language: Language {
-            name: "JavaScript",
-            category: Programming,
-            color: "#FFFF00",
+            name: "Plain Text",
+            category: Prose,
+            color: "#000000",
         },
         size: 62,
-        detectable: false,
+        detectable: true,
         generated: true,
         documentation: false,
         vendored: false,
