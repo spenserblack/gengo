@@ -102,17 +102,17 @@ impl Results {
         root: BString,
         index: gix::index::State,
     ) -> (Self, Vec<(BString, gix::ObjectId)>) {
+        use gix::index::entry::Mode;
+
         let (entries, path_storage) = index.into_entries();
-        let mut submodules = Vec::new();
+        let submodules: Vec<_> = entries
+            .iter()
+            .filter(|e| e.mode == Mode::COMMIT)
+            .map(|e| (e.path_in(&path_storage).to_owned(), e.id))
+            .collect();
         let entries: Vec<_> = entries
             .into_iter()
-            .filter(|e| {
-                if e.mode == gix::index::entry::Mode::COMMIT {
-                    submodules.push((e.path_in(&path_storage).to_owned(), e.id))
-                }
-                e.mode == gix::index::entry::Mode::FILE
-                    || e.mode == gix::index::entry::Mode::FILE_EXECUTABLE
-            })
+            .filter(|e| matches!(e.mode, Mode::FILE | Mode::FILE_EXECUTABLE))
             .map(|e| BlobEntry {
                 index_entry: e,
                 result: None,
