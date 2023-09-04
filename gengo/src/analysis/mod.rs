@@ -67,6 +67,7 @@ impl Analysis {
 
 impl Debug for Analysis {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "Analysis ")?;
         f.debug_map().entries(self.iter()).finish()
     }
 }
