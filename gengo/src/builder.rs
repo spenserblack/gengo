@@ -4,6 +4,7 @@ use super::vendored::Vendored;
 use super::Analyzers;
 use super::Gengo;
 use super::{Error, ErrorKind};
+use gix::discover::Error as DiscoverError;
 use std::error::Error as ErrorTrait;
 use std::path::Path;
 
@@ -50,7 +51,7 @@ impl<P: AsRef<Path>> Builder<P> {
     pub fn build(self) -> Result<Gengo, Box<dyn ErrorTrait>> {
         let repository = match gix::discover(self.repository_path) {
             Ok(r) => r,
-            Err(gix::discover::Error::Discover(err)) => {
+            Err(DiscoverError::Discover(err)) => {
                 return Err(Box::new(Error::with_source(ErrorKind::NoRepository, err)))
             }
             Err(err) => return Err(err.into()),

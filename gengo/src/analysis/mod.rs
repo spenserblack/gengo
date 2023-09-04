@@ -1,7 +1,7 @@
 use super::Entry;
 use indexmap::IndexMap;
 use std::borrow::Cow;
-use std::fmt::Formatter;
+use std::fmt::{self, Debug};
 use std::path::Path;
 
 pub use summary::Iter as SummaryIter;
@@ -65,8 +65,8 @@ impl Analysis {
     }
 }
 
-impl std::fmt::Debug for Analysis {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+impl Debug for Analysis {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_map().entries(self.iter()).finish()
     }
 }
