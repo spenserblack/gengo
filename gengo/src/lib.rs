@@ -245,6 +245,8 @@ impl Gengo {
             return Ok(());
         };
 
+        // NOTE Unspecified attributes are None, so `state.is_set()` is
+        //      implicitly `!state.is_unset()`.
         let generated = attrs[1]
             .as_ref()
             .map(|info| info.assignment.state.is_set())
