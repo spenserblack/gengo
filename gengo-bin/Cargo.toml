@@ -14,13 +14,12 @@ keywords = { workspace = true }
 name = "gengo"
 
 [features]
-default = ["color"]
+default = ["color", "gengo/max-performance"]
 color = ["owo-colors", "gengo/owo-colors"]
 
 [dependencies]
 clap = { version = "4", features = ["derive", "wrap_help"] }
-gix-for-configuration-only = { package = "gix", version = "0.52.0", default-features = false, features = ["max-performance"] }
-gengo = { path = "../gengo", version = "0.5" }
+gengo = { path = "../gengo", version = "0.5", default-features = false }
 indexmap = "2"
 owo-colors = { version = "3", optional = true }
 
