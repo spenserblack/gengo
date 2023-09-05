@@ -5,19 +5,22 @@
 //!
 //! # Built-in Languages
 #![doc = include_str!(concat!(env!("OUT_DIR"), "/language-list.md"))]
+
 pub use analysis::Analysis;
-pub use analysis::Iter as AnalysisIter;
 pub use builder::Builder;
 use documentation::Documentation;
 pub use error::{Error, ErrorKind};
 use generated::Generated;
-use git2::{AttrCheckFlags, AttrValue, Blob, Commit, ObjectType, Repository, Tree};
+use gix::attrs::StateRef;
+use gix::bstr::{BString, ByteSlice};
+use gix::prelude::FindExt;
 use glob::MatchOptions;
-use indexmap::IndexMap;
 pub use languages::analyzer::Analyzers;
 use languages::Category;
 pub use languages::Language;
-use std::path::{Path, PathBuf};
+use std::collections::HashMap;
+use std::path::Path;
+use std::sync::atomic::Ordering;
 use vendored::Vendored;
 
 pub mod analysis;
@@ -28,7 +31,7 @@ mod generated;
 pub mod languages;
 mod vendored;
 
-type Result<T, E = Box<dyn std::error::Error>> = std::result::Result<T, E>;
+type Result<T, E = Box<dyn std::error::Error + Send + Sync + 'static>> = std::result::Result<T, E>;
 
 /// Shared match options for consistent behavior.
 const GLOB_MATCH_OPTIONS: MatchOptions = MatchOptions {
@@ -39,7 +42,7 @@ const GLOB_MATCH_OPTIONS: MatchOptions = MatchOptions {
 
 /// The main entry point for Gengo.
 pub struct Gengo {
-    repository: Repository,
+    repository: gix::ThreadSafeRepository,
     analyzers: Analyzers,
     read_limit: usize,
     documentation: Documentation,
@@ -47,96 +50,215 @@ pub struct Gengo {
     vendored: Vendored,
 }
 
-// TODO parse .gitattributes to get language overrides.
-impl Gengo {
-    const ATTR_CHECK_FLAGS: [AttrCheckFlags; 2] =
-        [AttrCheckFlags::NO_SYSTEM, AttrCheckFlags::INDEX_THEN_FILE];
-    /// Resolves a revision to a commit.
-    fn rev(&self, rev: &str) -> Result<Commit> {
-        let reference = self.repository.revparse_single(rev)?;
-        let commit = reference.peel_to_commit()?;
-        Ok(commit)
-    }
+#[derive(Clone)]
+struct GitState {
+    attr_stack: gix::worktree::Stack,
+    attr_matches: gix::attrs::search::Outcome,
+}
 
+impl GitState {
+    fn new(repo: &gix::Repository, tree_id: &gix::oid) -> Result<(Self, gix::index::State)> {
+        let index = repo.index_from_tree(tree_id)?;
+        let attr_stack = repo.attributes_only(
+            &index,
+            gix::worktree::stack::state::attributes::Source::IdMapping,
+        )?;
+        let attr_matches = attr_stack.selected_attribute_matches([
+            "gengo-language",
+            "gengo-generated",
+            "gengo-documentation",
+            "gengo-vendored",
+            "gengo-detectable",
+        ]);
+        Ok((
+            Self {
+                attr_stack,
+                attr_matches,
+            },
+            index.into_parts().0,
+        ))
+    }
+}
+
+struct BlobEntry {
+    // Just for path and id access
+    index_entry: gix::index::Entry,
+    result: Option<Entry>,
+}
+
+/// The result of analyzing a repository or a single submodule
+struct Results {
+    /// If this is a submodule, the root is not empty and the full path to where our paths start.
+    root: BString,
+    entries: Vec<BlobEntry>,
+    path_storage: gix::index::PathStorage,
+}
+
+impl Results {
+    /// Create a data structure that holds index entries as well as our results per entry.
+    /// Return a list of paths at which submodules can be found, along with their
+    /// commit ids.
+    fn from_index(
+        root: BString,
+        index: gix::index::State,
+    ) -> (Self, Vec<(BString, gix::ObjectId)>) {
+        use gix::index::entry::Mode;
+
+        let (entries, path_storage) = index.into_entries();
+        let submodules: Vec<_> = entries
+            .iter()
+            .filter(|e| e.mode == Mode::COMMIT)
+            .map(|e| (e.path_in(&path_storage).to_owned(), e.id))
+            .collect();
+        let entries: Vec<_> = entries
+            .into_iter()
+            .filter(|e| matches!(e.mode, Mode::FILE | Mode::FILE_EXECUTABLE))
+            .map(|e| BlobEntry {
+                index_entry: e,
+                result: None,
+            })
+            .collect();
+        (
+            Results {
+                root,
+                entries,
+                path_storage,
+            },
+            submodules,
+        )
+    }
+}
+
+impl Gengo {
     /// Analyzes each file in the repository at the given revision.
     pub fn analyze(&self, rev: &str) -> Result<Analysis> {
-        let mut results = IndexMap::new();
-        let commit = self.rev(rev)?;
-        let tree = commit.tree()?;
-        self.analyze_tree("", &tree, &mut results)?;
-        Ok(Analysis(results))
-    }
+        let repo = self.repository.to_thread_local();
+        let tree_id = repo.rev_parse_single(rev)?.object()?.peel_to_tree()?.id;
+        let mut stack = vec![(BString::default(), repo, tree_id)];
 
-    fn analyze_tree(
-        &self,
-        root: &str,
-        tree: &Tree,
-        results: &mut IndexMap<PathBuf, Entry>,
-    ) -> Result<()> {
-        for entry in tree.iter() {
-            let kind = entry.kind();
-            // HACK Skip submodules. Might want to refactor this later.
-            let object = if let Some(ObjectType::Commit) = kind {
-                // NOTE This is a submodule.
-                continue;
-            } else {
-                entry.to_object(&self.repository)?
-            };
-            match kind {
-                Some(ObjectType::Tree) => {
-                    let path = entry.name().ok_or("invalid path")?;
-                    let tree = object.as_tree().expect("object to be a tree");
-                    let path = Path::new(root).join(path);
-                    let path = path.to_str().ok_or("invalid path")?;
+        let mut all_results = Vec::new();
+        while let Some((root, repo, tree_id)) = stack.pop() {
+            let (state, index) = GitState::new(&repo, &tree_id)?;
+            let (mut results, submodule_id_by_path) = Results::from_index(root.clone(), index);
 
-                    self.analyze_tree(path, tree, results)?;
-                }
-                Some(ObjectType::Blob) => {
-                    let path = entry.name().ok_or("invalid path").unwrap();
-                    let filepath = Path::new(root).join(path);
-                    let filepath = filepath.as_os_str();
-                    let blob = object.as_blob().expect("object to be a blob");
+            let submodules = repo.submodules()?.map(|sms| {
+                sms.filter_map(|sm| {
+                    let path = sm.path().ok()?;
+                    let sm_repo = sm.open().ok().flatten()?;
+                    Some((path.into_owned(), sm_repo))
+                })
+                .collect::<HashMap<_, _>>()
+            });
+            self.analyze_index(&repo.into_sync(), &mut results, state)?;
+            all_results.push(results);
 
-                    self.analyze_blob(filepath, blob, results)?;
-                }
-                _ => continue,
+            if let Some(mut submodules_by_path) = submodules {
+                stack.extend(
+                    submodule_id_by_path
+                        .into_iter()
+                        .filter_map(|(path, sm_commit)| {
+                            let sm_repo = submodules_by_path.remove(&path)?;
+                            let tree_id =
+                                sm_repo.find_object(sm_commit).ok()?.peel_to_tree().ok()?.id;
+                            let mut abs_root = root.clone();
+                            if !abs_root.is_empty() {
+                                abs_root.push(b'/');
+                            }
+                            abs_root.extend_from_slice(&path);
+                            Some((abs_root, sm_repo, tree_id))
+                        }),
+                );
             }
         }
+
+        Ok(Analysis(all_results))
+    }
+
+    fn analyze_index(
+        &self,
+        repo: &gix::ThreadSafeRepository,
+        results: &mut Results,
+        state: GitState,
+    ) -> Result<()> {
+        gix::parallel::in_parallel_with_slice(
+            &mut results.entries,
+            None,
+            move |_| (state.clone(), repo.to_thread_local()),
+            |entry, (state, repo), _, should_interrupt| {
+                if should_interrupt.load(Ordering::Relaxed) {
+                    return Ok(());
+                }
+                let Ok(path) =
+                    gix::path::try_from_bstr(entry.index_entry.path_in(&results.path_storage))
+                else {
+                    return Ok(());
+                };
+                self.analyze_blob(path, repo, state, entry)
+            },
+            || Some(std::time::Duration::from_micros(5)),
+            std::convert::identity,
+        )?;
         Ok(())
     }
 
-    fn analyze_blob<P: AsRef<Path>>(
+    fn analyze_blob(
         &self,
-        filepath: P,
-        blob: &Blob,
-        results: &mut IndexMap<PathBuf, Entry>,
+        filepath: impl AsRef<Path>,
+        repo: &gix::Repository,
+        state: &mut GitState,
+        result: &mut BlobEntry,
     ) -> Result<()> {
-        let contents = blob.content();
+        let filepath = filepath.as_ref();
+        let blob = repo.find_object(result.index_entry.id)?;
+        let contents = blob.data.as_slice();
+        state
+            .attr_stack
+            .at_path(filepath, Some(false), |id, buf| {
+                repo.objects.find_blob(id, buf)
+            })?
+            .matching_attributes(&mut state.attr_matches);
 
-        let lang_override = self
-            .get_str_attr(&filepath, "gengo-language")?
-            .map(|s| s.replace('-', " "))
+        let mut attrs = [None, None, None, None, None];
+        state
+            .attr_matches
+            .iter_selected()
+            .zip(attrs.iter_mut())
+            .for_each(|(info, slot)| {
+                *slot =
+                    (info.assignment.state != gix::attrs::StateRef::Unspecified).then_some(info);
+            });
+
+        let lang_override = attrs[0]
+            .as_ref()
+            .and_then(|info| match info.assignment.state {
+                StateRef::Value(v) => v.as_bstr().to_str().ok().map(|s| s.replace('-', " ")),
+                _ => None,
+            })
             .and_then(|s| self.analyzers.get(&s));
 
         let language =
-            lang_override.or_else(|| self.analyzers.pick(&filepath, contents, self.read_limit));
+            lang_override.or_else(|| self.analyzers.pick(filepath, contents, self.read_limit));
 
         let language = if let Some(language) = language {
-            language.clone()
+            language
         } else {
             return Ok(());
         };
 
-        let size = contents.len();
-        let generated = self
-            .get_boolean_attr(&filepath, "gengo-generated")?
-            .unwrap_or_else(|| self.is_generated(&filepath, contents));
-        let documentation = self
-            .get_boolean_attr(&filepath, "gengo-documentation")?
-            .unwrap_or_else(|| self.is_documentation(&filepath, contents));
-        let vendored = self
-            .get_boolean_attr(&filepath, "gengo-vendored")?
-            .unwrap_or_else(|| self.is_vendored(&filepath, contents));
+        // NOTE Unspecified attributes are None, so `state.is_set()` is
+        //      implicitly `!state.is_unset()`.
+        let generated = attrs[1]
+            .as_ref()
+            .map(|info| info.assignment.state.is_set())
+            .unwrap_or_else(|| self.is_generated(filepath, contents));
+        let documentation = attrs[2]
+            .as_ref()
+            .map(|info| info.assignment.state.is_set())
+            .unwrap_or_else(|| self.is_documentation(filepath, contents));
+        let vendored = attrs[3]
+            .as_ref()
+            .map(|info| info.assignment.state.is_set())
+            .unwrap_or_else(|| self.is_vendored(filepath, contents));
 
         let detectable = match language.category() {
             Category::Data | Category::Prose => false,
@@ -144,22 +266,21 @@ impl Gengo {
                 !(generated || documentation || vendored)
             }
         };
-        let detectable = self
-            .get_boolean_attr(&filepath, "gengo-detectable")?
+        let detectable = attrs[4]
+            .as_ref()
+            .map(|info| info.assignment.state.is_set())
             .unwrap_or(detectable);
 
-        let path_buf = filepath.as_ref().to_path_buf();
+        let size = contents.len();
         let entry = Entry {
-            language,
+            language: language.clone(),
             size,
             detectable,
             generated,
             documentation,
             vendored,
         };
-
-        results.insert(path_buf, entry);
-
+        result.result = Some(entry);
         Ok(())
     }
 
@@ -176,39 +297,6 @@ impl Gengo {
     /// Guesses if a file is vendored.
     pub fn is_vendored<P: AsRef<Path>>(&self, filepath: P, contents: &[u8]) -> bool {
         self.vendored.is_vendored(filepath, contents)
-    }
-
-    fn get_attr<P: AsRef<Path>>(&self, path: P, attr: &str) -> Result<AttrValue> {
-        let flags = Self::ATTR_CHECK_FLAGS
-            .into_iter()
-            .reduce(|a, b| a | b)
-            .unwrap();
-        let attr = self.repository.get_attr(path.as_ref(), attr, flags)?;
-        let attr = AttrValue::from_string(attr);
-        Ok(attr)
-    }
-
-    fn get_boolean_attr<P: AsRef<Path>>(&self, path: P, attr: &str) -> Result<Option<bool>> {
-        let attr = self.get_attr(path, attr)?;
-        let attr = match attr {
-            AttrValue::True => Some(true),
-            AttrValue::False => Some(false),
-            AttrValue::Unspecified => None,
-            // NOTE To avoid being overly strict, we'll just ignore invalid attributes.
-            _ => None,
-        };
-        Ok(attr)
-    }
-
-    fn get_str_attr<P: AsRef<Path>>(&self, path: P, attr: &str) -> Result<Option<String>> {
-        let attr = self.get_attr(path, attr)?;
-        let attr = match attr {
-            AttrValue::String(s) => Some(s),
-            AttrValue::Unspecified => None,
-            // NOTE To avoid being overly strict, we'll just ignore invalid attributes.
-            _ => None,
-        };
-        Ok(attr.map(String::from))
     }
 }
 
