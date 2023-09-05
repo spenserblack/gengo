@@ -15,7 +15,6 @@ max-performance = ["gix/max-performance"]
 max-performance-safe = ["gix/max-performance-safe"]
 
 [dependencies]
-git2 = { version = "0.17", default-features = false }
 gix = { version = "0.52.0", default-features = false }
 glob = "0.3"
 indexmap = { version = "2", features = ["serde"] }
