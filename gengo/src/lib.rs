@@ -19,7 +19,7 @@ pub use languages::analyzer::Analyzers;
 use languages::Category;
 pub use languages::Language;
 use std::collections::HashMap;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::sync::atomic::Ordering;
 use vendored::Vendored;
 
@@ -131,13 +131,14 @@ impl Results {
 
 impl Gengo {
     /// Analyzes each file in the repository at the given revision.
-    pub fn analyze(&mut self, rev: &str) -> Result<Analysis> {
+    pub fn analyze(&self, rev: &str) -> Result<Analysis> {
         let repo = self.repository.to_thread_local();
         let tree_id = repo.rev_parse_single(rev)?.object()?.peel_to_tree()?.id;
         let mut stack = vec![(BString::default(), repo, tree_id)];
 
         let mut all_results = Vec::new();
         while let Some((root, repo, tree_id)) = stack.pop() {
+            let is_submodule = !root.is_empty();
             let (state, index) = GitState::new(&repo, &tree_id)?;
             let (mut results, submodule_id_by_path) = Results::from_index(root.clone(), index);
 
@@ -149,14 +150,7 @@ impl Gengo {
                 })
                 .collect::<HashMap<_, _>>()
             });
-
-            if let Some(ref submodules) = submodules {
-                submodules
-                    .keys()
-                    .for_each(|path| self.vendored.add_dir(path.to_string()));
-            }
-
-            self.analyze_index(&root, &repo.into_sync(), &mut results, state)?;
+            self.analyze_index(&repo.into_sync(), &mut results, state, is_submodule)?;
             all_results.push(results);
 
             if let Some(mut submodules_by_path) = submodules {
@@ -183,10 +177,10 @@ impl Gengo {
 
     fn analyze_index(
         &self,
-        root: &BString,
         repo: &gix::ThreadSafeRepository,
         results: &mut Results,
         state: GitState,
+        is_submodule: bool,
     ) -> Result<()> {
         gix::parallel::in_parallel_with_slice(
             &mut results.entries,
@@ -201,7 +195,7 @@ impl Gengo {
                 else {
                     return Ok(());
                 };
-                self.analyze_blob(root, path, repo, state, entry)
+                self.analyze_blob(path, repo, state, entry, is_submodule)
             },
             || Some(std::time::Duration::from_micros(5)),
             std::convert::identity,
@@ -211,19 +205,13 @@ impl Gengo {
 
     fn analyze_blob(
         &self,
-        root: &BString,
         filepath: impl AsRef<Path>,
         repo: &gix::Repository,
         state: &mut GitState,
         result: &mut BlobEntry,
+        is_submodule: bool,
     ) -> Result<()> {
-        let mut buf = PathBuf::new();
-        if !root.is_empty() {
-            buf.push(root.to_string());
-        }
-        buf.push(&filepath);
-        let filepath = buf.as_path();
-
+        let filepath = filepath.as_ref();
         let blob = repo.find_object(result.index_entry.id)?;
         let contents = blob.data.as_slice();
         state
@@ -273,7 +261,7 @@ impl Gengo {
         let vendored = attrs[3]
             .as_ref()
             .map(|info| info.assignment.state.is_set())
-            .unwrap_or_else(|| self.is_vendored(filepath, contents));
+            .unwrap_or_else(|| is_submodule || self.is_vendored(filepath, contents));
 
         let detectable = match language.category() {
             Category::Data | Category::Prose => false,

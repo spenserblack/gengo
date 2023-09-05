@@ -1,22 +1,10 @@
-use super::GLOB_MATCH_OPTIONS;
-use glob::Pattern;
 use std::path::Path;
 
-pub struct Vendored {
-    globs: Vec<Pattern>,
-}
+pub struct Vendored;
 
 impl Vendored {
     pub fn new() -> Self {
-        let globs = Vec::new();
-
-        Self { globs }
-    }
-
-    pub fn add_dir<P: AsRef<Path>>(&mut self, dir: P) {
-        let pattern = format!("{}/**", dir.as_ref().display());
-        let pattern = Pattern::new(&pattern).unwrap();
-        self.globs.push(pattern);
+        Self
     }
 
     pub fn is_vendored<P: AsRef<Path>>(&self, filepath: P, contents: &[u8]) -> bool {
@@ -29,10 +17,6 @@ impl Vendored {
             .components()
             .next()
             .map_or(false, |c| c.as_os_str() == "node_modules")
-            || self
-                .globs
-                .iter()
-                .any(|g| g.matches_path_with(filepath.as_ref(), GLOB_MATCH_OPTIONS))
     }
 
     fn is_vendored_with_read<P: AsRef<Path>>(&self, _filepath: P, _contents: &[u8]) -> bool {

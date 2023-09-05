@@ -46,7 +46,7 @@ impl CLI {
         let gengo = Builder::new(&self.repository)
             .read_limit(self.read_limit)
             .build();
-        let mut gengo = match gengo {
+        let gengo = match gengo {
             Ok(gengo) => gengo,
             Err(e) => {
                 writeln!(err, "failed to create instance: {}", e)?;
