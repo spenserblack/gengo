@@ -4,8 +4,7 @@ use super::vendored::Vendored;
 use super::Analyzers;
 use super::Gengo;
 use super::{Error, ErrorKind};
-use git2::ErrorCode;
-use git2::Repository;
+use gix::discover::Error as DiscoverError;
 use std::error::Error as ErrorTrait;
 use std::path::Path;
 
@@ -50,22 +49,21 @@ impl<P: AsRef<Path>> Builder<P> {
     }
 
     pub fn build(self) -> Result<Gengo, Box<dyn ErrorTrait>> {
-        let repository = match Repository::discover(self.repository_path) {
+        let repository = match gix::discover(self.repository_path) {
             Ok(r) => r,
-            Err(e) => match e.code() {
-                ErrorCode::NotFound => {
-                    return Err(Box::new(Error::with_source(ErrorKind::NoRepository, e)));
-                }
-                _ => return Err(Box::new(e)),
-            },
+            Err(DiscoverError::Discover(err)) => {
+                return Err(Box::new(Error::with_source(ErrorKind::NoRepository, err)))
+            }
+            Err(err) => return Err(err.into()),
         };
+        let repository = gix::open(repository.path())?;
         let analyzers = self.analyzers.unwrap_or_default();
         let read_limit = self.read_limit.unwrap_or(Self::DEFAULT_READ_LIMIT);
         let documentation = Documentation::new();
         let generated = Generated::new();
         let vendored = Vendored::new();
         Ok(Gengo {
-            repository,
+            repository: repository.into_sync(),
             analyzers,
             read_limit,
             documentation,
