@@ -27,7 +27,7 @@ jobs:
           - --no-default-features --features color
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Fetch Test Branches
         run: git fetch origin test/javascript:test/javascript
       - uses: actions/cache@v3
@@ -67,7 +67,7 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Check Format
         run: cargo fmt -- --check
@@ -79,7 +79,7 @@ jobs:
     name: Check Languages File
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.0'
@@ -90,7 +90,7 @@ jobs:
     name: Benchmarks
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 3
       - name: Run Benchmarks
