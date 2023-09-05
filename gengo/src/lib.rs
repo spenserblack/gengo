@@ -19,7 +19,7 @@ pub use languages::analyzer::Analyzers;
 use languages::Category;
 pub use languages::Language;
 use std::collections::HashMap;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::sync::atomic::Ordering;
 use vendored::Vendored;
 
@@ -131,7 +131,7 @@ impl Results {
 
 impl Gengo {
     /// Analyzes each file in the repository at the given revision.
-    pub fn analyze(&self, rev: &str) -> Result<Analysis> {
+    pub fn analyze(&mut self, rev: &str) -> Result<Analysis> {
         let repo = self.repository.to_thread_local();
         let tree_id = repo.rev_parse_single(rev)?.object()?.peel_to_tree()?.id;
         let mut stack = vec![(BString::default(), repo, tree_id)];
@@ -149,7 +149,14 @@ impl Gengo {
                 })
                 .collect::<HashMap<_, _>>()
             });
-            self.analyze_index(&repo.into_sync(), &mut results, state)?;
+
+            if let Some(ref submodules) = submodules {
+                submodules
+                    .keys()
+                    .for_each(|path| self.vendored.add_dir(path.to_string()));
+            }
+
+            self.analyze_index(&root, &repo.into_sync(), &mut results, state)?;
             all_results.push(results);
 
             if let Some(mut submodules_by_path) = submodules {
@@ -176,6 +183,7 @@ impl Gengo {
 
     fn analyze_index(
         &self,
+        root: &BString,
         repo: &gix::ThreadSafeRepository,
         results: &mut Results,
         state: GitState,
@@ -193,7 +201,7 @@ impl Gengo {
                 else {
                     return Ok(());
                 };
-                self.analyze_blob(path, repo, state, entry)
+                self.analyze_blob(root, path, repo, state, entry)
             },
             || Some(std::time::Duration::from_micros(5)),
             std::convert::identity,
@@ -203,12 +211,19 @@ impl Gengo {
 
     fn analyze_blob(
         &self,
+        root: &BString,
         filepath: impl AsRef<Path>,
         repo: &gix::Repository,
         state: &mut GitState,
         result: &mut BlobEntry,
     ) -> Result<()> {
-        let filepath = filepath.as_ref();
+        let mut buf = PathBuf::new();
+        if !root.is_empty() {
+            buf.push(root.to_string());
+        }
+        buf.push(&filepath);
+        let filepath = buf.as_path();
+
         let blob = repo.find_object(result.index_entry.id)?;
         let contents = blob.data.as_slice();
         state

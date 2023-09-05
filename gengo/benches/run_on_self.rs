@@ -2,7 +2,7 @@ use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use gengo::Builder;
 
 fn head_benchmark(c: &mut Criterion) {
-    let gengo = Builder::new(env!("CARGO_MANIFEST_DIR")).build().unwrap();
+    let mut gengo = Builder::new(env!("CARGO_MANIFEST_DIR")).build().unwrap();
     for n in 0..3 {
         let rev = format!("HEAD{}", "^".repeat(n));
         c.bench_function(&format!("run on {}", rev), |b| {
