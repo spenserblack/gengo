@@ -138,6 +138,7 @@ impl Gengo {
 
         let mut all_results = Vec::new();
         while let Some((root, repo, tree_id)) = stack.pop() {
+            let is_submodule = !root.is_empty();
             let (state, index) = GitState::new(&repo, &tree_id)?;
             let (mut results, submodule_id_by_path) = Results::from_index(root.clone(), index);
 
@@ -149,7 +150,7 @@ impl Gengo {
                 })
                 .collect::<HashMap<_, _>>()
             });
-            self.analyze_index(&repo.into_sync(), &mut results, state)?;
+            self.analyze_index(&repo.into_sync(), &mut results, state, is_submodule)?;
             all_results.push(results);
 
             if let Some(mut submodules_by_path) = submodules {
@@ -179,6 +180,7 @@ impl Gengo {
         repo: &gix::ThreadSafeRepository,
         results: &mut Results,
         state: GitState,
+        is_submodule: bool,
     ) -> Result<()> {
         gix::parallel::in_parallel_with_slice(
             &mut results.entries,
@@ -193,7 +195,7 @@ impl Gengo {
                 else {
                     return Ok(());
                 };
-                self.analyze_blob(path, repo, state, entry)
+                self.analyze_blob(path, repo, state, entry, is_submodule)
             },
             || Some(std::time::Duration::from_micros(5)),
             std::convert::identity,
@@ -207,6 +209,7 @@ impl Gengo {
         repo: &gix::Repository,
         state: &mut GitState,
         result: &mut BlobEntry,
+        is_submodule: bool,
     ) -> Result<()> {
         let filepath = filepath.as_ref();
         let blob = repo.find_object(result.index_entry.id)?;
@@ -258,7 +261,7 @@ impl Gengo {
         let vendored = attrs[3]
             .as_ref()
             .map(|info| info.assignment.state.is_set())
-            .unwrap_or_else(|| self.is_vendored(filepath, contents));
+            .unwrap_or_else(|| is_submodule || self.is_vendored(filepath, contents));
 
         let detectable = match language.category() {
             Category::Data | Category::Prose => false,
