@@ -62,5 +62,7 @@ deps/* gengo-vendored
 templates/*.js gengo-language=Plain-Text
 ```
 
+You will need to commit your `.gitattributes` file for it to take effect.
+
 [linguist]: https://github.com/github-linguist/linguist
 [tokei]: https://github.com/xampprocky/tokei
