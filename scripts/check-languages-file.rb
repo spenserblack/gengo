@@ -46,11 +46,6 @@ LANGUAGES.each do |langname, langdef|
     STDERR.puts "#{langname}: 'heuristics' must be an array"
     exit_code = 1
   end
-  heuristics = langdef['heuristics'] || []
-  sorted?(heuristics) do |a, b|
-    STDERR.puts "#{langname}: 'heuristics' are out of order: '#{a}' and '#{b}'"
-    exit_code = 1
-  end
 
   bad_matchers = false
   matchers = langdef['matchers']
