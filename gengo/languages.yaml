@@ -349,6 +349,17 @@ JavaScript:
       - jsx
     interpreters:
       - node
+Jinja-like:
+  category: markup
+  color: "#A00000"
+  heuristics:
+    - "^\\{%\\sextends\\s"
+    - "\\{%\\s.+?\\s%\\}"
+  matchers:
+    extensions:
+      - html
+      - tera
+  priority: 25
 Jsonnet:
   category: programming
   color: "#0064BD"
