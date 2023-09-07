@@ -593,6 +593,7 @@ TOML:
       - toml
     filenames:
       - Cargo.lock
+      - poetry.lock
 TypeScript:
   category: programming
   color: "#2F74C0"
