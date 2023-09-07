@@ -47,6 +47,16 @@
 #
 # WARNING: Please alphabetize!
 ---
+".Env":
+  category: data
+  color: "#ECD53F"
+  matchers:
+    extensions:
+      - env
+    filenames:
+      - ".env"
+    patterns:
+      - ".env.*" # .env.local, .env.example
 ABAP:
   category: programming
   color: "#3C3C3C"
