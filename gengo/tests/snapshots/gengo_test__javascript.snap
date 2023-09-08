@@ -2,7 +2,7 @@
 source: gengo/tests/gengo_test.rs
 expression: results
 ---
-{
+Analysis {
     "bin.js": Entry {
         language: Language {
             name: "JavaScript",

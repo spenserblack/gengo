@@ -10,7 +10,7 @@ env:
 
 jobs:
   build:
-    name: Build (${{ matrix.os }})
+    name: Build ${{ matrix.feature-flags }} (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     needs:
       - check-languages-file
@@ -22,9 +22,12 @@ jobs:
           - macOS-latest
           - ubuntu-latest
           - windows-latest
+        feature-flags:
+          - --no-default-features
+          - --no-default-features --features color
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Fetch Test Branches
         run: git fetch origin test/javascript:test/javascript
       - uses: actions/cache@v3
@@ -38,13 +41,13 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Check
-        run: cargo check
+        run: cargo check ${{ matrix.feature-flags }}
 
       - name: Build
-        run: cargo build --verbose
+        run: cargo build --verbose ${{ matrix.feature-flags }}
 
       - name: Test
-        run: cargo test --verbose
+        run: cargo test --verbose ${{ matrix.feature-flags }}
 
       - name: Install tarpaulin
         uses: actions-rs/install@v0.1
@@ -53,18 +56,18 @@ jobs:
         with:
           crate: cargo-tarpaulin
       - name: Generate Coverage
-        run: cargo tarpaulin --verbose --workspace --timeout 120 --out Xml
+        run: cargo tarpaulin --verbose ${{ matrix.feature-flags }} --workspace --timeout 120 --out Xml
       - name: Upload Coverage
         uses: codecov/codecov-action@v3
         with:
-          flags: ${{ matrix.os }}
+          flags: ${{ matrix.os }},${{ matrix.feature-flags }}
           token: ${{ secrets.CODECOV_TOKEN }}
 
   lint:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Check Format
         run: cargo fmt -- --check
@@ -76,7 +79,7 @@ jobs:
     name: Check Languages File
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.0'
@@ -87,7 +90,7 @@ jobs:
     name: Benchmarks
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 3
       - name: Run Benchmarks

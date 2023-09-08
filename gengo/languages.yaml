@@ -47,6 +47,16 @@
 #
 # WARNING: Please alphabetize!
 ---
+".Env":
+  category: data
+  color: "#ECD53F"
+  matchers:
+    extensions:
+      - env
+    filenames:
+      - ".env"
+    patterns:
+      - ".env.*" # .env.local, .env.example
 ABAP:
   category: programming
   color: "#3C3C3C"
@@ -59,6 +69,15 @@ ABNF:
   matchers:
     extensions:
       - abnf
+ATS:
+  category: programming
+  color: "#0005FB"
+  matchers:
+    extensions:
+      - atxt
+      - dats
+      - hats
+      - sats
 Ada:
   category: programming
   color: "#005A00"
@@ -184,6 +203,15 @@ Docker:
       - "Dockerfile"
     patterns:
       - "Dockerfile.*" # Dockerfile.<extension>
+Elixir:
+  category: programming
+  color: "#6B5674"
+  matchers:
+    extensions:
+      - ex
+      - exs
+    interpreters:
+      - elixir
 Elm:
   category: programming
   color: "#1293D8"
@@ -203,6 +231,39 @@ Emojicode:
     extensions:
       - emojic
       - "🍇"
+Erlang:
+  category: programming
+  color: "#A90433"
+  matchers:
+    extensions:
+      - erl
+      - hrl
+"F#":
+  category: programming
+  color: "#F8008F"
+  matchers:
+    extensions:
+      - fs
+      - fsx
+"FORTRAN Legacy":
+  category: programming
+  color: "#716152"
+  matchers:
+    extensions:
+      - f
+      - f77
+      - for
+      - ftn
+      - pfo
+"Fortran Modern":
+  category: programming
+  color: "#725196"
+  matchers:
+    extensions:
+      - f03
+      - f08
+      - f90
+      - f95
 GitHub Workflow:
   category: programming
   color: "#2088FF"
@@ -223,12 +284,41 @@ GraphQL:
   matchers:
     extensions:
       - graphql
+Groovy:
+  category: programming
+  color: "#4298B8"
+  matchers:
+    extensions:
+      - groovy
+    interpreters:
+      - groovy
 HTML:
   category: markup
   color: "#E96228"
   matchers:
     extensions:
       - html
+Haskell:
+  category: programming
+  color: "#5E5086"
+  matchers:
+    extensions:
+      - hs
+HolyC:
+  category: programming
+  color: "#FFFF00"
+  matchers:
+    extensions:
+      - hc
+Ignore List:
+  category: data
+  color: "#330000"
+  matchers:
+    filenames:
+      - ".dockerignore"
+      - ".gitignore"
+      - ".npmignore"
+      - ".vercelignore"
 JSON:
   category: data
   color: "#AAAAAA"
@@ -269,12 +359,43 @@ JavaScript:
       - jsx
     interpreters:
       - node
+Jinja-like:
+  category: markup
+  color: "#A00000"
+  heuristics:
+    - "^\\{%\\sextends\\s"
+    - "\\{%\\s.+?\\s%\\}"
+  matchers:
+    extensions:
+      - html
+      - tera
+  priority: 25
+Jsonnet:
+  category: programming
+  color: "#0064BD"
+  matchers:
+    extensions:
+      - jsonnet
+      - libsonnet
 Julia:
   category: programming
   color: "#9558B2"
   matchers:
     extensions:
       - jl
+Jupyter Notebook:
+  category: markup
+  color: "#F37726"
+  matchers:
+    extensions:
+      - ipynb
+Kotlin:
+  category: programming
+  color: "#7F52FF"
+  matchers:
+    extensions:
+      - kt
+      - kts
 Lua:
   category: programming
   color: "#02027D"
@@ -305,12 +426,40 @@ Mermaid:
     extensions:
       - mermaid
       - mmd
+Nim:
+  category: programming
+  color: "#ffe953"
+  matchers:
+    extensions:
+      - nim
+Nix:
+  category: programming
+  color: "#6898D3" # Average of the two colors in the logo
+  matchers:
+    extensions:
+      - nix
+OCaml:
+  category: programming
+  color: "#f48904"
+  matchers:
+    extensions:
+      - ml
+      - mli
 PHP:
   category: programming
   color: "#7A86B8"
   matchers:
     extensions:
       - php
+Perl:
+  category: programming
+  color: "#51547F"
+  matchers:
+    extensions:
+      - cow # cowsay files are Perl
+      - pl
+    interpreters:
+      - perl
 Plain Text:
   category: prose
   color: "#000000"
@@ -335,6 +484,12 @@ Pug:
   matchers:
     extensions:
       - pug
+PureScript:
+  category: programming
+  color: "#1D222D"
+  matchers:
+    extensions:
+      - purs
 Python:
   category: programming
   color: "#3472A6"
@@ -354,12 +509,24 @@ Python Requirements File:
     patterns:
       - "requirements-*.txt"
   priority: 75
+R:
+  category: programming
+  color: "#1F66B7" # Average of the two colors used in the logo gradient: https://www.r-project.org/logo/Rlogo.svg
+  matchers:
+    extensions:
+      - R
 Regex:
   category: data
   color: "#44E03F"
   matchers:
     extensions:
       - regex
+"Ren'Py":
+  category: programming
+  color: "#FF7F7F"
+  matchers:
+    extensions:
+      - rpy
 Ruby:
   category: programming
   color: "#D21304"
@@ -400,10 +567,18 @@ Shell:
       - bash
       - fish
       - sh
+      - zsh
     interpreters:
       - bash
       - fish
       - sh
+      - zsh
+Solidity:
+  category: programming
+  color: "#2B247C"
+  matchers:
+    extensions:
+      - sol
 Svelte:
   category: programming
   color: "#FF3E00"
@@ -416,10 +591,14 @@ TOML:
   matchers:
     extensions:
       - toml
+    filenames:
+      - Cargo.lock
+      - poetry.lock
 TypeScript:
   category: programming
   color: "#2F74C0"
   heuristics:
+    - "(?m)^/// <reference "
     - "(?m)^export\\s+\\w[\\w\\d_]*?"
     - "(?m)^import\\s+"
   matchers:
@@ -428,6 +607,14 @@ TypeScript:
       - tsx
     interpreters:
       - deno
+Vim Script:
+  category: programming
+  color: "#019833"
+  matchers:
+    extensions:
+      - vim
+    filenames:
+      - ".vimrc"
 Vue:
   category: programming
   color: "#3FB27F"
@@ -443,6 +630,7 @@ XML:
     extensions:
       - ts
       - xml
+  priority: 25
 YAML:
   category: data
   color: "#CC1018"
@@ -450,3 +638,9 @@ YAML:
     extensions:
       - yaml
       - yml
+Zig:
+  category: programming
+  color: "#F7A41D"
+  matchers:
+    extensions:
+      - zig

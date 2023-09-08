@@ -14,7 +14,37 @@
       "profile": "https://github.com/o2sh",
       "contributions": [
         "code",
-        "maintenance"
+        "maintenance",
+        "data"
+      ]
+    },
+    {
+      "login": "jake-87",
+      "name": "j",
+      "avatar_url": "https://avatars.githubusercontent.com/u/68929154?v=4",
+      "profile": "https://github.com/jake-87",
+      "contributions": [
+        "data"
+      ]
+    },
+    {
+      "login": "pykenny",
+      "name": "Po-Yu Hsieh",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6328813?v=4",
+      "profile": "https://pyhsieh.net/",
+      "contributions": [
+        "data"
+      ]
+    },
+    {
+      "login": "Byron",
+      "name": "Sebastian Thiel",
+      "avatar_url": "https://avatars.githubusercontent.com/u/63622?v=4",
+      "profile": "https://keybase.io/byronbates",
+      "contributions": [
+        "ideas",
+        "code",
+        "userTesting"
       ]
     }
   ],

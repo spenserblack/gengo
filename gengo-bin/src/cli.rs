@@ -1,9 +1,8 @@
 use clap::Error as ClapError;
 use clap::Parser;
-use gengo::{Builder, Entry};
+use gengo::{analysis::SummaryOpts, Analysis, Builder};
 use indexmap::IndexMap;
 use std::io::{self, Write};
-use std::path::PathBuf;
 
 pub fn new() -> CLI {
     CLI::parse()
@@ -36,6 +35,10 @@ pub struct CLI {
     /// Include detailed statistics for each language.
     #[arg(short = 'b', long)]
     breakdown: bool,
+    /// Force the output to not have colors.
+    #[cfg(feature = "color")]
+    #[arg(long)]
+    no_color: bool,
 }
 
 impl CLI {
@@ -59,29 +62,23 @@ impl CLI {
             }
         };
 
-        let mut compiled = IndexMap::new();
-        let mut total = 0;
-        for (_, entry) in results.iter() {
-            if !(self.all || entry.detectable()) {
-                continue;
-            }
-
-            let language = entry.language();
-
-            let language = language.name();
-            let language = String::from(language);
-            let size = entry.size();
-
-            let entry = compiled.entry(language).or_insert(0);
-            *entry += size;
-            total += size;
-        }
-
+        let mut summary_opts: SummaryOpts = Default::default();
+        summary_opts.all = self.all;
+        let summary = results.summary_with(summary_opts);
+        let total = summary.total();
         let total = total as f64;
-        for (language, size) in compiled.into_iter() {
+
+        for (language, size) in summary.iter() {
             let percentage = (size * 100) as f64 / total;
+            #[cfg(feature = "color")]
+            let color = language.owo_color().unwrap();
+            #[cfg(not(feature = "color"))]
+            let color = ();
+
             let stats = format!("{:>6.2}% {}", percentage, size);
-            writeln!(out, "{:<15} {}", stats, language)?;
+            let line = format!("{:<15} {}", stats, language.name());
+            let line = self.colorize(&line, color);
+            writeln!(out, "{}", line)?;
         }
 
         if self.breakdown {
@@ -96,18 +93,16 @@ impl CLI {
         &self,
         mut out: Out,
         mut _err: Err,
-        results: IndexMap<PathBuf, Entry>,
+        results: Analysis,
     ) -> Result<(), io::Error> {
         let files_per_language = {
             let mut files_per_language = IndexMap::new();
-            for (path, entry) in results.into_iter() {
+            for (path, entry) in results.iter() {
                 if !(self.all || entry.detectable()) {
                     continue;
                 }
-                let language = entry.language();
-                let language = language.name();
-                let language = String::from(language);
 
+                let language = entry.language();
                 let language_files = files_per_language.entry(language).or_insert_with(Vec::new);
                 language_files.push(path);
             }
@@ -115,12 +110,52 @@ impl CLI {
         };
 
         for (language, files) in files_per_language.into_iter() {
-            writeln!(out, "{}", language)?;
+            #[cfg(feature = "color")]
+            let color = language.owo_color().unwrap();
+            #[cfg(not(feature = "color"))]
+            let color = ();
+
+            writeln!(out, "{}", self.colorize(language.name(), color))?;
             for file in files {
-                writeln!(out, "  {}", file.display())?;
+                writeln!(
+                    out,
+                    "  {}",
+                    self.colorize(&file.display().to_string(), color)
+                )?;
             }
             writeln!(out)?;
         }
         Ok(())
+    }
+
+    #[cfg(feature = "color")]
+    fn colorize(&self, s: &str, color: owo_colors::Rgb) -> String {
+        use owo_colors::{OwoColorize, Rgb};
+
+        if self.no_color {
+            return String::from(s);
+        }
+
+        // NOTE Adapted from https://css-tricks.com/converting-color-spaces-in-javascript/#aa-rgb-to-hsl
+        let r = color.0;
+        let g = color.1;
+        let b = color.2;
+        let min: u16 = [r, g, b].into_iter().min().unwrap().into();
+        let max: u16 = [r, g, b].into_iter().max().unwrap().into();
+        let lightness = (max + min) / 2;
+        let bright = lightness > 0x7F;
+
+        let line = s.on_color(color);
+        let fg = if bright {
+            Rgb(0, 0, 0)
+        } else {
+            Rgb(0xFF, 0xFF, 0xFF)
+        };
+        line.color(fg).to_string()
+    }
+
+    #[cfg(not(feature = "color"))]
+    fn colorize<Anything>(&self, s: &str, _: Anything) -> String {
+        String::from(s)
     }
 }
