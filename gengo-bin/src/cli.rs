@@ -68,8 +68,14 @@ impl CLI {
         let total = summary.total();
         let total = total as f64;
 
+        let summary = {
+            let mut summary: Vec<(_, _)> = summary.iter().collect();
+            summary.sort_by_key(|(_, size)| usize::MAX - *size);
+            summary
+        };
+
         for (language, size) in summary.iter() {
-            let percentage = (size * 100) as f64 / total;
+            let percentage = (*size * 100) as f64 / total;
             #[cfg(feature = "color")]
             let color = language.owo_color().unwrap();
             #[cfg(not(feature = "color"))]
