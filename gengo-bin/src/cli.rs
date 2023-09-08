@@ -115,6 +115,12 @@ impl CLI {
             files_per_language
         };
 
+        let files_per_language = {
+            let mut v: Vec<(_, _)> = files_per_language.into_iter().collect();
+            v.sort_by_key(|(language, _)| language.name());
+            v
+        };
+
         for (language, files) in files_per_language.into_iter() {
             #[cfg(feature = "color")]
             let color = language.owo_color().unwrap();
@@ -122,6 +128,13 @@ impl CLI {
             let color = ();
 
             writeln!(out, "{}", self.colorize(language.name(), color))?;
+
+            let files = {
+                let mut files = files;
+                files.sort();
+                files
+            };
+
             for file in files {
                 writeln!(
                     out,
