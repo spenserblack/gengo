@@ -6,4 +6,4 @@ RUN apk --update add cmake make musl-dev pkgconfig && \
     cp target/release/gengo /usr/local/bin/gengo && \
     rm -rf target
 
-CMD ["gengo"]
+ENTRYPOINT ["gengo"]
