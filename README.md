@@ -64,5 +64,14 @@ templates/*.js gengo-language=Plain-Text
 
 You will need to commit your `.gitattributes` file for it to take effect.
 
+### Docker
+
+You can build a docker image and run it as well.
+
+```bash
+docker build -t gengo .
+docker run --rm -v $(pwd):$(pwd) -w $(pwd) -t gengo
+```
+
 [linguist]: https://github.com/github-linguist/linguist
 [tokei]: https://github.com/xampprocky/tokei
