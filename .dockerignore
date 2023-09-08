@@ -1,6 +1,14 @@
+.devcontainer/
+.git/
+.github/
+.vscode/
 docs/
 scripts/
 target/
 
 *.md
+.all-contributorsrc
+.editorconfig
+.git-blame-ignore-revs
+.gitattributes
 CODEOWNERS
