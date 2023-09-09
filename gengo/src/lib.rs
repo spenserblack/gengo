@@ -72,7 +72,7 @@ impl GitState {
         ]);
         Ok((
             Self {
-                attr_stack,
+                attr_stack: attr_stack.detach(),
                 attr_matches,
             },
             index.into_parts().0,
