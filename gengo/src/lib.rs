@@ -29,6 +29,7 @@ mod documentation;
 mod error;
 mod generated;
 pub mod languages;
+mod provider;
 mod vendored;
 
 type Result<T, E = Box<dyn std::error::Error + Send + Sync + 'static>> = std::result::Result<T, E>;
