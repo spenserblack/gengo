@@ -1,9 +1,9 @@
-//! Provides file providers.
+//! Provides sources to get files and their attributes.
 use crate::Language;
 use std::path::Path;
 
 /// Provides files and overrides.
-pub trait Provider<'contents, P: AsRef<Path>> {
+pub trait FileSource<'contents, P: AsRef<Path>> {
     type Iter: Iterator<Item = (P, &'contents [u8])>;
 
     /// Returns an iterator over the files.
