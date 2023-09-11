@@ -2,9 +2,12 @@
 use crate::Language;
 use std::path::Path;
 
+mod git;
+
 /// Provides files and overrides.
-pub trait FileSource<'contents, P: AsRef<Path>> {
-    type Iter: Iterator<Item = (P, &'contents [u8])>;
+pub trait FileSource<'contents> {
+    type Filepath: AsRef<Path>;
+    type Iter: Iterator<Item = (Self::Filepath, &'contents [u8])>;
 
     /// Returns an iterator over the files.
     fn files(&self) -> Self::Iter;
