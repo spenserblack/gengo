@@ -1,6 +1,7 @@
 //! Provides sources to get files and their attributes.
 use crate::Language;
 use std::path::Path;
+pub use git::Git;
 
 mod git;
 
