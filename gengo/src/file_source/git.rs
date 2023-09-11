@@ -34,9 +34,29 @@ impl Git {
 
 impl<'repo> FileSource<'repo> for Git {
     type Filepath = Cow<'repo, Path>;
-    type Iter = <Vec<(Self::Filepath, &'repo [u8])> as IntoIterator>::IntoIter;
+    type Contents = &'repo [u8];
+    type Iter = Iter<'repo>;
 
     fn files(&self) -> Self::Iter {
-        todo!();
+        todo!("Initialize iterator");
+        Iter {
+            state: (),
+            stack: (),
+            foo: & (),
+        }
+    }
+}
+
+pub struct Iter<'repo> {
+    state: (),
+    stack: (),
+    foo: &'repo (),
+}
+
+impl<'repo> Iterator for Iter<'repo> {
+    type Item = (Cow<'repo, Path>, &'repo [u8]);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        todo!("implement iteration");
     }
 }

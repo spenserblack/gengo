@@ -8,7 +8,8 @@ mod git;
 /// Provides files and overrides.
 pub trait FileSource<'contents> {
     type Filepath: AsRef<Path> + Send + Sync;
-    type Iter: Iterator<Item = (Self::Filepath, &'contents [u8])>;
+    type Contents: AsRef<[u8]> + Send + Sync;
+    type Iter: Iterator<Item = (Self::Filepath, Self::Contents)>;
 
     /// Returns an iterator over the files.
     fn files(&self) -> Self::Iter;
