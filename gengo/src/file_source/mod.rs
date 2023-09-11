@@ -6,7 +6,7 @@ mod git;
 
 /// Provides files and overrides.
 pub trait FileSource<'contents> {
-    type Filepath: AsRef<Path>;
+    type Filepath: AsRef<Path> + Send + Sync;
     type Iter: Iterator<Item = (Self::Filepath, &'contents [u8])>;
 
     /// Returns an iterator over the files.
