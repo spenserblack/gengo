@@ -98,18 +98,10 @@ impl Results {
     /// Create a data structure that holds index entries as well as our results per entry.
     /// Return a list of paths at which submodules can be found, along with their
     /// commit ids.
-    fn from_index(
-        root: BString,
-        index: gix::index::State,
-    ) -> (Self, Vec<(BString, gix::ObjectId)>) {
+    fn from_index(root: BString, index: gix::index::State) -> Self {
         use gix::index::entry::Mode;
 
         let (entries, path_storage) = index.into_entries();
-        let submodules: Vec<_> = entries
-            .iter()
-            .filter(|e| e.mode == Mode::COMMIT)
-            .map(|e| (e.path_in(&path_storage).to_owned(), e.id))
-            .collect();
         let entries: Vec<_> = entries
             .into_iter()
             .filter(|e| matches!(e.mode, Mode::FILE | Mode::FILE_EXECUTABLE))
@@ -118,14 +110,12 @@ impl Results {
                 result: None,
             })
             .collect();
-        (
-            Results {
-                root,
-                entries,
-                path_storage,
-            },
-            submodules,
-        )
+
+        Results {
+            root,
+            entries,
+            path_storage,
+        }
     }
 }
 
@@ -137,39 +127,14 @@ impl Gengo {
         let mut stack = vec![(BString::default(), repo, tree_id)];
 
         let mut all_results = Vec::new();
+        // TODO Remove unused variables/code
         while let Some((root, repo, tree_id)) = stack.pop() {
-            let is_submodule = !root.is_empty();
+            let is_submodule = false;
             let (state, index) = GitState::new(&repo, &tree_id)?;
-            let (mut results, submodule_id_by_path) = Results::from_index(root.clone(), index);
+            let mut results = Results::from_index(root.clone(), index);
 
-            let submodules = repo.submodules()?.map(|sms| {
-                sms.filter_map(|sm| {
-                    let path = sm.path().ok()?;
-                    let sm_repo = sm.open().ok().flatten()?;
-                    Some((path.into_owned(), sm_repo))
-                })
-                .collect::<HashMap<_, _>>()
-            });
             self.analyze_index(&repo.into_sync(), &mut results, state, is_submodule)?;
             all_results.push(results);
-
-            if let Some(mut submodules_by_path) = submodules {
-                stack.extend(
-                    submodule_id_by_path
-                        .into_iter()
-                        .filter_map(|(path, sm_commit)| {
-                            let sm_repo = submodules_by_path.remove(&path)?;
-                            let tree_id =
-                                sm_repo.find_object(sm_commit).ok()?.peel_to_tree().ok()?.id;
-                            let mut abs_root = root.clone();
-                            if !abs_root.is_empty() {
-                                abs_root.push(b'/');
-                            }
-                            abs_root.extend_from_slice(&path);
-                            Some((abs_root, sm_repo, tree_id))
-                        }),
-                );
-            }
         }
 
         Ok(Analysis(all_results))
