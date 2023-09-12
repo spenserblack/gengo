@@ -126,9 +126,8 @@ impl Gengo {
         let mut results = Results::from_index(index);
 
         self.analyze_index(&repo.into_sync(), &mut results, state)?;
-        let all_results = vec![results];
 
-        Ok(Analysis(all_results))
+        Ok(Analysis(results))
     }
 
     fn analyze_index(
