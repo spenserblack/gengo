@@ -43,8 +43,7 @@ impl Analysis {
     pub fn summary_with(&self, opts: SummaryOpts) -> Summary {
         let mut summary = IndexMap::new();
         let results = &self.0;
-        for entry in results.entries.iter().filter_map(|e| e.result.as_ref())
-        {
+        for entry in results.entries.iter().filter_map(|e| e.result.as_ref()) {
             if !(opts.all || entry.detectable()) {
                 continue;
             }
