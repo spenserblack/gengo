@@ -12,13 +12,13 @@ use documentation::Documentation;
 pub use error::{Error, ErrorKind};
 use generated::Generated;
 use gix::attrs::StateRef;
-use gix::bstr::{BString, ByteSlice};
+use gix::bstr::ByteSlice;
 use gix::prelude::FindExt;
 use glob::MatchOptions;
 pub use languages::analyzer::Analyzers;
 use languages::Category;
 pub use languages::Language;
-use std::collections::HashMap;
+
 use std::path::Path;
 use std::sync::atomic::Ordering;
 use vendored::Vendored;
