@@ -610,7 +610,7 @@ dependencies = [
 
 [[package]]
 name = "gengo"
-version = "0.5.2"
+version = "0.6.0"
 dependencies = [
  "criterion",
  "gix",
@@ -628,7 +628,7 @@ dependencies = [
 
 [[package]]
 name = "gengo-bin"
-version = "0.5.2"
+version = "0.6.0"
 dependencies = [
  "clap",
  "gengo",
