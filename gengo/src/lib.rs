@@ -88,8 +88,6 @@ struct BlobEntry {
 
 /// The result of analyzing a repository or a single submodule
 struct Results {
-    /// If this is a submodule, the root is not empty and the full path to where our paths start.
-    root: BString,
     entries: Vec<BlobEntry>,
     path_storage: gix::index::PathStorage,
 }
@@ -98,7 +96,7 @@ impl Results {
     /// Create a data structure that holds index entries as well as our results per entry.
     /// Return a list of paths at which submodules can be found, along with their
     /// commit ids.
-    fn from_index(root: BString, index: gix::index::State) -> Self {
+    fn from_index(index: gix::index::State) -> Self {
         use gix::index::entry::Mode;
 
         let (entries, path_storage) = index.into_entries();
@@ -112,7 +110,6 @@ impl Results {
             .collect();
 
         Results {
-            root,
             entries,
             path_storage,
         }
@@ -124,18 +121,12 @@ impl Gengo {
     pub fn analyze(&self, rev: &str) -> Result<Analysis> {
         let repo = self.repository.to_thread_local();
         let tree_id = repo.rev_parse_single(rev)?.object()?.peel_to_tree()?.id;
-        let mut stack = vec![(BString::default(), repo, tree_id)];
 
-        let mut all_results = Vec::new();
-        // TODO Remove unused variables/code
-        while let Some((root, repo, tree_id)) = stack.pop() {
-            let is_submodule = false;
-            let (state, index) = GitState::new(&repo, &tree_id)?;
-            let mut results = Results::from_index(root.clone(), index);
+        let (state, index) = GitState::new(&repo, &tree_id)?;
+        let mut results = Results::from_index(index);
 
-            self.analyze_index(&repo.into_sync(), &mut results, state, is_submodule)?;
-            all_results.push(results);
-        }
+        self.analyze_index(&repo.into_sync(), &mut results, state)?;
+        let all_results = vec![results];
 
         Ok(Analysis(all_results))
     }
@@ -145,7 +136,6 @@ impl Gengo {
         repo: &gix::ThreadSafeRepository,
         results: &mut Results,
         state: GitState,
-        is_submodule: bool,
     ) -> Result<()> {
         gix::parallel::in_parallel_with_slice(
             &mut results.entries,
@@ -160,7 +150,7 @@ impl Gengo {
                 else {
                     return Ok(());
                 };
-                self.analyze_blob(path, repo, state, entry, is_submodule)
+                self.analyze_blob(path, repo, state, entry)
             },
             || Some(std::time::Duration::from_micros(5)),
             std::convert::identity,
@@ -174,7 +164,6 @@ impl Gengo {
         repo: &gix::Repository,
         state: &mut GitState,
         result: &mut BlobEntry,
-        is_submodule: bool,
     ) -> Result<()> {
         let filepath = filepath.as_ref();
         let blob = repo.find_object(result.index_entry.id)?;
@@ -226,7 +215,7 @@ impl Gengo {
         let vendored = attrs[3]
             .as_ref()
             .map(|info| info.assignment.state.is_set())
-            .unwrap_or_else(|| is_submodule || self.is_vendored(filepath, contents));
+            .unwrap_or_else(|| self.is_vendored(filepath, contents));
 
         let detectable = match language.category() {
             Category::Data | Category::Prose => false,

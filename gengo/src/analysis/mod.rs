@@ -21,14 +21,7 @@ impl Analysis {
                     Some((
                         {
                             let p = entry.index_entry.path_in(&results.path_storage);
-                            if !results.root.is_empty() {
-                                let mut base = results.root.clone();
-                                base.push(b'/');
-                                base.extend_from_slice(p);
-                                gix::path::try_from_bstring(base).ok()?.into()
-                            } else {
-                                gix::path::try_from_bstr(p).ok()?
-                            }
+                            gix::path::try_from_bstr(p).ok()?
                         },
                         result,
                     ))
