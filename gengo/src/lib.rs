@@ -94,8 +94,6 @@ struct Results {
 
 impl Results {
     /// Create a data structure that holds index entries as well as our results per entry.
-    /// Return a list of paths at which submodules can be found, along with their
-    /// commit ids.
     fn from_index(index: gix::index::State) -> Self {
         use gix::index::entry::Mode;
 
