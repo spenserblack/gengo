@@ -9,6 +9,8 @@ license = { workspace = true }
 
 keywords = { workspace = true }
 
+exclude = ["README.md"]
+
 [features]
 default = ["max-performance-safe"]
 max-performance = ["gix/max-performance"]

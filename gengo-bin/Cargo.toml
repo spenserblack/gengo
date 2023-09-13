@@ -10,6 +10,8 @@ license = { workspace = true }
 categories = ["command-line-utilities"]
 keywords = { workspace = true }
 
+exclude = ["README.md"]
+
 [[bin]]
 name = "gengo"
 
