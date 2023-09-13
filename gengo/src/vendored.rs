@@ -28,15 +28,10 @@ impl Vendored {
     }
 
     fn globs() -> Vec<Pattern> {
-        [
-            // NOTE To prevent an unrelated change in the future
-            "**/node_modules",
-            "**/node_modules/**",
-            "**/tests/fixtures/**",
-        ]
-        .into_iter()
-        .map(|g| Pattern::new(g).unwrap())
-        .collect()
+        ["**/node_modules/**", "**/tests/fixtures/**"]
+            .into_iter()
+            .map(|g| Pattern::new(g).unwrap())
+            .collect()
     }
 }
 
@@ -52,7 +47,7 @@ mod tests {
         case("src/something.rs", false),
         case("node_modules/subfolder/something.js", true),
         case("", false),
-        case("node_modules", true),
+        case("node_modules", false),
         case("tests/fixtures/foo.json", true),
         case("package/tests/fixtures/foo.json", true)
     )]
