@@ -40,9 +40,6 @@ jobs:
             target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
-      - name: Check
-        run: cargo check ${{ matrix.feature-flags }}
-
       - name: Build
         run: cargo build --verbose ${{ matrix.feature-flags }}
 
