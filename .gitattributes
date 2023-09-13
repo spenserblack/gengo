@@ -3,3 +3,6 @@
 
 # Fix GitHub's detected language
 .vscode/*.json linguist-language=JSON-with-Comments
+
+# Ignore fixtures
+**/fixtures/* -gengo-detectable
