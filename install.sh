@@ -33,3 +33,4 @@ if [ "$NO_RELEASE_ASSET" ]; then
 fi
 
 curl -sSL "https://github.com/spenserblack/gengo/releases/latest/download/gengo-$OS-$ARCH.tar.gz" | sudo tar -C "$INSTALL_DIR" -xzf -
+echo "successfully installed gengo"
