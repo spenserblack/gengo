@@ -26,6 +26,9 @@ A bit like [tokei][tokei], a lot like [linguist][linguist].
 
 Behind the scenes, this script downloads a binary from the latest GitHub release.
 
+**This will activate `sudo` to write the executable.** Please review the install script before
+running it.
+
 #### Unix
 
 ```shell
