@@ -1,13 +1,15 @@
 [package]
 name = "gengo"
 description = { workspace = true }
-readme = "README.md"
+readme = "crates-io.md"
 version = { workspace = true }
 edition = { workspace = true }
 repository = { workspace = true }
 license = { workspace = true }
 
 keywords = { workspace = true }
+
+exclude = ["README.md"]
 
 [features]
 default = ["max-performance-safe"]

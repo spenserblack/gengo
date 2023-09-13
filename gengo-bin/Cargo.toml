@@ -1,7 +1,7 @@
 [package]
 name = "gengo-bin"
 description = { workspace = true }
-readme = "README.md"
+readme = "crates-io.md"
 version = { workspace = true }
 edition = { workspace = true }
 repository = { workspace = true }
@@ -9,6 +9,8 @@ license = { workspace = true }
 
 categories = ["command-line-utilities"]
 keywords = { workspace = true }
+
+exclude = ["README.md"]
 
 [[bin]]
 name = "gengo"
