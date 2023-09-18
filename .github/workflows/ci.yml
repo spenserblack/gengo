@@ -52,8 +52,9 @@ jobs:
         continue-on-error: true
         with:
           crate: cargo-tarpaulin
+          version: "0.27.0"
       - name: Generate Coverage
-        run: cargo tarpaulin --verbose ${{ matrix.feature-flags }} --workspace --timeout 120 --out Xml
+        run: cargo tarpaulin --verbose ${{ matrix.feature-flags }} --workspace --timeout 120 --out xml
       - name: Upload Coverage
         uses: codecov/codecov-action@v3
         with:
