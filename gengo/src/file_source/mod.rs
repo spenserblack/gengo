@@ -1,7 +1,11 @@
 //! Provides sources to get files and their attributes.
 use crate::Language;
 use std::path::Path;
+use std::result::Result as BaseResult;
 pub use git::Git;
+use crate::GenericError;
+
+type Result<T, E = GenericError> = BaseResult<T, E>;
 
 mod git;
 
@@ -12,7 +16,7 @@ pub trait FileSource<'contents> {
     type Iter: Iterator<Item = (Self::Filepath, Self::Contents)>;
 
     /// Returns an iterator over the files.
-    fn files(&self) -> Self::Iter;
+    fn files(&self) -> Result<Self::Iter>;
 
     /// Provides an optional override for documentation file detection.
     fn is_documentation_override<O: AsRef<Path>>(&self, _path: O) -> Option<bool> {
