@@ -106,6 +106,7 @@ C:
     extensions:
       - c
       - h
+  priority: 75
 "C#":
   category: programming
   color: "#178600"

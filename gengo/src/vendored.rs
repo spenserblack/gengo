@@ -1,10 +1,16 @@
+use super::GLOB_MATCH_OPTIONS;
+use glob::Pattern;
 use std::path::Path;
 
-pub struct Vendored;
+pub struct Vendored {
+    globs: Vec<Pattern>,
+}
 
 impl Vendored {
     pub fn new() -> Self {
-        Self
+        let globs = Self::globs();
+
+        Self { globs }
     }
 
     pub fn is_vendored<P: AsRef<Path>>(&self, filepath: P, contents: &[u8]) -> bool {
@@ -12,15 +18,20 @@ impl Vendored {
     }
 
     fn is_vendored_no_read<P: AsRef<Path>>(&self, filepath: P) -> bool {
-        filepath
-            .as_ref()
-            .components()
-            .next()
-            .map_or(false, |c| c.as_os_str() == "node_modules")
+        self.globs
+            .iter()
+            .any(|g| g.matches_path_with(filepath.as_ref(), GLOB_MATCH_OPTIONS))
     }
 
     fn is_vendored_with_read<P: AsRef<Path>>(&self, _filepath: P, _contents: &[u8]) -> bool {
         false
+    }
+
+    fn globs() -> Vec<Pattern> {
+        ["**/node_modules/**", "**/tests/fixtures/**"]
+            .into_iter()
+            .map(|g| Pattern::new(g).unwrap())
+            .collect()
     }
 }
 
@@ -36,7 +47,9 @@ mod tests {
         case("src/something.rs", false),
         case("node_modules/subfolder/something.js", true),
         case("", false),
-        case("node_modules", true)
+        case("node_modules", false),
+        case("tests/fixtures/foo.json", true),
+        case("package/tests/fixtures/foo.json", true)
     )]
     fn test_is_vendored_no_read(filepath: &str, expected: bool) {
         let vendored = Vendored::new();
