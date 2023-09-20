@@ -12,7 +12,6 @@ changelog:
     - title: New Features
       labels:
         - semver-minor
-        - enhancement
     - title: Fixes
       labels:
         - semver-patch
