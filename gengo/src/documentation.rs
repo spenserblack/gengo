@@ -29,10 +29,18 @@ impl Documentation {
     }
 
     fn globs() -> Vec<Pattern> {
-        ["**/docs/**"]
-            .into_iter()
-            .map(|g| Pattern::new(g).unwrap())
-            .collect()
+        [
+            // Directories
+            "**/docs/**",
+            // Files
+            "**/CHANGELOG",
+            "**/CHANGELOG.*",
+            "**/README",
+            "**/README.*",
+        ]
+        .into_iter()
+        .map(|g| Pattern::new(g).unwrap())
+        .collect()
     }
 }
 
@@ -48,7 +56,13 @@ mod tests {
         case("src/something.rs", false),
         case("docs/subfolder/something.md", true),
         case("", false),
-        case("docs", true)
+        case("docs", false),
+        case("CHANGELOG", true),
+        case("CHANGELOG.txt", true),
+        case("CHANGELOG.md", true),
+        case("README", true),
+        case("README.txt", true),
+        case("README.md", true)
     )]
     fn test_is_documentation_no_read(filepath: &str, expected: bool) {
         let documentation = Documentation::new();
