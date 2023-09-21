@@ -98,23 +98,27 @@ impl<'repo> FileSource<'repo> for Git {
     }
 
     fn overrides<O: AsRef<Path>>(
-        &mut self,
+        &self,
         path: O,
     ) -> Overrides {
         let repo = self.repository.to_thread_local();
-        let platform = self.state.attr_stack.at_path(path, Some(false), |id, buf| {
-            repo.objects.find_blob(id, buf)
-        });
-        // NOTE If we cannot get overrides, simply don't return them.
-        let platform = match platform {
-            Ok(platform) => platform,
-            Err(_) => return Default::default(),
+        let state = {
+            let mut state = self.state.clone();
+            let platform = state.attr_stack.at_path(path, Some(false), |id, buf| {
+                repo.objects.find_blob(id, buf)
+            });
+            // NOTE If we cannot get overrides, simply don't return them.
+            let platform = match platform {
+                Ok(platform) => platform,
+                Err(_) => return Default::default(),
+            };
+            platform.matching_attributes(&mut state.attr_matches);
+            state
         };
-        platform.matching_attributes(&mut self.state.attr_matches);
 
         let attrs = {
             let mut attrs = [None, None, None, None, None];
-            self.state.attr_matches.iter_selected().zip(attrs.iter_mut()).for_each(|(info, slot)| {
+            state.attr_matches.iter_selected().zip(attrs.iter_mut()).for_each(|(info, slot)| {
                 *slot = (info.assignment.state != StateRef::Unspecified).then_some(info);
             });
             attrs
@@ -165,6 +169,7 @@ impl<'repo> Iterator for Iter<'repo> {
     }
 }
 
+#[derive(Clone)]
 struct State {
     attr_stack: WTStack,
     attr_matches: AttrOutcome,

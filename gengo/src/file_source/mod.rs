@@ -20,7 +20,7 @@ pub trait FileSource<'contents> {
 
     /// Provides combined overrides for the file.
     fn overrides<O: AsRef<Path>>(
-        &mut self,
+        &self,
         path: O,
     ) -> Overrides {
         Overrides {
