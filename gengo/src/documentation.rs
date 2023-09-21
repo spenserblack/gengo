@@ -35,6 +35,8 @@ impl Documentation {
             // Files
             "**/CHANGELOG",
             "**/CHANGELOG.*",
+            "**/HACKING",
+            "**/HACKING.*",
             "**/README",
             "**/README.*",
         ]
@@ -60,6 +62,9 @@ mod tests {
         case("CHANGELOG", true),
         case("CHANGELOG.txt", true),
         case("CHANGELOG.md", true),
+        case("HACKING", true),
+        case("HACKING.txt", true),
+        case("HACKING.md", true),
         case("README", true),
         case("README.txt", true),
         case("README.md", true)
