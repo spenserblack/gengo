@@ -1,10 +1,16 @@
+use super::GLOB_MATCH_OPTIONS;
+use glob::Pattern;
 use std::path::Path;
 
-pub struct Documentation;
+pub struct Documentation {
+    globs: Vec<Pattern>,
+}
 
 impl Documentation {
     pub fn new() -> Self {
-        Self
+        let globs = Self::globs();
+
+        Self { globs }
     }
 
     pub fn is_documentation<P: AsRef<Path>>(&self, filepath: P, contents: &[u8]) -> bool {
@@ -13,15 +19,30 @@ impl Documentation {
     }
 
     fn is_documentation_no_read<P: AsRef<Path>>(&self, filepath: P) -> bool {
-        filepath
-            .as_ref()
-            .components()
-            .next()
-            .map_or(false, |c| c.as_os_str() == "docs")
+        self.globs
+            .iter()
+            .any(|g| g.matches_path_with(filepath.as_ref(), GLOB_MATCH_OPTIONS))
     }
 
     fn is_documentation_with_read<P: AsRef<Path>>(&self, _filepath: P, _contents: &[u8]) -> bool {
         false
+    }
+
+    fn globs() -> Vec<Pattern> {
+        [
+            // Directories
+            "**/docs/**",
+            // Files
+            "**/CHANGELOG",
+            "**/CHANGELOG.*",
+            "**/HACKING",
+            "**/HACKING.*",
+            "**/README",
+            "**/README.*",
+        ]
+        .into_iter()
+        .map(|g| Pattern::new(g).unwrap())
+        .collect()
     }
 }
 
@@ -37,7 +58,16 @@ mod tests {
         case("src/something.rs", false),
         case("docs/subfolder/something.md", true),
         case("", false),
-        case("docs", true)
+        case("docs", false),
+        case("CHANGELOG", true),
+        case("CHANGELOG.txt", true),
+        case("CHANGELOG.md", true),
+        case("HACKING", true),
+        case("HACKING.txt", true),
+        case("HACKING.md", true),
+        case("README", true),
+        case("README.txt", true),
+        case("README.md", true)
     )]
     fn test_is_documentation_no_read(filepath: &str, expected: bool) {
         let documentation = Documentation::new();
