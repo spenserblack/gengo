@@ -104,13 +104,11 @@ impl<'repo> FileSource<'repo> for Git {
         let repo = self.repository.to_thread_local();
         let state = {
             let mut state = self.state.clone();
-            let platform = state.attr_stack.at_path(path, Some(false), |id, buf| {
+            let Ok(platform) = state.attr_stack.at_path(path, Some(false), |id, buf| {
                 repo.objects.find_blob(id, buf)
-            });
-            // NOTE If we cannot get overrides, simply don't return them.
-            let platform = match platform {
-                Ok(platform) => platform,
-                Err(_) => return Default::default(),
+            }) else {
+                // NOTE If we cannot get overrides, simply don't return them.
+                return Default::default();
             };
             platform.matching_attributes(&mut state.attr_matches);
             state
