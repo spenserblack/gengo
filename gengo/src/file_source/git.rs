@@ -10,7 +10,7 @@ use gix::{
         Stack as WTStack
     },
     attrs::search::Outcome as AttrOutcome,
-    index::State as IndexState,
+    index,
 };
 use crate::{Error, ErrorKind, GenericError};
 use std::path::Path;
@@ -38,7 +38,7 @@ impl Builder {
     }
 
     /// Constructs a [`State`] for the repository and rev.
-    fn state(&self) -> Result<State> {
+    fn state(&self) -> Result<(index::State, State)> {
         let repo = self.repository.to_thread_local();
         let tree_id = repo.rev_parse_single(self.rev.as_str())?.object()?.peel_to_tree()?.id;
         let index = repo.index_from_tree(&tree_id)?;
@@ -51,15 +51,17 @@ impl Builder {
             attr_matches,
             index_state,
         };
-        Ok(state)
+        let (index_state, _) = index.into_parts();
+        Ok((index_state, state))
     }
 
     fn build(self) -> Result<Git> {
-        let state = self.state()?;
+        let (index_state, state) = self.state()?;
         let git = Git {
             repository: self.repository,
             rev: self.rev,
             state,
+            index_state,
         };
         Ok(git)
     }
@@ -69,6 +71,7 @@ pub struct Git {
     repository: ThreadSafeRepository,
     rev: String,
     state: State,
+    index_state: index::State,
 }
 
 impl Git {
@@ -171,5 +174,5 @@ impl<'repo> Iterator for Iter<'repo> {
 struct State {
     attr_stack: WTStack,
     attr_matches: AttrOutcome,
-    index_state: IndexState,
+    index_state: index::State,
 }
