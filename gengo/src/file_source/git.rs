@@ -86,13 +86,14 @@ impl Git {
 
 impl<'repo> FileSource<'repo> for Git {
     type Filepath = Cow<'repo, Path>;
-    type Contents = &'repo [u8];
+    type Contents = Vec<u8>;
     type Iter = Iter<'repo>;
 
     fn files(&'repo self) -> Result<Self::Iter> {
         let entries = self.state.index_state.entries().iter();
         let path_storage = self.state.index_state.path_backing();
         let iter = Iter {
+            repository: self.repository.to_thread_local(),
             entries,
             path_storage,
         };
@@ -157,15 +158,22 @@ impl<'repo> FileSource<'repo> for Git {
 }
 
 pub struct Iter<'repo> {
+    repository: Repository,
     entries: slice::Iter<'repo, index::Entry>,
     path_storage: &'repo index::PathStorage,
 }
 
 impl<'repo> Iterator for Iter<'repo> {
-    type Item = (Cow<'repo, Path>, &'repo [u8]);
+    type Item = (Cow<'repo, Path>, Vec<u8>);
 
     fn next(&mut self) -> Option<Self::Item> {
-        todo!("implement iteration");
+        let entry = self.entries.next()?;
+        let path = entry.path_in(self.path_storage);
+        let path = gix::path::try_from_bstr(path).ok()?;
+
+        let blob = self.repository.find_object(entry.id).ok()?;
+        let contents = blob.detach().data;
+        Some((path, contents))
     }
 }
 
