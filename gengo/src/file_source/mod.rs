@@ -1,9 +1,9 @@
 //! Provides sources to get files and their attributes.
-use crate::Language;
+
+use crate::GenericError;
+pub use git::Git;
 use std::path::Path;
 use std::result::Result as BaseResult;
-pub use git::Git;
-use crate::GenericError;
 
 type Result<T, E = GenericError> = BaseResult<T, E>;
 
@@ -19,10 +19,7 @@ pub trait FileSource<'files> {
     fn files(&'files self) -> Result<Self::Iter>;
 
     /// Provides combined overrides for the file.
-    fn overrides<O: AsRef<Path>>(
-        &self,
-        path: O,
-    ) -> Overrides {
+    fn overrides<O: AsRef<Path>>(&self, path: O) -> Overrides {
         Overrides {
             language: self.language_override(&path),
             is_documentation: self.is_documentation_override(&path),

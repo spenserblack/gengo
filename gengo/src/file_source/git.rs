@@ -1,21 +1,18 @@
-use super::{FileSource, Result, Overrides};
+use super::{FileSource, Overrides, Result};
+use crate::{Error, ErrorKind};
 use gix::{
-    attrs::StateRef,
-    bstr::{BString, ByteSlice},
-    Repository, ThreadSafeRepository,
-    prelude::FindExt,
-    discover::Error as DiscoverError,
-    worktree::{
-        stack::state::attributes::Source as AttrSource,
-        Stack as WTStack
-    },
     attrs::search::Outcome as AttrOutcome,
+    attrs::StateRef,
+    bstr::ByteSlice,
+    discover::Error as DiscoverError,
     index,
+    prelude::FindExt,
+    worktree::{stack::state::attributes::Source as AttrSource, Stack as WTStack},
+    Repository, ThreadSafeRepository,
 };
-use crate::{Error, ErrorKind, GenericError};
-use std::path::Path;
 use std::borrow::Cow;
-use std::error::Error as ErrorTrait;
+use std::path::Path;
+
 use std::slice;
 
 struct Builder {
@@ -41,7 +38,11 @@ impl Builder {
     /// Constructs a [`State`] for the repository and rev.
     fn state(&self) -> Result<State> {
         let repo = self.repository.to_thread_local();
-        let tree_id = repo.rev_parse_single(self.rev.as_str())?.object()?.peel_to_tree()?.id;
+        let tree_id = repo
+            .rev_parse_single(self.rev.as_str())?
+            .object()?
+            .peel_to_tree()?
+            .id;
         let index = repo.index_from_tree(&tree_id)?;
         let attr_stack = repo.attributes_only(&index, AttrSource::IdMapping)?;
         let attr_matches = attr_stack.selected_attribute_matches(Git::OVERRIDE_ATTRS);
@@ -73,7 +74,13 @@ pub struct Git {
 }
 
 impl Git {
-    const OVERRIDE_ATTRS: [&'static str;5] = ["gengo-language", "gengo-documentation", "gengo-generated", "gengo-vendored", "gengo-detectable"];
+    const OVERRIDE_ATTRS: [&'static str; 5] = [
+        "gengo-language",
+        "gengo-documentation",
+        "gengo-generated",
+        "gengo-vendored",
+        "gengo-detectable",
+    ];
     const LANGUAGE_OVERRIDE: usize = 0;
     const DOCUMENTATION_OVERRIDE: usize = 1;
     const GENERATED_OVERRIDE: usize = 2;
@@ -100,16 +107,14 @@ impl<'repo> FileSource<'repo> for Git {
         Ok(iter)
     }
 
-    fn overrides<O: AsRef<Path>>(
-        &self,
-        path: O,
-    ) -> Overrides {
+    fn overrides<O: AsRef<Path>>(&self, path: O) -> Overrides {
         let repo = self.repository.to_thread_local();
         let state = {
             let mut state = self.state.clone();
-            let Ok(platform) = state.attr_stack.at_path(path, Some(false), |id, buf| {
-                repo.objects.find_blob(id, buf)
-            }) else {
+            let Ok(platform) = state
+                .attr_stack
+                .at_path(path, Some(false), |id, buf| repo.objects.find_blob(id, buf))
+            else {
                 // NOTE If we cannot get overrides, simply don't return them.
                 return Default::default();
             };
@@ -119,18 +124,23 @@ impl<'repo> FileSource<'repo> for Git {
 
         let attrs = {
             let mut attrs = [None, None, None, None, None];
-            state.attr_matches.iter_selected().zip(attrs.iter_mut()).for_each(|(info, slot)| {
-                *slot = (info.assignment.state != StateRef::Unspecified).then_some(info);
-            });
+            state
+                .attr_matches
+                .iter_selected()
+                .zip(attrs.iter_mut())
+                .for_each(|(info, slot)| {
+                    *slot = (info.assignment.state != StateRef::Unspecified).then_some(info);
+                });
             attrs
         };
 
-        let language = attrs[Self::LANGUAGE_OVERRIDE]
-            .as_ref()
-            .and_then(|info| match info.assignment.state {
-                StateRef::Value(v) => v.as_bstr().to_str().ok().map(|s| s.replace('-', " ")),
-                _ => None,
-            });
+        let language =
+            attrs[Self::LANGUAGE_OVERRIDE]
+                .as_ref()
+                .and_then(|info| match info.assignment.state {
+                    StateRef::Value(v) => v.as_bstr().to_str().ok().map(|s| s.replace('-', " ")),
+                    _ => None,
+                });
         // NOTE Unspecified attributes are None, so `state.is_set()` is
         //      implicitly `!state.is_unset()`.
         // TODO This is really repetitive. Refactor to iteration?

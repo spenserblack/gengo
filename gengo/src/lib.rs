@@ -18,12 +18,11 @@ use glob::MatchOptions;
 pub use languages::analyzer::Analyzers;
 use languages::Category;
 pub use languages::Language;
-use owo_colors::DynColor;
 
+use std::error::Error as ErrorTrait;
 use std::path::Path;
 use std::sync::atomic::Ordering;
 use vendored::Vendored;
-use std::error::Error as ErrorTrait;
 
 pub mod analysis;
 mod builder;
@@ -33,7 +32,6 @@ mod file_source;
 mod generated;
 pub mod languages;
 mod vendored;
-
 
 type GenericError = Box<dyn ErrorTrait>;
 type Result<T, E = Box<dyn std::error::Error + Send + Sync + 'static>> = std::result::Result<T, E>;
