@@ -16,6 +16,7 @@ use crate::{Error, ErrorKind, GenericError};
 use std::path::Path;
 use std::borrow::Cow;
 use std::error::Error as ErrorTrait;
+use std::slice;
 
 struct Builder {
     repository: ThreadSafeRepository,
@@ -88,11 +89,11 @@ impl<'repo> FileSource<'repo> for Git {
     type Contents = &'repo [u8];
     type Iter = Iter<'repo>;
 
-    fn files(&self) -> Result<Self::Iter> {
+    fn files(&'repo self) -> Result<Self::Iter> {
+        let entries = self.state.index_state.entries().iter();
         let path_storage = self.state.index_state.path_backing();
-        todo!("Initialize iterator");
         let iter = Iter {
-            stack: (),
+            entries,
             path_storage,
         };
         Ok(iter)
@@ -156,7 +157,7 @@ impl<'repo> FileSource<'repo> for Git {
 }
 
 pub struct Iter<'repo> {
-    stack: (),
+    entries: slice::Iter<'repo, index::Entry>,
     path_storage: &'repo index::PathStorage,
 }
 

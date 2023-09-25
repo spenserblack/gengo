@@ -10,13 +10,13 @@ type Result<T, E = GenericError> = BaseResult<T, E>;
 mod git;
 
 /// Provides files and overrides.
-pub trait FileSource<'contents> {
+pub trait FileSource<'files> {
     type Filepath: AsRef<Path> + Send + Sync;
     type Contents: AsRef<[u8]> + Send + Sync;
     type Iter: Iterator<Item = (Self::Filepath, Self::Contents)>;
 
     /// Returns an iterator over the files.
-    fn files(&self) -> Result<Self::Iter>;
+    fn files(&'files self) -> Result<Self::Iter>;
 
     /// Provides combined overrides for the file.
     fn overrides<O: AsRef<Path>>(
