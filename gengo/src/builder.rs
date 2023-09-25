@@ -19,7 +19,7 @@ use crate::file_source::Git;
 /// ```
 pub struct Builder<P: AsRef<Path>> {
     repository_path: P,
-    rev: Option<String>,
+    rev: String,
     analyzers: Option<Analyzers>,
     read_limit: Option<usize>,
 }
@@ -27,10 +27,10 @@ pub struct Builder<P: AsRef<Path>> {
 impl<P: AsRef<Path>> Builder<P> {
     pub const DEFAULT_READ_LIMIT: usize = 1 << 20;
 
-    pub fn new(repository_path: P) -> Self {
+    pub fn new(repository_path: P, rev: &str) -> Self {
         Self {
             repository_path,
-            rev: None,
+            rev: rev.to_owned(),
             analyzers: None,
             read_limit: None,
         }
@@ -52,7 +52,7 @@ impl<P: AsRef<Path>> Builder<P> {
     }
 
     pub fn build<'repo>(self) -> Result<Gengo<'repo, Git>, Box<dyn ErrorTrait>> {
-        let file_source = Git::new(self.repository_path, self.rev.map(|s| s.as_str()).unwrap_or("HEAD"))?;
+        let file_source = Git::new(self.repository_path, &self.rev)?;
         let analyzers = self.analyzers.unwrap_or_default();
         let read_limit = self.read_limit.unwrap_or(Self::DEFAULT_READ_LIMIT);
         let documentation = Documentation::new();
