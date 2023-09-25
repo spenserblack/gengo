@@ -14,7 +14,7 @@ use std::path::Path;
 ///
 /// ```no_run
 /// use gengo::Builder;
-/// let gengo = Builder::new("path/to/repo").build().unwrap();
+/// let gengo = Builder::new("path/to/repo", "HEAD").build().unwrap();
 /// ```
 pub struct Builder<P: AsRef<Path>> {
     repository_path: P,

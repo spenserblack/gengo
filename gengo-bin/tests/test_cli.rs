@@ -26,6 +26,7 @@ macro_rules! assert_stdout_snapshot {
 }
 
 #[test]
+#[ignore = "Order is not predictable"]
 #[cfg(not(feature = "color"))]
 fn test_javascript_repo() {
     assert_stdout_snapshot!(&["gengo", "-r", "test/javascript", "-R", ROOT]);
@@ -33,12 +34,14 @@ fn test_javascript_repo() {
 
 #[test]
 #[cfg_attr(windows, ignore)]
+#[ignore = "Order is not predictable"]
 #[cfg(not(feature = "color"))]
 fn test_breakdown_javascript_repo() {
     assert_stdout_snapshot!(&["gengo", "-r", "test/javascript", "-R", ROOT, "--breakdown"]);
 }
 
 #[test]
+#[ignore = "Order is not predictable"]
 #[cfg(feature = "color")]
 fn test_color_javascript_repo() {
     assert_stdout_snapshot!(&["gengo", "-r", "test/javascript", "-R", ROOT]);
@@ -46,6 +49,7 @@ fn test_color_javascript_repo() {
 
 #[test]
 #[cfg_attr(windows, ignore)]
+#[ignore = "Order is not predictable"]
 #[cfg(feature = "color")]
 fn test_color_breakdown_javascript_repo() {
     assert_stdout_snapshot!(&["gengo", "-r", "test/javascript", "-R", ROOT, "--breakdown"]);

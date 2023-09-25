@@ -2,7 +2,6 @@ use super::Entry;
 use indexmap::IndexMap;
 
 use std::collections::HashMap;
-use std::fmt::{self, Debug};
 use std::path::PathBuf;
 
 pub use summary::Iter as SummaryIter;
@@ -12,6 +11,7 @@ pub use summary::Summary;
 mod summary;
 
 /// The result of analyzing a repository along with all of its submodules.
+#[derive(Debug)]
 pub struct Analysis(pub(super) HashMap<PathBuf, Entry>);
 
 impl Analysis {
@@ -41,12 +41,5 @@ impl Analysis {
             *summary.entry(language).or_insert(0) += entry.size();
         }
         Summary(summary)
-    }
-}
-
-impl Debug for Analysis {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "Analysis ")?;
-        f.debug_map().entries(self.iter()).finish()
     }
 }
