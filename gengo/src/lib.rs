@@ -18,6 +18,7 @@ use glob::MatchOptions;
 pub use languages::analyzer::Analyzers;
 use languages::Category;
 pub use languages::Language;
+pub use file_source::FileSource;
 
 use std::error::Error as ErrorTrait;
 use std::path::Path;
@@ -44,8 +45,8 @@ const GLOB_MATCH_OPTIONS: MatchOptions = MatchOptions {
 };
 
 /// The main entry point for Gengo.
-pub struct Gengo {
-    repository: gix::ThreadSafeRepository,
+pub struct Gengo<'fs, FS: FileSource<'fs>> {
+    file_source: FS,
     analyzers: Analyzers,
     read_limit: usize,
     documentation: Documentation,
@@ -53,71 +54,7 @@ pub struct Gengo {
     vendored: Vendored,
 }
 
-#[derive(Clone)]
-struct GitState {
-    attr_stack: gix::worktree::Stack,
-    attr_matches: gix::attrs::search::Outcome,
-}
-
-impl GitState {
-    fn new(repo: &gix::Repository, tree_id: &gix::oid) -> Result<(Self, gix::index::State)> {
-        let index = repo.index_from_tree(tree_id)?;
-        let attr_stack = repo.attributes_only(
-            &index,
-            gix::worktree::stack::state::attributes::Source::IdMapping,
-        )?;
-        let attr_matches = attr_stack.selected_attribute_matches([
-            "gengo-language",
-            "gengo-generated",
-            "gengo-documentation",
-            "gengo-vendored",
-            "gengo-detectable",
-        ]);
-        Ok((
-            Self {
-                attr_stack: attr_stack.detach(),
-                attr_matches,
-            },
-            index.into_parts().0,
-        ))
-    }
-}
-
-struct BlobEntry {
-    // Just for path and id access
-    index_entry: gix::index::Entry,
-    result: Option<Entry>,
-}
-
-/// The result of analyzing a repository or a single submodule
-struct Results {
-    entries: Vec<BlobEntry>,
-    path_storage: gix::index::PathStorage,
-}
-
-impl Results {
-    /// Create a data structure that holds index entries as well as our results per entry.
-    fn from_index(index: gix::index::State) -> Self {
-        use gix::index::entry::Mode;
-
-        let (entries, path_storage) = index.into_entries();
-        let entries: Vec<_> = entries
-            .into_iter()
-            .filter(|e| matches!(e.mode, Mode::FILE | Mode::FILE_EXECUTABLE))
-            .map(|e| BlobEntry {
-                index_entry: e,
-                result: None,
-            })
-            .collect();
-
-        Results {
-            entries,
-            path_storage,
-        }
-    }
-}
-
-impl Gengo {
+impl<'fs, FS: FileSource<'fs>> Gengo<'fs, FS> {
     /// Analyzes each file in the repository at the given revision.
     pub fn analyze(&self, rev: &str) -> Result<Analysis> {
         let repo = self.repository.to_thread_local();
@@ -161,7 +98,7 @@ impl Gengo {
     fn analyze_blob(
         &self,
         filepath: impl AsRef<Path>,
-        repo: &gix::Repository,
+        contents: impl AsRef<[u8]>,
         state: &mut GitState,
         result: &mut BlobEntry,
     ) -> Result<()> {

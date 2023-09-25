@@ -7,6 +7,7 @@ use super::{Error, ErrorKind};
 use gix::discover::Error as DiscoverError;
 use std::error::Error as ErrorTrait;
 use std::path::Path;
+use crate::file_source::Git;
 
 /// Builds a new `Gengo` instance.
 ///
@@ -18,6 +19,7 @@ use std::path::Path;
 /// ```
 pub struct Builder<P: AsRef<Path>> {
     repository_path: P,
+    rev: Option<String>,
     analyzers: Option<Analyzers>,
     read_limit: Option<usize>,
 }
@@ -28,6 +30,7 @@ impl<P: AsRef<Path>> Builder<P> {
     pub fn new(repository_path: P) -> Self {
         Self {
             repository_path,
+            rev: None,
             analyzers: None,
             read_limit: None,
         }
@@ -48,22 +51,15 @@ impl<P: AsRef<Path>> Builder<P> {
         self
     }
 
-    pub fn build(self) -> Result<Gengo, Box<dyn ErrorTrait>> {
-        let repository = match gix::discover(self.repository_path) {
-            Ok(r) => r,
-            Err(DiscoverError::Discover(err)) => {
-                return Err(Box::new(Error::with_source(ErrorKind::NoRepository, err)))
-            }
-            Err(err) => return Err(err.into()),
-        };
-        let repository = gix::open(repository.path())?;
+    pub fn build<'repo>(self) -> Result<Gengo<'repo, Git>, Box<dyn ErrorTrait>> {
+        let file_source = Git::new(self.repository_path, self.rev.map(|s| s.as_str()).unwrap_or("HEAD"))?;
         let analyzers = self.analyzers.unwrap_or_default();
         let read_limit = self.read_limit.unwrap_or(Self::DEFAULT_READ_LIMIT);
         let documentation = Documentation::new();
         let generated = Generated::new();
         let vendored = Vendored::new();
         Ok(Gengo {
-            repository: repository.into_sync(),
+            file_source,
             analyzers,
             read_limit,
             documentation,
