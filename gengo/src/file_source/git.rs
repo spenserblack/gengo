@@ -38,7 +38,7 @@ impl Builder {
     }
 
     /// Constructs a [`State`] for the repository and rev.
-    fn state(&self) -> Result<(index::State, State)> {
+    fn state(&self) -> Result<State> {
         let repo = self.repository.to_thread_local();
         let tree_id = repo.rev_parse_single(self.rev.as_str())?.object()?.peel_to_tree()?.id;
         let index = repo.index_from_tree(&tree_id)?;
@@ -51,17 +51,15 @@ impl Builder {
             attr_matches,
             index_state,
         };
-        let (index_state, _) = index.into_parts();
-        Ok((index_state, state))
+        Ok(state)
     }
 
     fn build(self) -> Result<Git> {
-        let (index_state, state) = self.state()?;
+        let state = self.state()?;
         let git = Git {
             repository: self.repository,
             rev: self.rev,
             state,
-            index_state,
         };
         Ok(git)
     }
@@ -71,7 +69,6 @@ pub struct Git {
     repository: ThreadSafeRepository,
     rev: String,
     state: State,
-    index_state: index::State,
 }
 
 impl Git {
@@ -92,10 +89,11 @@ impl<'repo> FileSource<'repo> for Git {
     type Iter = Iter<'repo>;
 
     fn files(&self) -> Result<Self::Iter> {
+        let path_storage = self.state.index_state.path_backing();
         todo!("Initialize iterator");
         let iter = Iter {
             stack: (),
-            foo: & (),
+            path_storage,
         };
         Ok(iter)
     }
@@ -159,7 +157,7 @@ impl<'repo> FileSource<'repo> for Git {
 
 pub struct Iter<'repo> {
     stack: (),
-    foo: &'repo (),
+    path_storage: &'repo index::PathStorage,
 }
 
 impl<'repo> Iterator for Iter<'repo> {
