@@ -452,8 +452,6 @@ Odin:
   matchers:
     extensions:
       - odin
-    interpreters:
-      - odin
 PHP:
   category: programming
   color: "#7A86B8"
