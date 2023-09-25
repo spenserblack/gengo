@@ -3,11 +3,10 @@ use super::generated::Generated;
 use super::vendored::Vendored;
 use super::Analyzers;
 use super::Gengo;
-use super::{Error, ErrorKind};
-use gix::discover::Error as DiscoverError;
+
+use crate::file_source::Git;
 use std::error::Error as ErrorTrait;
 use std::path::Path;
-use crate::file_source::Git;
 
 /// Builds a new `Gengo` instance.
 ///
@@ -51,7 +50,7 @@ impl<P: AsRef<Path>> Builder<P> {
         self
     }
 
-    pub fn build<'repo>(self) -> Result<Gengo<'repo, Git>, Box<dyn ErrorTrait>> {
+    pub fn build(self) -> Result<Gengo<Git>, Box<dyn ErrorTrait>> {
         let file_source = Git::new(self.repository_path, &self.rev)?;
         let analyzers = self.analyzers.unwrap_or_default();
         let read_limit = self.read_limit.unwrap_or(Self::DEFAULT_READ_LIMIT);

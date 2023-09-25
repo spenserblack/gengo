@@ -1,22 +1,19 @@
 //! Provides sources to get files and their attributes.
 
-use crate::GenericError;
 pub use git::Git;
+use std::marker::{Send, Sync};
 use std::path::Path;
-use std::result::Result as BaseResult;
-
-type Result<T, E = GenericError> = BaseResult<T, E>;
 
 mod git;
 
 /// Provides files and overrides.
-pub trait FileSource<'files> {
+pub trait FileSource<'files>: Send + Sync {
     type Filepath: AsRef<Path> + Send + Sync;
     type Contents: AsRef<[u8]> + Send + Sync;
     type Iter: Iterator<Item = (Self::Filepath, Self::Contents)>;
 
     /// Returns an iterator over the files.
-    fn files(&'files self) -> Result<Self::Iter>;
+    fn files(&'files self) -> crate::Result<Self::Iter>;
 
     /// Provides combined overrides for the file.
     fn overrides<O: AsRef<Path>>(&self, path: O) -> Overrides {

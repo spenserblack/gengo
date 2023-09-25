@@ -43,7 +43,7 @@ pub struct CLI {
 
 impl CLI {
     pub fn run<Out: Write, Err: Write>(&self, mut out: Out, mut err: Err) -> Result<(), io::Error> {
-        let gengo = Builder::new(&self.repository)
+        let gengo = Builder::new(&self.repository, &self.revision)
             .read_limit(self.read_limit)
             .build();
         let gengo = match gengo {
@@ -53,7 +53,7 @@ impl CLI {
                 return Ok(());
             }
         };
-        let results = gengo.analyze(&self.revision);
+        let results = gengo.analyze();
         let results = match results {
             Ok(results) => results,
             Err(e) => {

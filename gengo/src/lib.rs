@@ -9,21 +9,24 @@
 pub use analysis::Analysis;
 pub use builder::Builder;
 use documentation::Documentation;
+
 pub use error::{Error, ErrorKind};
 use generated::Generated;
-use gix::attrs::StateRef;
-use gix::bstr::ByteSlice;
-use gix::prelude::FindExt;
+
+use std::collections::HashMap;
+
+pub use file_source::FileSource;
 use glob::MatchOptions;
 pub use languages::analyzer::Analyzers;
 use languages::Category;
 pub use languages::Language;
-pub use file_source::FileSource;
 
 use std::error::Error as ErrorTrait;
 use std::path::Path;
-use std::sync::atomic::Ordering;
+
 use vendored::Vendored;
+
+use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
 
 pub mod analysis;
 mod builder;
@@ -35,7 +38,7 @@ pub mod languages;
 mod vendored;
 
 type GenericError = Box<dyn ErrorTrait>;
-type Result<T, E = Box<dyn std::error::Error + Send + Sync + 'static>> = std::result::Result<T, E>;
+type Result<T, E = GenericError> = std::result::Result<T, E>;
 
 /// Shared match options for consistent behavior.
 const GLOB_MATCH_OPTIONS: MatchOptions = MatchOptions {
@@ -45,7 +48,7 @@ const GLOB_MATCH_OPTIONS: MatchOptions = MatchOptions {
 };
 
 /// The main entry point for Gengo.
-pub struct Gengo<'fs, FS: FileSource<'fs>> {
+pub struct Gengo<FS: for<'fs> FileSource<'fs>> {
     file_source: FS,
     analyzers: Analyzers,
     read_limit: usize,
@@ -54,104 +57,48 @@ pub struct Gengo<'fs, FS: FileSource<'fs>> {
     vendored: Vendored,
 }
 
-impl<'fs, FS: FileSource<'fs>> Gengo<'fs, FS> {
+impl<FS: for<'fs> FileSource<'fs>> Gengo<FS> {
     /// Analyzes each file in the repository at the given revision.
-    pub fn analyze(&self, rev: &str) -> Result<Analysis> {
-        let repo = self.repository.to_thread_local();
-        let tree_id = repo.rev_parse_single(rev)?.object()?.peel_to_tree()?.id;
+    pub fn analyze(&self) -> Result<Analysis> {
+        let mut entries = HashMap::new();
+        // TODO Avoid this conversion to Vec?
+        let files: Vec<_> = self.file_source.files()?.collect();
+        let entries_v: Vec<_> = files
+            .par_iter()
+            .filter_map(|(path, contents)| {
+                let entry = self.analyze_blob(path, contents)?;
+                Some((path.as_ref().to_owned(), entry))
+            })
+            .collect();
+        entries_v.into_iter().for_each(|(path, entry)| {
+            entries.insert(path, entry);
+        });
 
-        let (state, index) = GitState::new(&repo, &tree_id)?;
-        let mut results = Results::from_index(index);
-
-        self.analyze_index(&repo.into_sync(), &mut results, state)?;
-
-        Ok(Analysis(results))
-    }
-
-    fn analyze_index(
-        &self,
-        repo: &gix::ThreadSafeRepository,
-        results: &mut Results,
-        state: GitState,
-    ) -> Result<()> {
-        gix::parallel::in_parallel_with_slice(
-            &mut results.entries,
-            None,
-            move |_| (state.clone(), repo.to_thread_local()),
-            |entry, (state, repo), _, should_interrupt| {
-                if should_interrupt.load(Ordering::Relaxed) {
-                    return Ok(());
-                }
-                let Ok(path) =
-                    gix::path::try_from_bstr(entry.index_entry.path_in(&results.path_storage))
-                else {
-                    return Ok(());
-                };
-                self.analyze_blob(path, repo, state, entry)
-            },
-            || Some(std::time::Duration::from_micros(5)),
-            std::convert::identity,
-        )?;
-        Ok(())
+        Ok(Analysis(entries))
     }
 
     fn analyze_blob(
         &self,
         filepath: impl AsRef<Path>,
         contents: impl AsRef<[u8]>,
-        state: &mut GitState,
-        result: &mut BlobEntry,
-    ) -> Result<()> {
+    ) -> Option<Entry> {
+        let overrides = self.file_source.overrides(&filepath);
         let filepath = filepath.as_ref();
-        let blob = repo.find_object(result.index_entry.id)?;
-        let contents = blob.data.as_slice();
-        state
-            .attr_stack
-            .at_path(filepath, Some(false), |id, buf| {
-                repo.objects.find_blob(id, buf)
-            })?
-            .matching_attributes(&mut state.attr_matches);
+        let contents = contents.as_ref();
 
-        let mut attrs = [None, None, None, None, None];
-        state
-            .attr_matches
-            .iter_selected()
-            .zip(attrs.iter_mut())
-            .for_each(|(info, slot)| {
-                *slot =
-                    (info.assignment.state != gix::attrs::StateRef::Unspecified).then_some(info);
-            });
-
-        let lang_override = attrs[0]
-            .as_ref()
-            .and_then(|info| match info.assignment.state {
-                StateRef::Value(v) => v.as_bstr().to_str().ok().map(|s| s.replace('-', " ")),
-                _ => None,
-            })
-            .and_then(|s| self.analyzers.get(&s));
+        let lang_override = overrides.language.and_then(|s| self.analyzers.get(&s));
 
         let language =
-            lang_override.or_else(|| self.analyzers.pick(filepath, contents, self.read_limit));
+            lang_override.or_else(|| self.analyzers.pick(filepath, contents, self.read_limit))?;
 
-        let language = if let Some(language) = language {
-            language
-        } else {
-            return Ok(());
-        };
-
-        // NOTE Unspecified attributes are None, so `state.is_set()` is
-        //      implicitly `!state.is_unset()`.
-        let generated = attrs[1]
-            .as_ref()
-            .map(|info| info.assignment.state.is_set())
+        let generated = overrides
+            .is_generated
             .unwrap_or_else(|| self.is_generated(filepath, contents));
-        let documentation = attrs[2]
-            .as_ref()
-            .map(|info| info.assignment.state.is_set())
+        let documentation = overrides
+            .is_documentation
             .unwrap_or_else(|| self.is_documentation(filepath, contents));
-        let vendored = attrs[3]
-            .as_ref()
-            .map(|info| info.assignment.state.is_set())
+        let vendored = overrides
+            .is_vendored
             .unwrap_or_else(|| self.is_vendored(filepath, contents));
 
         let detectable = match language.category() {
@@ -160,10 +107,7 @@ impl<'fs, FS: FileSource<'fs>> Gengo<'fs, FS> {
                 !(generated || documentation || vendored)
             }
         };
-        let detectable = attrs[4]
-            .as_ref()
-            .map(|info| info.assignment.state.is_set())
-            .unwrap_or(detectable);
+        let detectable = overrides.is_detectable.unwrap_or(detectable);
 
         let size = contents.len();
         let entry = Entry {
@@ -174,8 +118,7 @@ impl<'fs, FS: FileSource<'fs>> Gengo<'fs, FS> {
             documentation,
             vendored,
         };
-        result.result = Some(entry);
-        Ok(())
+        Some(entry)
     }
 
     /// Guesses if a file is generated.

@@ -619,6 +619,7 @@ dependencies = [
  "insta",
  "once_cell",
  "owo-colors",
+ "rayon",
  "regex",
  "rstest",
  "serde",

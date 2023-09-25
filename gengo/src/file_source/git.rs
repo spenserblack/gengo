@@ -1,4 +1,4 @@
-use super::{FileSource, Overrides, Result};
+use super::{FileSource, Overrides};
 use crate::{Error, ErrorKind};
 use gix::{
     attrs::search::Outcome as AttrOutcome,
@@ -21,7 +21,7 @@ struct Builder {
 }
 
 impl Builder {
-    fn new<P: AsRef<Path>>(path: P, rev: &str) -> Result<Self> {
+    fn new<P: AsRef<Path>>(path: P, rev: &str) -> crate::Result<Self> {
         let repository = match gix::discover(path) {
             Ok(r) => r,
             Err(DiscoverError::Discover(err)) => {
@@ -36,7 +36,7 @@ impl Builder {
     }
 
     /// Constructs a [`State`] for the repository and rev.
-    fn state(&self) -> Result<State> {
+    fn state(&self) -> crate::Result<State> {
         let repo = self.repository.to_thread_local();
         let tree_id = repo
             .rev_parse_single(self.rev.as_str())?
@@ -56,11 +56,10 @@ impl Builder {
         Ok(state)
     }
 
-    fn build(self) -> Result<Git> {
+    fn build(self) -> crate::Result<Git> {
         let state = self.state()?;
         let git = Git {
             repository: self.repository,
-            rev: self.rev,
             state,
         };
         Ok(git)
@@ -69,7 +68,6 @@ impl Builder {
 
 pub struct Git {
     repository: ThreadSafeRepository,
-    rev: String,
     state: State,
 }
 
@@ -86,7 +84,7 @@ impl Git {
     const GENERATED_OVERRIDE: usize = 2;
     const VENDORED_OVERRIDE: usize = 3;
     const DETECTABLE_OVERRIDE: usize = 4;
-    pub fn new<P: AsRef<Path>>(path: P, rev: &str) -> Result<Self> {
+    pub fn new<P: AsRef<Path>>(path: P, rev: &str) -> crate::Result<Self> {
         Builder::new(path, rev)?.build()
     }
 }
@@ -96,7 +94,7 @@ impl<'repo> FileSource<'repo> for Git {
     type Contents = Vec<u8>;
     type Iter = Iter<'repo>;
 
-    fn files(&'repo self) -> Result<Self::Iter> {
+    fn files(&'repo self) -> crate::Result<Self::Iter> {
         let entries = self.state.index_state.entries().iter();
         let path_storage = self.state.index_state.path_backing();
         let iter = Iter {
