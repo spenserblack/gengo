@@ -9,10 +9,12 @@ changelog:
     - title: ":boom: Breaking changes"
       labels:
         - semver-major
+    - title: New Languages
+      labels:
+        - new-language
     - title: New Features
       labels:
         - semver-minor
-        - enhancement
     - title: Fixes
       labels:
         - semver-patch
