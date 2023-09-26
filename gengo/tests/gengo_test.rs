@@ -5,7 +5,6 @@ const ROOT: &str = env!("CARGO_MANIFEST_DIR");
 mod util;
 
 #[test]
-#[ignore = "HashMaps have an unpredictable order"]
 fn test_javascript() {
     // TODO It's not great to use a snapshot test on a type that doesn't
     // guarantee order. Improve this test.

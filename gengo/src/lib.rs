@@ -13,8 +13,6 @@ use documentation::Documentation;
 pub use error::{Error, ErrorKind};
 use generated::Generated;
 
-use std::collections::HashMap;
-
 pub use file_source::FileSource;
 use glob::MatchOptions;
 pub use languages::analyzer::Analyzers;
@@ -60,19 +58,16 @@ pub struct Gengo<FS: for<'fs> FileSource<'fs>> {
 impl<FS: for<'fs> FileSource<'fs>> Gengo<FS> {
     /// Analyzes each file in the repository at the given revision.
     pub fn analyze(&self) -> Result<Analysis> {
-        let mut entries = HashMap::new();
         // TODO Avoid this conversion to Vec?
         let files: Vec<_> = self.file_source.files()?.collect();
-        let entries_v: Vec<_> = files
+        // let mut entries = Vec::with_capacity(files.len());
+        let entries: Vec<(_, _)> = files
             .par_iter()
             .filter_map(|(path, contents)| {
                 let entry = self.analyze_blob(path, contents)?;
                 Some((path.as_ref().to_owned(), entry))
             })
             .collect();
-        entries_v.into_iter().for_each(|(path, entry)| {
-            entries.insert(path, entry);
-        });
 
         Ok(Analysis(entries))
     }

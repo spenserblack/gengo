@@ -1,7 +1,6 @@
 use super::Entry;
 use indexmap::IndexMap;
 
-use std::collections::HashMap;
 use std::path::PathBuf;
 
 pub use summary::Iter as SummaryIter;
@@ -12,10 +11,10 @@ mod summary;
 
 /// The result of analyzing a repository along with all of its submodules.
 #[derive(Debug)]
-pub struct Analysis(pub(super) HashMap<PathBuf, Entry>);
+pub struct Analysis(pub(super) Vec<(PathBuf, Entry)>);
 
 impl Analysis {
-    pub fn iter(&self) -> impl Iterator<Item = (&PathBuf, &Entry)> + '_ {
+    pub fn iter(&self) -> impl Iterator<Item = &(PathBuf, Entry)> {
         let results = &self.0;
         results.iter()
     }
