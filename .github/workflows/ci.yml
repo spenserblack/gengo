@@ -91,5 +91,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 3
+      - name: Fetch Test Branches
+        run: git fetch origin test/javascript:test/javascript
       - name: Run Benchmarks
         run: cargo bench
