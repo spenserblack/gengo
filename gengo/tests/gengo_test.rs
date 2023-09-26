@@ -6,9 +6,14 @@ mod util;
 
 #[test]
 fn test_javascript() {
+    // TODO It's not great to use a snapshot test on a type that doesn't
+    // guarantee order. Improve this test.
     let analyzers = fixture_str!("test_javascript-analyzers.yaml");
     let analyzers = Analyzers::from_yaml(analyzers).unwrap();
-    let gengo = Builder::new(ROOT).analyzers(analyzers).build().unwrap();
-    let results = gengo.analyze("test/javascript").unwrap();
+    let gengo = Builder::new(ROOT, "test/javascript")
+        .analyzers(analyzers)
+        .build()
+        .unwrap();
+    let results = gengo.analyze().unwrap();
     insta::assert_debug_snapshot!(results);
 }

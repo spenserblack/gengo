@@ -3,8 +3,8 @@ use super::generated::Generated;
 use super::vendored::Vendored;
 use super::Analyzers;
 use super::Gengo;
-use super::{Error, ErrorKind};
-use gix::discover::Error as DiscoverError;
+
+use crate::file_source::Git;
 use std::error::Error as ErrorTrait;
 use std::path::Path;
 
@@ -14,10 +14,11 @@ use std::path::Path;
 ///
 /// ```no_run
 /// use gengo::Builder;
-/// let gengo = Builder::new("path/to/repo").build().unwrap();
+/// let gengo = Builder::new("path/to/repo", "HEAD").build().unwrap();
 /// ```
 pub struct Builder<P: AsRef<Path>> {
     repository_path: P,
+    rev: String,
     analyzers: Option<Analyzers>,
     read_limit: Option<usize>,
 }
@@ -25,9 +26,10 @@ pub struct Builder<P: AsRef<Path>> {
 impl<P: AsRef<Path>> Builder<P> {
     pub const DEFAULT_READ_LIMIT: usize = 1 << 20;
 
-    pub fn new(repository_path: P) -> Self {
+    pub fn new(repository_path: P, rev: &str) -> Self {
         Self {
             repository_path,
+            rev: rev.to_owned(),
             analyzers: None,
             read_limit: None,
         }
@@ -48,22 +50,15 @@ impl<P: AsRef<Path>> Builder<P> {
         self
     }
 
-    pub fn build(self) -> Result<Gengo, Box<dyn ErrorTrait>> {
-        let repository = match gix::discover(self.repository_path) {
-            Ok(r) => r,
-            Err(DiscoverError::Discover(err)) => {
-                return Err(Box::new(Error::with_source(ErrorKind::NoRepository, err)))
-            }
-            Err(err) => return Err(err.into()),
-        };
-        let repository = gix::open(repository.path())?;
+    pub fn build(self) -> Result<Gengo<Git>, Box<dyn ErrorTrait>> {
+        let file_source = Git::new(self.repository_path, &self.rev)?;
         let analyzers = self.analyzers.unwrap_or_default();
         let read_limit = self.read_limit.unwrap_or(Self::DEFAULT_READ_LIMIT);
         let documentation = Documentation::new();
         let generated = Generated::new();
         let vendored = Vendored::new();
         Ok(Gengo {
-            repository: repository.into_sync(),
+            file_source,
             analyzers,
             read_limit,
             documentation,
