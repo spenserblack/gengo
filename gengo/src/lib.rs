@@ -1,9 +1,20 @@
-//! Gengo is a language detection library for Git repositories.
+//! Gengo is a language detection library for collections of files.
+//! Currently, it supports reading from git repositories.
+//!
+//! # Example
+//!
+//! ```no_run
+//! use gengo::{Builder, Git};
+//! let git = Git::new("path/to/repo", "HEAD").unwrap();
+//! let gengo = Builder::new(git).build().unwrap();
+//! let results = gengo.analyze().unwrap();
+//! ```
+//! # Built-in Languages
+//!
 //! While it is possible to provide your own definitions for
 //! language detection, Gengo comes with a set of built-in
 //! definitions.
 //!
-//! # Built-in Languages
 #![doc = include_str!(concat!(env!("OUT_DIR"), "/language-list.md"))]
 
 pub use analysis::Analysis;
@@ -13,7 +24,7 @@ use documentation::Documentation;
 pub use error::{Error, ErrorKind};
 use generated::Generated;
 
-pub use file_source::FileSource;
+pub use file_source::{FileSource, Git};
 use glob::MatchOptions;
 pub use languages::analyzer::Analyzers;
 use languages::Category;

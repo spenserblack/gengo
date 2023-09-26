@@ -4,9 +4,8 @@ use super::vendored::Vendored;
 use super::Analyzers;
 use super::Gengo;
 
-use crate::file_source::Git;
+use crate::file_source::FileSource;
 use std::error::Error as ErrorTrait;
-use std::path::Path;
 
 /// Builds a new `Gengo` instance.
 ///
@@ -16,20 +15,18 @@ use std::path::Path;
 /// use gengo::Builder;
 /// let gengo = Builder::new("path/to/repo", "HEAD").build().unwrap();
 /// ```
-pub struct Builder<P: AsRef<Path>> {
-    repository_path: P,
-    rev: String,
+pub struct Builder<FS: for<'fs> FileSource<'fs>> {
+    file_source: FS,
     analyzers: Option<Analyzers>,
     read_limit: Option<usize>,
 }
 
-impl<P: AsRef<Path>> Builder<P> {
+impl<FS: for<'fs> FileSource<'fs>> Builder<FS> {
     pub const DEFAULT_READ_LIMIT: usize = 1 << 20;
 
-    pub fn new(repository_path: P, rev: &str) -> Self {
+    pub fn new(file_source: FS) -> Self {
         Self {
-            repository_path,
-            rev: rev.to_owned(),
+            file_source,
             analyzers: None,
             read_limit: None,
         }
@@ -50,8 +47,8 @@ impl<P: AsRef<Path>> Builder<P> {
         self
     }
 
-    pub fn build(self) -> Result<Gengo<Git>, Box<dyn ErrorTrait>> {
-        let file_source = Git::new(self.repository_path, &self.rev)?;
+    pub fn build(self) -> Result<Gengo<FS>, Box<dyn ErrorTrait>> {
+        let file_source = self.file_source;
         let analyzers = self.analyzers.unwrap_or_default();
         let read_limit = self.read_limit.unwrap_or(Self::DEFAULT_READ_LIMIT);
         let documentation = Documentation::new();
