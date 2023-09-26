@@ -46,6 +46,15 @@
         "code",
         "userTesting"
       ]
+    },
+    {
+      "login": "spsandwichman",
+      "name": "sandwich",
+      "avatar_url": "https://avatars.githubusercontent.com/u/73349893?v=4",
+      "profile": "http://sandwichman.dev",
+      "contributions": [
+        "data"
+      ]
     }
   ],
   "contributorsPerLine": 7,
