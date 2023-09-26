@@ -446,6 +446,12 @@ OCaml:
     extensions:
       - ml
       - mli
+Odin:
+  category: programming
+  color: "#3882D2"
+  matchers:
+    extensions:
+      - odin
 PHP:
   category: programming
   color: "#7A86B8"
