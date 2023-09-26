@@ -1,6 +1,6 @@
 use clap::Error as ClapError;
 use clap::Parser;
-use gengo::{analysis::SummaryOpts, Analysis, Builder};
+use gengo::{analysis::SummaryOpts, Analysis, Builder, Git};
 use indexmap::IndexMap;
 use std::io::{self, Write};
 
@@ -43,9 +43,14 @@ pub struct CLI {
 
 impl CLI {
     pub fn run<Out: Write, Err: Write>(&self, mut out: Out, mut err: Err) -> Result<(), io::Error> {
-        let gengo = Builder::new(&self.repository, &self.revision)
-            .read_limit(self.read_limit)
-            .build();
+        let git = match Git::new(&self.repository, &self.revision) {
+            Ok(git) => git,
+            Err(e) => {
+                writeln!(err, "failed to create git instance: {}", e)?;
+                return Ok(());
+            }
+        };
+        let gengo = Builder::new(git).read_limit(self.read_limit).build();
         let gengo = match gengo {
             Ok(gengo) => gengo,
             Err(e) => {

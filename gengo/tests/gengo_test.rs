@@ -1,5 +1,4 @@
-use gengo::Analyzers;
-use gengo::Builder;
+use gengo::{Analyzers, Builder, Git};
 const ROOT: &str = env!("CARGO_MANIFEST_DIR");
 
 mod util;
@@ -10,10 +9,8 @@ fn test_javascript() {
     // guarantee order. Improve this test.
     let analyzers = fixture_str!("test_javascript-analyzers.yaml");
     let analyzers = Analyzers::from_yaml(analyzers).unwrap();
-    let gengo = Builder::new(ROOT, "test/javascript")
-        .analyzers(analyzers)
-        .build()
-        .unwrap();
+    let git = Git::new(ROOT, "test/javascript").unwrap();
+    let gengo = Builder::new(git).analyzers(analyzers).build().unwrap();
     let results = gengo.analyze().unwrap();
     insta::assert_debug_snapshot!(results);
 }
