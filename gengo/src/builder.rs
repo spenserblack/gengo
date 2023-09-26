@@ -8,13 +8,6 @@ use crate::file_source::FileSource;
 use std::error::Error as ErrorTrait;
 
 /// Builds a new `Gengo` instance.
-///
-/// # Example
-///
-/// ```no_run
-/// use gengo::Builder;
-/// let gengo = Builder::new("path/to/repo", "HEAD").build().unwrap();
-/// ```
 pub struct Builder<FS: for<'fs> FileSource<'fs>> {
     file_source: FS,
     analyzers: Option<Analyzers>,
