@@ -183,7 +183,14 @@ impl<'repo> Iterator for Iter<'repo> {
     type Item = &'repo index::Entry;
 
     fn next(&mut self) -> Option<Self::Item> {
-        self.entries.next()
+        use index::entry::Mode;
+
+        loop {
+            let entry = self.entries.next()?;
+            if matches!(entry.mode, Mode::FILE | Mode::FILE_EXECUTABLE) {
+                return Some(entry);
+            }
+        }
     }
 }
 
