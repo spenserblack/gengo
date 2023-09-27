@@ -8,7 +8,7 @@ use gix::{
     index,
     prelude::FindExt,
     worktree::{stack::state::attributes::Source as AttrSource, Stack as WTStack},
-    Repository, ThreadSafeRepository,
+    ThreadSafeRepository,
 };
 use std::borrow::Cow;
 use std::path::Path;
@@ -92,17 +92,27 @@ impl Git {
 impl<'repo> FileSource<'repo> for Git {
     type Filepath = Cow<'repo, Path>;
     type Contents = Vec<u8>;
+    type FileEntry = &'repo index::Entry;
     type Iter = Iter<'repo>;
 
     fn files(&'repo self) -> crate::Result<Self::Iter> {
         let entries = self.state.index_state.entries().iter();
-        let path_storage = self.state.index_state.path_backing();
-        let iter = Iter {
-            repository: self.repository.to_thread_local(),
-            entries,
-            path_storage,
-        };
+        let iter = Iter { entries };
         Ok(iter)
+    }
+
+    fn filename(&'repo self, entry: &Self::FileEntry) -> crate::Result<Self::Filepath> {
+        let path_storage = self.state.index_state.path_backing();
+        let path = entry.path_in(path_storage);
+        let path = gix::path::try_from_bstr(path)?;
+        Ok(path)
+    }
+
+    fn contents(&'repo self, entry: &Self::FileEntry) -> crate::Result<Self::Contents> {
+        let repository = self.repository.to_thread_local();
+        let blob = repository.find_object(entry.id)?;
+        let contents = blob.detach().data;
+        Ok(contents)
     }
 
     fn overrides<O: AsRef<Path>>(&self, path: O) -> Overrides {
@@ -166,22 +176,14 @@ impl<'repo> FileSource<'repo> for Git {
 }
 
 pub struct Iter<'repo> {
-    repository: Repository,
     entries: slice::Iter<'repo, index::Entry>,
-    path_storage: &'repo index::PathStorage,
 }
 
 impl<'repo> Iterator for Iter<'repo> {
-    type Item = (Cow<'repo, Path>, Vec<u8>);
+    type Item = &'repo index::Entry;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let entry = self.entries.next()?;
-        let path = entry.path_in(self.path_storage);
-        let path = gix::path::try_from_bstr(path).ok()?;
-
-        let blob = self.repository.find_object(entry.id).ok()?;
-        let contents = blob.detach().data;
-        Some((path, contents))
+        self.entries.next()
     }
 }
 

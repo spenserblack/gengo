@@ -10,10 +10,17 @@ mod git;
 pub trait FileSource<'files>: Send + Sync {
     type Filepath: AsRef<Path> + Send + Sync;
     type Contents: AsRef<[u8]> + Send + Sync;
-    type Iter: Iterator<Item = (Self::Filepath, Self::Contents)>;
+    type FileEntry: Send + Sync;
+    type Iter: Iterator<Item = Self::FileEntry> + Send + Sync;
 
-    /// Returns an iterator over the files.
+    /// Returns an iterator over items that represent files.
     fn files(&'files self) -> crate::Result<Self::Iter>;
+
+    /// Gets the filename from the file entry.
+    fn filename(&'files self, entry: &Self::FileEntry) -> crate::Result<Self::Filepath>;
+
+    /// Gets the contents from the file entry.
+    fn contents(&'files self, entry: &Self::FileEntry) -> crate::Result<Self::Contents>;
 
     /// Provides combined overrides for the file.
     fn overrides<O: AsRef<Path>>(&self, path: O) -> Overrides {
