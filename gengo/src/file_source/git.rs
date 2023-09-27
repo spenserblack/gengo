@@ -107,23 +107,22 @@ impl<'repo> FileSource<'repo> for Git {
 
     fn overrides<O: AsRef<Path>>(&self, path: O) -> Overrides {
         let repo = self.repository.to_thread_local();
-        let state = {
-            let mut state = self.state.clone();
-            let Ok(platform) = state
-                .attr_stack
-                .at_path(path, Some(false), |id, buf| repo.objects.find_blob(id, buf))
+        let attr_matches = {
+            let mut attr_stack = self.state.attr_stack.clone();
+            let mut attr_matches = self.state.attr_matches.clone();
+            let Ok(platform) =
+                attr_stack.at_path(path, Some(false), |id, buf| repo.objects.find_blob(id, buf))
             else {
                 // NOTE If we cannot get overrides, simply don't return them.
                 return Default::default();
             };
-            platform.matching_attributes(&mut state.attr_matches);
-            state
+            platform.matching_attributes(&mut attr_matches);
+            attr_matches
         };
 
         let attrs = {
             let mut attrs = [None, None, None, None, None];
-            state
-                .attr_matches
+            attr_matches
                 .iter_selected()
                 .zip(attrs.iter_mut())
                 .for_each(|(info, slot)| {
@@ -185,7 +184,6 @@ impl<'repo> Iterator for Iter<'repo> {
     }
 }
 
-#[derive(Clone)]
 struct State {
     attr_stack: WTStack,
     attr_matches: AttrOutcome,
