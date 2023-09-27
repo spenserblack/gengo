@@ -175,7 +175,15 @@ impl<'repo> Iterator for Iter<'repo> {
     type Item = (Cow<'repo, Path>, Vec<u8>);
 
     fn next(&mut self) -> Option<Self::Item> {
-        let entry = self.entries.next()?;
+        use gix::index::entry::Mode;
+
+        let entry = loop {
+            let entry = self.entries.next()?;
+            if matches!(entry.mode, Mode::FILE | Mode::FILE_EXECUTABLE) {
+                break entry;
+            }
+        };
+
         let path = entry.path_in(self.path_storage);
         let path = gix::path::try_from_bstr(path).ok()?;
 
