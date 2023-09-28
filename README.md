@@ -54,7 +54,6 @@ templates/*.js gengo-language=Plain-Text
 
 You will need to commit your `.gitattributes` file for it to take effect.
 
-[ghcr-package]: https://github.com/users/spenserblack/packages/container/package/gengo
 [install-docs]: ./docs/INSTALLATION.md
 [linguist]: https://github.com/github-linguist/linguist
 [tokei]: https://github.com/xampprocky/tokei

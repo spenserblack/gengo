@@ -35,3 +35,5 @@ docker run --rm -v $(pwd):$(pwd) -w $(pwd) -t gengo
 ```
 
 Or pull it from the [GitHub Container Registry][ghcr-package].
+
+[ghcr-package]: https://github.com/users/spenserblack/packages/container/package/gengo
