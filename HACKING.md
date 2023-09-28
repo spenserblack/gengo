@@ -75,7 +75,7 @@ reading contents should always be done before checks that *do* read contents.
 
 ## Testing
 
-Because this project analyzes git revisions, some of the tests are run
+Because this project analyzes git revisions, some of the tests are run on
 commits in this project that are unreachable from `main`. Make sure to
 fetch branches that are prefixed with `test/` from this repository.
 
