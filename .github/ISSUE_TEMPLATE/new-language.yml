@@ -1,0 +1,72 @@
+name: New Language Request
+description: Request support for a new language
+title: "Language: "
+labels:
+  - new-language
+body:
+  - type: input
+    id: language-name
+    attributes:
+      label: Name
+      description: The name of the language
+    validations:
+      required: true
+  - type: 
+    id: popularity
+    attributes:
+      label: Popularity
+      description: "Basically, the creators aren't the only users of the language"
+      options:
+        - label: This language is reasonably popular
+          required: true
+    attributes
+  - type: textarea
+    id: interpreters
+    attributes:
+      label: "Interpreters / shebangs"
+      description: |
+        List any interpreters used in shebangs (`#!/path/to/interpreter`)
+      placeholder: |
+        e.g.
+
+        - python
+        - python3
+  - type: textarea
+    id: filenames
+    attributes:
+      label: Filenames
+      description: List any related filenames
+      placeholder: |
+        e.g.
+
+        - Dockerfile
+  - type: textarea
+    id: extensions
+    attributes:
+      label: Extensions
+      description: List any related file extensions
+      placeholder: |
+        e.g.
+
+        - js
+        - cjs
+        - mjs
+  - type: textarea
+    id: patterns
+    attributes:
+      label: File Patterns
+      description: "If there are any file patterns that don't fit the above, list them here"
+      placeholder: |
+        e.g.
+
+        - .vscode/*.json
+  - type: textarea
+    id: conflicts
+    attributes:
+      label: Conflicts
+      description: "To the best of your knowledge, do any of your answers conflict with another language?"
+      placeholder: |
+        e.g.
+
+        The `rs` extension that Rust uses conflicts with RenderScript
+    
