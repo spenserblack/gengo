@@ -85,6 +85,7 @@ commits in this project that are unreachable from `main`. Make sure to
 fetch branches that are prefixed with `test/` from this repository.
 
 [check-languages-script]: ./scripts/check-languages-file.rb
+[editorconfig]: https://editorconfig.org/
 [insta]: https://crates.io/crates/insta
 [languages-file]: ./gengo/languages.yaml
 [lib-src]: ./gengo/src

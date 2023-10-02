@@ -23,5 +23,4 @@ but should provide a clear summary that a user can understand.
 
 >Increase contrast of colored terminal output
 
-[editorconfig]: https://editorconfig.org/
 [hacking]: ./HACKING.md
