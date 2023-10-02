@@ -19,7 +19,6 @@ body:
       options:
         - label: This language is reasonably popular
           required: true
-    attributes
   - type: textarea
     id: interpreters
     attributes:
