@@ -44,7 +44,7 @@ My Language:
     interpreters:
       - mylangexe
     patterns:
-      - "(?i)(^|/)special-path/"
+      - "**/special-path/*.ext"
   priority: 100
 ```
 
