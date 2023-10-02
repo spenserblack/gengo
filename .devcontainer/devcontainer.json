@@ -3,7 +3,7 @@
   "image": "mcr.microsoft.com/devcontainers/rust:1",
   "customizations": {
     "codespaces": {
-      "openFiles": ["CONTRIBUTING.md", "HACKING.md", "gengo/languages.yaml"]
+      "openFiles": ["docs/CONTRIBUTING.md", "docs/HACKING.md", "gengo/languages.yaml"]
     },
     "vscode": {
       "extensions": [
