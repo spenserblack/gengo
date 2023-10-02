@@ -21,7 +21,7 @@ color = ["owo-colors", "gengo/owo-colors"]
 
 [dependencies]
 clap = { version = "4", features = ["derive", "wrap_help"] }
-gengo = { path = "../gengo", version = "0.7", default-features = false }
+gengo = { path = "../gengo", version = "0.8", default-features = false }
 indexmap = "2"
 owo-colors = { version = "3", optional = true }
 
