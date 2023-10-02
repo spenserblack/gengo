@@ -4,6 +4,11 @@
 
 ### Tools
 
+#### EditorConfig
+
+This project uses [EditorConfig][editorconfig]. If necessary, install the plugin
+for your preferred editor(s).
+
 #### Testing
 
 This project uses [insta][insta] for snapshot testing. Review the instructions
