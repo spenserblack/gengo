@@ -11,6 +11,12 @@ body:
       description: The name of the language
     validations:
       required: true
+  - type: textarea
+    id: language-color
+    attributes:
+      label: Recommended Color
+      description: Let us know if you have an idea for what the color should be, and why
+      placeholder: "`#C0FFEE` spells 'coffee' so it's perfect for CoffeeScript"
   - type: checkboxes
     id: popularity
     attributes:
