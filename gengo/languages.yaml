@@ -99,6 +99,13 @@ AutoHotkey:
   matchers:
     extensions:
       - ahk
+Batch File:
+  category: programming
+  color: "#818B91"
+  matchers:
+    extensions:
+      - bat
+      - cmd
 C:
   category: programming
   color: "#8888CC"
