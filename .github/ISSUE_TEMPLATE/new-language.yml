@@ -19,6 +19,16 @@ body:
       options:
         - label: This language is reasonably popular
           required: true
+  - type: dropdown
+    id: language-category
+    attributes:
+      label: Which category best describes this language?
+      options:
+        - data
+        - markup
+        - programming
+        - prose
+        - query
   - type: textarea
     id: language-color
     attributes:
