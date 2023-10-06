@@ -86,6 +86,12 @@ Ada:
       - ada
       - adb
       - ads
+Arduino:
+  category: programming
+  color: "#189BA1"
+  matchers:
+    extensions:
+      - ino
 Assembly:
   category: programming
   color: "#33AA33"
