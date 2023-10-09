@@ -11,6 +11,8 @@ fn test_javascript() {
     let analyzers = Analyzers::from_yaml(analyzers).unwrap();
     let git = Git::new(ROOT, "test/javascript").unwrap();
     let gengo = Builder::new(git).analyzers(analyzers).build().unwrap();
-    let results = gengo.analyze().unwrap();
+    let analysis = gengo.analyze().unwrap();
+    let mut results: Vec<_> = analysis.iter().collect();
+    results.sort_by_key(|(path, _)| path);
     insta::assert_debug_snapshot!(results);
 }

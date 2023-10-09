@@ -7,13 +7,20 @@ use std::path::Path;
 mod git;
 
 /// Provides files and overrides.
-pub trait FileSource<'files>: Send + Sync {
-    type Filepath: AsRef<Path> + Send + Sync;
-    type Contents: AsRef<[u8]> + Send + Sync;
-    type Iter: Iterator<Item = (Self::Filepath, Self::Contents)>;
+pub trait FileSource<'files>: Sync {
+    type Filepath: AsRef<Path>;
+    type Contents: AsRef<[u8]>;
+    type Entry: Send;
+    type Iter: Iterator<Item = Self::Entry> + Send;
 
-    /// Returns an iterator over the files.
-    fn files(&'files self) -> crate::Result<Self::Iter>;
+    /// Returns an iterator over the entries use to get filenames and contents.
+    fn entries(&'files self) -> crate::Result<Self::Iter>;
+
+    /// Gets a filename from an entry.
+    fn filepath(&'files self, entry: &Self::Entry) -> crate::Result<Self::Filepath>;
+
+    /// Gets file contents from an entry.
+    fn contents(&'files self, entry: &Self::Entry) -> crate::Result<Self::Contents>;
 
     /// Provides combined overrides for the file.
     fn overrides<O: AsRef<Path>>(&self, path: O) -> Overrides {

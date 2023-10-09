@@ -35,7 +35,7 @@ use std::path::Path;
 
 use vendored::Vendored;
 
-use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
+use rayon::prelude::{ParallelBridge, ParallelIterator};
 
 pub mod analysis;
 mod builder;
@@ -69,14 +69,15 @@ pub struct Gengo<FS: for<'fs> FileSource<'fs>> {
 impl<FS: for<'fs> FileSource<'fs>> Gengo<FS> {
     /// Analyzes each file in the repository at the given revision.
     pub fn analyze(&self) -> Result<Analysis> {
-        // TODO Avoid this conversion to Vec?
-        let files: Vec<_> = self.file_source.files()?.collect();
-        // let mut entries = Vec::with_capacity(files.len());
-        let entries: Vec<(_, _)> = files
-            .par_iter()
-            .filter_map(|(path, contents)| {
-                let entry = self.analyze_blob(path, contents)?;
-                Some((path.as_ref().to_owned(), entry))
+        let entries: Vec<(_, _)> = self
+            .file_source
+            .entries()?
+            .par_bridge()
+            .filter_map(|entry| {
+                let filepath = self.file_source.filepath(&entry).ok()?;
+                let contents = self.file_source.contents(&entry).ok()?;
+                let entry = self.analyze_blob(&filepath, contents)?;
+                Some((filepath.as_ref().to_owned(), entry))
             })
             .collect();
 
