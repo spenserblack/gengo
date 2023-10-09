@@ -75,7 +75,7 @@ impl CLI {
 
         let summary = {
             let mut summary: Vec<(_, _)> = summary.iter().collect();
-            summary.sort_by_key(|(_, size)| usize::MAX - *size);
+            summary.sort_by_key(|(language, size)| (usize::MAX - *size, language.name()));
             summary
         };
 
