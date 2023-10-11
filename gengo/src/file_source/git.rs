@@ -8,7 +8,7 @@ use gix::{
     index,
     prelude::FindExt,
     worktree::{stack::state::attributes::Source as AttrSource, Stack as WTStack},
-    ThreadSafeRepository,
+    Repository, ThreadSafeRepository,
 };
 use std::borrow::Cow;
 use std::path::Path;
@@ -36,7 +36,7 @@ impl Builder {
     }
 
     /// Constructs a [`State`] for the repository and rev.
-    fn state(&self) -> crate::Result<State> {
+    fn state(&self) -> crate::Result<(State, index::State)> {
         let repo = self.repository.to_thread_local();
         let tree_id = repo
             .rev_parse_single(self.rev.as_str())?
@@ -51,16 +51,16 @@ impl Builder {
         let state = State {
             attr_stack,
             attr_matches,
-            index_state,
         };
-        Ok(state)
+        Ok((state, index_state))
     }
 
     fn build(self) -> crate::Result<Git> {
-        let state = self.state()?;
+        let (state, index_state) = self.state()?;
         let git = Git {
             repository: self.repository,
             state,
+            index_state,
         };
         Ok(git)
     }
@@ -69,6 +69,7 @@ impl Builder {
 pub struct Git {
     repository: ThreadSafeRepository,
     state: State,
+    index_state: index::State,
 }
 
 impl Git {
@@ -93,46 +94,57 @@ impl<'repo> FileSource<'repo> for Git {
     type Entry = &'repo index::Entry;
     type Filepath = Cow<'repo, Path>;
     type Contents = Vec<u8>;
+    type State = (State, Repository);
     type Iter = Iter<'repo>;
 
     fn entries(&'repo self) -> crate::Result<Self::Iter> {
-        let entries = self.state.index_state.entries().iter();
+        let entries = self.index_state.entries().iter();
         Ok(Iter { entries })
     }
 
-    fn filepath(&'repo self, entry: &Self::Entry) -> crate::Result<Self::Filepath> {
-        let path_storage = self.state.index_state.path_backing();
+    fn filepath(
+        &'repo self,
+        entry: &Self::Entry,
+        _state: &mut Self::State,
+    ) -> crate::Result<Self::Filepath> {
+        let path_storage = self.index_state.path_backing();
         let path = entry.path_in(path_storage);
         let path = gix::path::try_from_bstr(path)?;
         Ok(path)
     }
 
-    fn contents(&'repo self, entry: &Self::Entry) -> crate::Result<Self::Contents> {
-        let repository = self.repository.to_thread_local();
+    fn contents(
+        &'repo self,
+        entry: &Self::Entry,
+        (_, repository): &mut Self::State,
+    ) -> crate::Result<Self::Contents> {
         let blob = repository.find_object(entry.id)?;
         let blob = blob.detach();
         let contents = blob.data;
         Ok(contents)
     }
 
-    fn overrides<O: AsRef<Path>>(&self, path: O) -> Overrides {
-        let repo = self.repository.to_thread_local();
-        let attr_matches = {
-            let mut attr_stack = self.state.attr_stack.clone();
-            let mut attr_matches = self.state.attr_matches.clone();
-            let Ok(platform) =
-                attr_stack.at_path(path, Some(false), |id, buf| repo.objects.find_blob(id, buf))
-            else {
-                // NOTE If we cannot get overrides, simply don't return them.
-                return Default::default();
-            };
-            platform.matching_attributes(&mut attr_matches);
-            attr_matches
+    fn state(&'repo self) -> crate::Result<Self::State> {
+        Ok((self.state.clone(), self.repository.to_thread_local()))
+    }
+
+    fn overrides<O: AsRef<Path>>(
+        &self,
+        path: O,
+        (state, repository): &mut Self::State,
+    ) -> Overrides {
+        let Ok(platform) = state.attr_stack.at_path(path, Some(false), |id, buf| {
+            repository.objects.find_blob(id, buf)
+        }) else {
+            // NOTE If we cannot get overrides, simply don't return them.
+            return Default::default();
         };
+        platform.matching_attributes(&mut state.attr_matches);
 
         let attrs = {
             let mut attrs = [None, None, None, None, None];
-            attr_matches
+            state
+                .attr_matches
                 .iter_selected()
                 .zip(attrs.iter_mut())
                 .for_each(|(info, slot)| {
@@ -194,8 +206,8 @@ impl<'repo> Iterator for Iter<'repo> {
     }
 }
 
-struct State {
+#[derive(Clone)]
+pub struct State {
     attr_stack: WTStack,
     attr_matches: AttrOutcome,
-    index_state: index::State,
 }

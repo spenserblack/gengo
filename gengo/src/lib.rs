@@ -69,16 +69,18 @@ pub struct Gengo<FS: for<'fs> FileSource<'fs>> {
 impl<FS: for<'fs> FileSource<'fs>> Gengo<FS> {
     /// Analyzes each file in the repository at the given revision.
     pub fn analyze(&self) -> Result<Analysis> {
+        let state = self.file_source.state()?;
         let entries: Vec<(_, _)> = self
             .file_source
             .entries()?
             .par_bridge()
-            .filter_map(|entry| {
-                let filepath = self.file_source.filepath(&entry).ok()?;
-                let contents = self.file_source.contents(&entry).ok()?;
-                let entry = self.analyze_blob(&filepath, contents)?;
+            .map_with(state, |state, entry| {
+                let filepath = self.file_source.filepath(&entry, state).ok()?;
+                let contents = self.file_source.contents(&entry, state).ok()?;
+                let entry = self.analyze_blob(&filepath, contents, state)?;
                 Some((filepath.as_ref().to_owned(), entry))
             })
+            .filter_map(|entry| entry)
             .collect();
 
         Ok(Analysis(entries))
@@ -88,8 +90,9 @@ impl<FS: for<'fs> FileSource<'fs>> Gengo<FS> {
         &self,
         filepath: impl AsRef<Path>,
         contents: impl AsRef<[u8]>,
+        state: &mut <FS as FileSource>::State,
     ) -> Option<Entry> {
-        let overrides = self.file_source.overrides(&filepath);
+        let overrides = self.file_source.overrides(&filepath, state);
         let filepath = filepath.as_ref();
         let contents = contents.as_ref();
 
