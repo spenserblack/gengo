@@ -94,7 +94,7 @@ impl<'repo> FileSource<'repo> for Git {
     type Entry = &'repo index::Entry;
     type Filepath = Cow<'repo, Path>;
     type Contents = Vec<u8>;
-    type State = ();
+    type State = State;
     type Iter = Iter<'repo>;
 
     fn entries(&'repo self) -> crate::Result<Self::Iter> {
@@ -126,27 +126,24 @@ impl<'repo> FileSource<'repo> for Git {
     }
 
     fn state(&'repo self) -> crate::Result<Self::State> {
-        Ok(())
+        Ok(self.state.clone())
     }
 
-    fn overrides<O: AsRef<Path>>(&self, path: O, _state: &mut Self::State) -> Overrides {
+    fn overrides<O: AsRef<Path>>(&self, path: O, state: &mut Self::State) -> Overrides {
         let repo = self.repository.to_thread_local();
-        let attr_matches = {
-            let mut attr_stack = self.state.attr_stack.clone();
-            let mut attr_matches = self.state.attr_matches.clone();
-            let Ok(platform) =
-                attr_stack.at_path(path, Some(false), |id, buf| repo.objects.find_blob(id, buf))
-            else {
-                // NOTE If we cannot get overrides, simply don't return them.
-                return Default::default();
-            };
-            platform.matching_attributes(&mut attr_matches);
-            attr_matches
+        let Ok(platform) = state
+            .attr_stack
+            .at_path(path, Some(false), |id, buf| repo.objects.find_blob(id, buf))
+        else {
+            // NOTE If we cannot get overrides, simply don't return them.
+            return Default::default();
         };
+        platform.matching_attributes(&mut state.attr_matches);
 
         let attrs = {
             let mut attrs = [None, None, None, None, None];
-            attr_matches
+            state
+                .attr_matches
                 .iter_selected()
                 .zip(attrs.iter_mut())
                 .for_each(|(info, slot)| {
@@ -208,7 +205,8 @@ impl<'repo> Iterator for Iter<'repo> {
     }
 }
 
-struct State {
+#[derive(Clone)]
+pub struct State {
     attr_stack: WTStack,
     attr_matches: AttrOutcome,
 }
