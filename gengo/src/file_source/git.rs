@@ -36,7 +36,7 @@ impl Builder {
     }
 
     /// Constructs a [`State`] for the repository and rev.
-    fn state(&self) -> crate::Result<State> {
+    fn state(&self) -> crate::Result<(State, index::State)> {
         let repo = self.repository.to_thread_local();
         let tree_id = repo
             .rev_parse_single(self.rev.as_str())?
@@ -51,16 +51,16 @@ impl Builder {
         let state = State {
             attr_stack,
             attr_matches,
-            index_state,
         };
-        Ok(state)
+        Ok((state, index_state))
     }
 
     fn build(self) -> crate::Result<Git> {
-        let state = self.state()?;
+        let (state, index_state) = self.state()?;
         let git = Git {
             repository: self.repository,
             state,
+            index_state,
         };
         Ok(git)
     }
@@ -69,6 +69,7 @@ impl Builder {
 pub struct Git {
     repository: ThreadSafeRepository,
     state: State,
+    index_state: index::State,
 }
 
 impl Git {
@@ -96,12 +97,12 @@ impl<'repo> FileSource<'repo> for Git {
     type Iter = Iter<'repo>;
 
     fn entries(&'repo self) -> crate::Result<Self::Iter> {
-        let entries = self.state.index_state.entries().iter();
+        let entries = self.index_state.entries().iter();
         Ok(Iter { entries })
     }
 
     fn filepath(&'repo self, entry: &Self::Entry) -> crate::Result<Self::Filepath> {
-        let path_storage = self.state.index_state.path_backing();
+        let path_storage = self.index_state.path_backing();
         let path = entry.path_in(path_storage);
         let path = gix::path::try_from_bstr(path)?;
         Ok(path)
@@ -197,5 +198,4 @@ impl<'repo> Iterator for Iter<'repo> {
 struct State {
     attr_stack: WTStack,
     attr_matches: AttrOutcome,
-    index_state: index::State,
 }
