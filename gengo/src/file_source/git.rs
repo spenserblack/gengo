@@ -191,10 +191,6 @@ impl<'repo> Iterator for Iter<'repo> {
             }
         };
         Some(entry)
-
-        // let blob = self.repository.find_object(entry.id).ok()?;
-        // let contents = blob.detach().data;
-        // Some((path, contents))
     }
 }
 
