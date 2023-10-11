@@ -8,7 +8,7 @@ use gix::{
     index,
     prelude::FindExt,
     worktree::{stack::state::attributes::Source as AttrSource, Stack as WTStack},
-    ThreadSafeRepository,
+    Repository, ThreadSafeRepository,
 };
 use std::borrow::Cow;
 use std::path::Path;
@@ -94,7 +94,7 @@ impl<'repo> FileSource<'repo> for Git {
     type Entry = &'repo index::Entry;
     type Filepath = Cow<'repo, Path>;
     type Contents = Vec<u8>;
-    type State = State;
+    type State = (State, Repository);
     type Iter = Iter<'repo>;
 
     fn entries(&'repo self) -> crate::Result<Self::Iter> {
@@ -116,9 +116,8 @@ impl<'repo> FileSource<'repo> for Git {
     fn contents(
         &'repo self,
         entry: &Self::Entry,
-        _state: &mut Self::State,
+        (_, repository): &mut Self::State,
     ) -> crate::Result<Self::Contents> {
-        let repository = self.repository.to_thread_local();
         let blob = repository.find_object(entry.id)?;
         let blob = blob.detach();
         let contents = blob.data;
@@ -126,15 +125,17 @@ impl<'repo> FileSource<'repo> for Git {
     }
 
     fn state(&'repo self) -> crate::Result<Self::State> {
-        Ok(self.state.clone())
+        Ok((self.state.clone(), self.repository.to_thread_local()))
     }
 
-    fn overrides<O: AsRef<Path>>(&self, path: O, state: &mut Self::State) -> Overrides {
-        let repo = self.repository.to_thread_local();
-        let Ok(platform) = state
-            .attr_stack
-            .at_path(path, Some(false), |id, buf| repo.objects.find_blob(id, buf))
-        else {
+    fn overrides<O: AsRef<Path>>(
+        &self,
+        path: O,
+        (state, repository): &mut Self::State,
+    ) -> Overrides {
+        let Ok(platform) = state.attr_stack.at_path(path, Some(false), |id, buf| {
+            repository.objects.find_blob(id, buf)
+        }) else {
             // NOTE If we cannot get overrides, simply don't return them.
             return Default::default();
         };
