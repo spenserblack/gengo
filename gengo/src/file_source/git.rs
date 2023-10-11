@@ -94,6 +94,7 @@ impl<'repo> FileSource<'repo> for Git {
     type Entry = &'repo index::Entry;
     type Filepath = Cow<'repo, Path>;
     type Contents = Vec<u8>;
+    type State = ();
     type Iter = Iter<'repo>;
 
     fn entries(&'repo self) -> crate::Result<Self::Iter> {
@@ -101,14 +102,22 @@ impl<'repo> FileSource<'repo> for Git {
         Ok(Iter { entries })
     }
 
-    fn filepath(&'repo self, entry: &Self::Entry) -> crate::Result<Self::Filepath> {
+    fn filepath(
+        &'repo self,
+        entry: &Self::Entry,
+        _state: &mut Self::State,
+    ) -> crate::Result<Self::Filepath> {
         let path_storage = self.index_state.path_backing();
         let path = entry.path_in(path_storage);
         let path = gix::path::try_from_bstr(path)?;
         Ok(path)
     }
 
-    fn contents(&'repo self, entry: &Self::Entry) -> crate::Result<Self::Contents> {
+    fn contents(
+        &'repo self,
+        entry: &Self::Entry,
+        _state: &mut Self::State,
+    ) -> crate::Result<Self::Contents> {
         let repository = self.repository.to_thread_local();
         let blob = repository.find_object(entry.id)?;
         let blob = blob.detach();
@@ -116,7 +125,11 @@ impl<'repo> FileSource<'repo> for Git {
         Ok(contents)
     }
 
-    fn overrides<O: AsRef<Path>>(&self, path: O) -> Overrides {
+    fn state(&'repo self) -> crate::Result<Self::State> {
+        Ok(())
+    }
+
+    fn overrides<O: AsRef<Path>>(&self, path: O, _state: &mut Self::State) -> Overrides {
         let repo = self.repository.to_thread_local();
         let attr_matches = {
             let mut attr_stack = self.state.attr_stack.clone();
