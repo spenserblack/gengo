@@ -33,7 +33,7 @@ pub trait FileSource<'files>: Sync {
         state: &mut Self::State,
     ) -> crate::Result<Self::Contents>;
 
-    /// Gets a state that can be shared between threads.
+    /// Gets a state that can be shared between iterations.
     fn state(&'files self) -> crate::Result<Self::State>;
 
     /// Provides combined overrides for the file.
