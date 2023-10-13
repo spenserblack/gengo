@@ -664,3 +664,10 @@ Zig:
   matchers:
     extensions:
       - zig
+Swift:
+  category: programming
+  color: "#DC5114"
+  matchers:
+    extensions:
+      - swift
+
