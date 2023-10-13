@@ -78,6 +78,20 @@ Check `documentation.rs`, `generated.rs`, and `vendored.rs` in [`gengo/src`][lib
 to update detection for these. For performance reasons, checks that *don't* require
 reading contents should always be done before checks that *do* read contents.
 
+### Adding a sample
+
+This project can test itself on code samples for accuracy. Not only that, but the samples can be used
+in the future to train additional classification methods. If you would like to add a sample, add a
+file to `samples-test/samples/LANGUAGE/`, where `LANGUAGE` is the name of the language as seen in
+[`languages.yaml`][languages-file].
+
+When adding a sample:
+- It should preferably be a real-world sample, not a "hello world" example.
+- State where the sample comes from. Did you write it? Did you copy it from an open-source repository?
+  - If you wrote it yourself, you agree that the sample is licensed under this repository's licenses.
+  - If you copied it from somewhere else, make sure that the code you copied is licensed under the
+    MIT or Apache 2.0 license.
+
 ## Testing
 
 Because this project analyzes git revisions, some of the tests are run on
