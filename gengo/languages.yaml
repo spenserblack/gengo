@@ -605,6 +605,12 @@ Svelte:
   matchers:
     extensions:
       - svelte
+Swift:
+  category: programming
+  color: "#DC5114"
+  matchers:
+    extensions:
+      - swift
 TOML:
   category: data
   color: "#9C4221"
@@ -664,10 +670,3 @@ Zig:
   matchers:
     extensions:
       - zig
-Swift:
-  category: programming
-  color: "#DC5114"
-  matchers:
-    extensions:
-      - swift
-
