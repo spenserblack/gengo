@@ -1,0 +1,13 @@
+[package]
+name = "samples-test"
+publish = false
+edition.workspace = true
+description.workspace = true
+version.workspace = true
+repository.workspace = true
+readme.workspace = true
+license.workspace = true
+keywords.workspace = true
+
+[dependencies]
+gengo = { path = "../gengo", version = "0.8", default-features = false }

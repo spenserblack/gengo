@@ -1,5 +1,5 @@
 [workspace]
-members = ["gengo", "gengo-bin"]
+members = ["gengo", "gengo-bin", "samples-test"]
 resolver = "2"
 
 [workspace.package]

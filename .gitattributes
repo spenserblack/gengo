@@ -6,3 +6,6 @@
 
 # Ignore fixtures
 **/fixtures/* -gengo-detectable
+
+# Handle sample code
+/samples-test/samples/** -text linguist-vendored -gengo-detectable
