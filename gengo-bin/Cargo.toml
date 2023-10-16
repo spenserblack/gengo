@@ -17,7 +17,7 @@ name = "gengo"
 
 [features]
 default = ["color", "gengo/max-performance"]
-color = ["owo-colors", "gengo/owo-colors"]
+color = ["gengo/owo-colors", "owo-colors"]
 
 [dependencies]
 clap = { version = "4", features = ["derive", "wrap_help"] }
