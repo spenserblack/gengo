@@ -1,9 +1,11 @@
 //! Provides sources to get files and their attributes.
 
+pub use directory::Directory;
 pub use git::Git;
 use std::marker::{Send, Sync};
 use std::path::Path;
 
+mod directory;
 mod git;
 
 /// Provides files and overrides.
