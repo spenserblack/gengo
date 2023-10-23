@@ -19,6 +19,10 @@ changelog:
       labels:
         - semver-patch
         - bug
+    - title: ":jack_o_lantern: Hacktoberfest Contributions"
+      labels:
+        - hacktoberfest
+        - hacktoberfest-accepted
     - title: Other Changes
       labels:
         - "*"
