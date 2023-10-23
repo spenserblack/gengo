@@ -8,7 +8,7 @@
     "vscode": {
       "extensions": [
         "EditorConfig.EditorConfig",
-        "rebornix.ruby",
+        "Shopify.ruby-lsp"
         "rust-lang.rust-analyzer",
         "tomoyukim.vscode-mermaid-editor"
       ],

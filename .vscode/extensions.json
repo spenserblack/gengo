@@ -1,8 +1,8 @@
 {
   "recommendations": [
     "editorconfig.editorconfig",
-    "rebornix.ruby",
     "rust-lang.rust-analyzer",
+    "shopify.ruby-lsp",
     "tomoyukim.vscode-mermaid-editor"
   ]
 }
