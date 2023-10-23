@@ -37,7 +37,7 @@ mod tests {
         let errors: Vec<_> = samples_dir
             .read_dir()
             .expect("samples directory to be readable")
-            .map(|entry| {
+            .flat_map(|entry| {
                 let path = entry.expect("entry to be readable").path();
                 let language_dir = path.strip_prefix(&samples_dir).unwrap();
                 let language_name = language_dir.display().to_string();
@@ -49,7 +49,7 @@ mod tests {
                         let contents = fs::read(&path).expect("file to be readable");
                         let relative_path = path.strip_prefix(&samples_dir).unwrap();
                         let actual = analyzers
-                            .pick(&relative_path, &contents, 1 << 20)
+                            .pick(relative_path, &contents, 1 << 20)
                             .expect("language to exist");
                         if expected.name() != actual.name() {
                             Err(TestError {
@@ -62,7 +62,6 @@ mod tests {
                         }
                     })
             })
-            .flatten()
             .filter_map(Result::err)
             .collect();
         if errors.is_empty() {
