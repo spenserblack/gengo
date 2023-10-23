@@ -278,6 +278,12 @@ Erlang:
       - f08
       - f90
       - f95
+GDScript:
+  category: programming
+  color: "#355570"
+  matchers:
+    extensions:
+      - gd
 GitHub Workflow:
   category: programming
   color: "#2088FF"
