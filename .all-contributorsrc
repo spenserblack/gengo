@@ -73,6 +73,15 @@
       "contributions": [
         "data"
       ]
+    },
+    {
+      "login": "alexpalade",
+      "name": "Alex Palade",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1126946?v=4",
+      "profile": "https://github.com/alexpalade",
+      "contributions": [
+        "data"
+      ]
     }
   ],
   "contributorsPerLine": 7,
