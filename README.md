@@ -12,8 +12,8 @@ A bit like [tokei][tokei], a lot like [linguist][linguist].
 | Feature/Behavior | [linguist][linguist] | [tokei][tokei] | gengo |
 | :--------------: | :------------------: | :------------: | :---: |
 | **Analyze Git Revision** | Yes | No | Yes |
-| **Analyze Directory** | No | Yes | No |
-| **Requires Git Repository** | Yes | No | Yes |
+| **Analyze Directory** | No | Yes | Yes |
+| **Requires Git Repository** | Yes | No | No |
 | **Detect Language by Extension** | Yes | Yes | Yes |
 | **Detect Language by Filename** | Yes | Yes | Yes |
 | **Detect by Filepath Pattern** | No | No | Yes |
