@@ -1,17 +1,21 @@
 use super::FileSource;
 use crate::Result;
-use std::fs::{File, ReadDir};
+use ignore::{Walk, WalkBuilder};
+use std::fs::File;
 use std::io::Read;
 use std::path::{Path, PathBuf};
 
 /// A file source that reads files from a directory.
+///
+/// Will try to ignore files be default. See [`WalkBuilder`](ignore::WalkBuilder)
+/// for more information.
 pub struct Directory {
-    path: PathBuf,
     buf_size: usize,
+    walk_builder: WalkBuilder,
 }
 
 pub struct Iter {
-    paths: Vec<ReadDir>,
+    walk: Walk,
 }
 
 // TODO Simpler API than having to copy the same read_limit/buf_size value to multiple places?
@@ -26,8 +30,11 @@ impl Directory {
         if !path.is_dir() {
             return Err("path is not a directory".into());
         }
-        let path = path.to_owned();
-        let directory = Self { path, buf_size };
+        let walk_builder = WalkBuilder::new(path);
+        let directory = Self {
+            buf_size,
+            walk_builder,
+        };
         Ok(directory)
     }
 }
@@ -41,8 +48,8 @@ impl<'files> FileSource<'files> for Directory {
 
     fn entries(&'files self) -> crate::Result<Self::Iter> {
         // NOTE `new` should assert that `path` is always a directory
-        let paths = vec![self.path.read_dir()?];
-        Ok(Iter { paths })
+        let walk = self.walk_builder.build();
+        Ok(Iter { walk })
     }
 
     fn filepath(
@@ -75,25 +82,10 @@ impl Iterator for Iter {
     type Item = PathBuf;
 
     fn next(&mut self) -> Option<Self::Item> {
-        loop {
-            let read_dir = self.paths.last_mut()?;
-            let entry = match read_dir.next() {
-                Some(entry) => entry,
-                None => {
-                    self.paths.pop();
-                    continue;
-                }
-            };
-            // TODO Handle errors?
-            let entry = entry.ok()?;
-            let path = entry.path();
-            if path.is_dir() {
-                self.paths.push(path.read_dir().ok()?);
-                continue;
-            } else if !path.is_file() {
-                continue;
-            }
-            break Some(path);
-        }
+        // TODO Handle error?
+        self.walk
+            .next()
+            .and_then(|entry| entry.ok())
+            .map(|dir_entry| dir_entry.path().to_owned())
     }
 }
