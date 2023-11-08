@@ -24,7 +24,7 @@ use documentation::Documentation;
 pub use error::{Error, ErrorKind};
 use generated::Generated;
 
-pub use file_source::{FileSource, Git};
+pub use file_source::{Directory, FileSource, Git};
 use glob::MatchOptions;
 pub use languages::analyzer::Analyzers;
 use languages::Category;

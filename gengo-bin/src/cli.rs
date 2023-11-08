@@ -1,6 +1,6 @@
 use clap::Error as ClapError;
 use clap::Parser;
-use gengo::{analysis::SummaryOpts, Analysis, Builder, Git};
+use gengo::{analysis::SummaryOpts, Analysis, Builder, Directory, Git};
 use indexmap::IndexMap;
 use std::io::{self, Write};
 
@@ -22,6 +22,9 @@ pub struct CLI {
     /// The git revision to analyze.
     #[arg(short = 'r', long = "rev", default_value = "HEAD")]
     revision: String,
+    /// Analyze a directory instead of a repository (BETA).
+    #[arg(short = 'd', long, conflicts_with("revision"))]
+    directory: bool,
     /// The maximum number of bytes to read from each file.
     ///
     /// This is useful for large files that can impact performance.
@@ -43,22 +46,41 @@ pub struct CLI {
 
 impl CLI {
     pub fn run<Out: Write, Err: Write>(&self, mut out: Out, mut err: Err) -> Result<(), io::Error> {
-        let git = match Git::new(&self.repository, &self.revision) {
-            Ok(git) => git,
-            Err(e) => {
-                writeln!(err, "failed to create git instance: {}", e)?;
-                return Ok(());
-            }
+        let results = if self.directory {
+            let directory = match Directory::new(&self.repository, self.read_limit) {
+                Ok(directory) => directory,
+                Err(e) => {
+                    writeln!(err, "failed to create directory instance: {}", e)?;
+                    return Ok(());
+                }
+            };
+            let gengo = Builder::new(directory).read_limit(self.read_limit).build();
+            let gengo = match gengo {
+                Ok(gengo) => gengo,
+                Err(e) => {
+                    writeln!(err, "failed to create instance: {}", e)?;
+                    return Ok(());
+                }
+            };
+            gengo.analyze()
+        } else {
+            let git = match Git::new(&self.repository, &self.revision) {
+                Ok(git) => git,
+                Err(e) => {
+                    writeln!(err, "failed to create git instance: {}", e)?;
+                    return Ok(());
+                }
+            };
+            let gengo = Builder::new(git).read_limit(self.read_limit).build();
+            let gengo = match gengo {
+                Ok(gengo) => gengo,
+                Err(e) => {
+                    writeln!(err, "failed to create instance: {}", e)?;
+                    return Ok(());
+                }
+            };
+            gengo.analyze()
         };
-        let gengo = Builder::new(git).read_limit(self.read_limit).build();
-        let gengo = match gengo {
-            Ok(gengo) => gengo,
-            Err(e) => {
-                writeln!(err, "failed to create instance: {}", e)?;
-                return Ok(());
-            }
-        };
-        let results = gengo.analyze();
         let results = match results {
             Ok(results) => results,
             Err(e) => {

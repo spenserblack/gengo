@@ -1,0 +1,96 @@
+---
+source: gengo/tests/gengo_test.rs
+expression: results
+---
+[
+    (
+        "tests/fixtures/test_check_json_with_comments-analyzers.yaml",
+        Entry {
+            language: Language {
+                name: "YAML",
+                category: Data,
+                color: "#CC1018",
+            },
+            size: 316,
+            detectable: false,
+            generated: false,
+            documentation: false,
+            vendored: true,
+        },
+    ),
+    (
+        "tests/fixtures/test_check_json_with_comments-file.json",
+        Entry {
+            language: Language {
+                name: "JSON with Comments",
+                category: Data,
+                color: "#CCCCCC",
+            },
+            size: 96,
+            detectable: false,
+            generated: false,
+            documentation: false,
+            vendored: true,
+        },
+    ),
+    (
+        "tests/fixtures/test_check_shebang_shell-analyzers.yaml",
+        Entry {
+            language: Language {
+                name: "YAML",
+                category: Data,
+                color: "#CC1018",
+            },
+            size: 108,
+            detectable: false,
+            generated: false,
+            documentation: false,
+            vendored: true,
+        },
+    ),
+    (
+        "tests/fixtures/test_javascript-analyzers.yaml",
+        Entry {
+            language: Language {
+                name: "YAML",
+                category: Data,
+                color: "#CC1018",
+            },
+            size: 437,
+            detectable: false,
+            generated: false,
+            documentation: false,
+            vendored: true,
+        },
+    ),
+    (
+        "tests/fixtures/test_simple-analyzers.yaml",
+        Entry {
+            language: Language {
+                name: "YAML",
+                category: Data,
+                color: "#CC1018",
+            },
+            size: 181,
+            detectable: false,
+            generated: false,
+            documentation: false,
+            vendored: true,
+        },
+    ),
+    (
+        "tests/fixtures/test_simple-file.sh",
+        Entry {
+            language: Language {
+                name: "Shell",
+                category: Programming,
+                color: "#262E28",
+            },
+            size: 37,
+            detectable: false,
+            generated: false,
+            documentation: false,
+            vendored: true,
+        },
+    ),
+]
