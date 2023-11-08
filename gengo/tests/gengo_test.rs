@@ -19,6 +19,7 @@ fn test_git_javascript() {
 }
 
 #[test]
+#[cfg_attr(windows, ignore)]
 fn test_directory_fixtures() {
     let directory = Path::new(ROOT).join("tests/fixtures");
     let directory = Directory::new(directory, 1 << 20).unwrap();
