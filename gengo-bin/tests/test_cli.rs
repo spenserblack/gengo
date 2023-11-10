@@ -37,12 +37,12 @@ fn test_javascript_repo() {
 fn test_breakdown_javascript_repo() {
     assert_stdout_snapshot!(&[
         "gengo",
+        "--breakdown",
         "git",
         "-r",
         "test/javascript",
         "-R",
         ROOT,
-        "--breakdown"
     ]);
 }
 
@@ -58,12 +58,12 @@ fn test_color_javascript_repo() {
 fn test_color_breakdown_javascript_repo() {
     assert_stdout_snapshot!(&[
         "gengo",
+        "--breakdown",
         "git",
         "-r",
         "test/javascript",
         "-R",
         ROOT,
-        "--breakdown"
     ]);
 }
 
