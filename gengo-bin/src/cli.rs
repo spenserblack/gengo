@@ -1,7 +1,8 @@
 use clap::Error as ClapError;
-use clap::Parser;
+use clap::{Parser, Subcommand};
 use gengo::{analysis::SummaryOpts, Analysis, Builder, Directory, Git};
 use indexmap::IndexMap;
+use std::error::Error as BaseError;
 use std::io::{self, Write};
 
 pub fn new() -> CLI {
@@ -15,16 +16,10 @@ pub fn try_new_from(args: &[&str]) -> Result<CLI, ClapError> {
 /// Fetch language statistics for your source code.
 #[derive(Parser)]
 #[command(version)]
+#[command(propagate_version = true)]
 pub struct CLI {
-    /// The path to the repository to analyze.
-    #[arg(short = 'R', long, default_value = ".")]
-    repository: String,
-    /// The git revision to analyze.
-    #[arg(short = 'r', long = "rev", default_value = "HEAD")]
-    revision: String,
-    /// Analyze a directory instead of a repository (BETA).
-    #[arg(short = 'd', long, conflicts_with("revision"))]
-    directory: bool,
+    #[command(subcommand)]
+    command: Commands,
     /// The maximum number of bytes to read from each file.
     ///
     /// This is useful for large files that can impact performance.
@@ -44,43 +39,28 @@ pub struct CLI {
     no_color: bool,
 }
 
+#[derive(Subcommand)]
+enum Commands {
+    /// Analyze a git repository.
+    Git {
+        /// The path to the repository to analyze.
+        #[arg(short = 'R', long, default_value = ".")]
+        repository: String,
+        /// The git revision to analyze.
+        #[arg(short = 'r', long = "rev", default_value = "HEAD")]
+        revision: String,
+    },
+    /// ***BETA*** Analyze a directory.
+    Directory {
+        /// The path to the directory to analyze.
+        #[arg(short = 'D', long, default_value = ".")]
+        directory: String,
+    },
+}
+
 impl CLI {
     pub fn run<Out: Write, Err: Write>(&self, mut out: Out, mut err: Err) -> Result<(), io::Error> {
-        let results = if self.directory {
-            let directory = match Directory::new(&self.repository, self.read_limit) {
-                Ok(directory) => directory,
-                Err(e) => {
-                    writeln!(err, "failed to create directory instance: {}", e)?;
-                    return Ok(());
-                }
-            };
-            let gengo = Builder::new(directory).read_limit(self.read_limit).build();
-            let gengo = match gengo {
-                Ok(gengo) => gengo,
-                Err(e) => {
-                    writeln!(err, "failed to create instance: {}", e)?;
-                    return Ok(());
-                }
-            };
-            gengo.analyze()
-        } else {
-            let git = match Git::new(&self.repository, &self.revision) {
-                Ok(git) => git,
-                Err(e) => {
-                    writeln!(err, "failed to create git instance: {}", e)?;
-                    return Ok(());
-                }
-            };
-            let gengo = Builder::new(git).read_limit(self.read_limit).build();
-            let gengo = match gengo {
-                Ok(gengo) => gengo,
-                Err(e) => {
-                    writeln!(err, "failed to create instance: {}", e)?;
-                    return Ok(());
-                }
-            };
-            gengo.analyze()
-        };
+        let results = self.command.analyze(self.read_limit);
         let results = match results {
             Ok(results) => results,
             Err(e) => {
@@ -203,5 +183,25 @@ impl CLI {
     #[cfg(not(feature = "color"))]
     fn colorize<Anything>(&self, s: &str, _: Anything) -> String {
         String::from(s)
+    }
+}
+
+impl Commands {
+    fn analyze(&self, read_limit: usize) -> Result<Analysis, Box<dyn BaseError>> {
+        match self {
+            Commands::Git {
+                repository,
+                revision,
+            } => {
+                let git = Git::new(repository, revision)?;
+                let gengo = Builder::new(git).read_limit(read_limit).build()?;
+                gengo.analyze()
+            }
+            Commands::Directory { directory } => {
+                let directory = Directory::new(directory, read_limit)?;
+                let gengo = Builder::new(directory).read_limit(read_limit).build()?;
+                gengo.analyze()
+            }
+        }
     }
 }

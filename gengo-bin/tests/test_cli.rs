@@ -28,27 +28,43 @@ macro_rules! assert_stdout_snapshot {
 #[test]
 #[cfg(not(feature = "color"))]
 fn test_javascript_repo() {
-    assert_stdout_snapshot!(&["gengo", "-r", "test/javascript", "-R", ROOT]);
+    assert_stdout_snapshot!(&["gengo", "git", "-r", "test/javascript", "-R", ROOT]);
 }
 
 #[test]
 #[cfg_attr(windows, ignore)]
 #[cfg(not(feature = "color"))]
 fn test_breakdown_javascript_repo() {
-    assert_stdout_snapshot!(&["gengo", "-r", "test/javascript", "-R", ROOT, "--breakdown"]);
+    assert_stdout_snapshot!(&[
+        "gengo",
+        "git",
+        "-r",
+        "test/javascript",
+        "-R",
+        ROOT,
+        "--breakdown"
+    ]);
 }
 
 #[test]
 #[cfg(feature = "color")]
 fn test_color_javascript_repo() {
-    assert_stdout_snapshot!(&["gengo", "-r", "test/javascript", "-R", ROOT]);
+    assert_stdout_snapshot!(&["gengo", "git", "-r", "test/javascript", "-R", ROOT]);
 }
 
 #[test]
 #[cfg_attr(windows, ignore)]
 #[cfg(feature = "color")]
 fn test_color_breakdown_javascript_repo() {
-    assert_stdout_snapshot!(&["gengo", "-r", "test/javascript", "-R", ROOT, "--breakdown"]);
+    assert_stdout_snapshot!(&[
+        "gengo",
+        "git",
+        "-r",
+        "test/javascript",
+        "-R",
+        ROOT,
+        "--breakdown"
+    ]);
 }
 
 //
