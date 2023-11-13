@@ -26,8 +26,7 @@ jobs:
         run: cargo publish -p gengo-bin
 
   github:
-    name: GitHub Release Assets
-    run-name: Build ${{ matrix.target }}
+    name: Build ${{ matrix.target }}
     runs-on: ${{ matrix.os }}
     permissions:
       contents: write
