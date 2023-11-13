@@ -26,29 +26,42 @@ jobs:
         run: cargo publish -p gengo-bin
 
   github:
-    name: GitHub Assets
+    name: GitHub Release Assets
+    run-name: Build ${{ matrix.target }}
     runs-on: ${{ matrix.os }}
     permissions:
       contents: write
     strategy:
       fail-fast: false
       matrix:
-        os:
-          - macos-latest
-          - ubuntu-latest
-          - windows-latest
+        include:
+          - os: macos-latest
+            target: x86_64-apple-darwin
+          - os: ubuntu-latest
+            target: aarch64-unknown-linux-gnu
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
 
     steps:
       - uses: actions/checkout@v4
+      - name: Add target
+        run: rustup target add ${{ matrix.target }}
       - name: Build Assets
         run: |
-          cargo build --release
-          tar -C target/release/ -czvf gengo-${{ runner.os }}-${{ runner.arch }}.tar.gz gengo${{ runner.os == 'Windows' && '.exe' || '' }}
+          cargo build --release --target ${{ matrix.target }}
+          tar -C target/release/ -czvf gengo-${{ matrix.target }}.tar.gz gengo${{ runner.os == 'Windows' && '.exe' || '' }}
       - name: Upload Assets
         if: ${{ github.event_name != "workflow_dispatch" }}
         uses: softprops/action-gh-release@v1
         with:
           files: '*.tar.gz'
+      - name: Upload Artifacts
+        if: ${{ github.event_name == "workflow_dispatch" }}
+        uses: actions/upload-artifact
+        with:
+          path: '*.tar.gz'
 
   docker:
     name: Publish Docker Image
