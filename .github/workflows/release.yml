@@ -52,7 +52,7 @@ jobs:
         run: |
           cargo build --release --target ${{ matrix.target }}
           tar -C target/release/ -czvf gengo-${{ matrix.target }}.tar.gz gengo${{ runner.os == 'Windows' && '.exe' || '' }}
-      - name: Upload Assets
+      - name: Upload Release Assets
         if: ${{ github.event_name != 'workflow_dispatch' }}
         uses: softprops/action-gh-release@v1
         with:
