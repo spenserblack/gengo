@@ -17,7 +17,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     fs::write(languages_target_path, json)?;
 
     let doc_target_path = Path::new(&env::var("OUT_DIR")?).join("language-list.md");
-    let mut doc_file = File::create(&doc_target_path)?;
+    let mut doc_file = File::create(doc_target_path)?;
     for language in languages.keys() {
         writeln!(doc_file, "- {}", language)?;
     }
