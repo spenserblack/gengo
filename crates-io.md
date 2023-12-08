@@ -1,6 +1,6 @@
 # Gengo
 
-## Installating the binary
+## Installing the binary
 
 ```shell
 cargo install gengo-bin
