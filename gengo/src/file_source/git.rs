@@ -6,7 +6,6 @@ use gix::{
     bstr::ByteSlice,
     discover::Error as DiscoverError,
     index,
-    prelude::FindExt,
     worktree::{stack::state::attributes::Source as AttrSource, Stack as WTStack},
     Repository, ThreadSafeRepository,
 };
@@ -133,9 +132,10 @@ impl<'repo> FileSource<'repo> for Git {
         path: O,
         (state, repository): &mut Self::State,
     ) -> Overrides {
-        let Ok(platform) = state.attr_stack.at_path(path, Some(false), |id, buf| {
-            repository.objects.find_blob(id, buf)
-        }) else {
+        let Ok(platform) = state
+            .attr_stack
+            .at_path(path, Some(false), &repository.objects)
+        else {
             // NOTE If we cannot get overrides, simply don't return them.
             return Default::default();
         };

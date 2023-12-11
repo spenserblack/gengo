@@ -17,7 +17,7 @@ max-performance = ["gix/max-performance"]
 max-performance-safe = ["gix/max-performance-safe"]
 
 [dependencies]
-gix = { version = ">= 0.54.1, < 0.56", default-features = false, features = [
+gix = { version = "0.56", default-features = false, features = [
     "attributes",
     "index",
     "parallel",
