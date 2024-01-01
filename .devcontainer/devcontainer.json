@@ -1,6 +1,9 @@
 {
   "name": "Rust",
-  "image": "mcr.microsoft.com/devcontainers/rust:1",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "args": { "VARIANT": "1" }
+  },
   "customizations": {
     "codespaces": {
       "openFiles": ["docs/CONTRIBUTING.md", "docs/HACKING.md", "gengo/languages.yaml"]
