@@ -28,24 +28,6 @@ impl Analyzers {
         self.0.get(&name).map(|a| &a.language)
     }
 
-    /// Returns the analyzers that have matched by filepath.
-    #[deprecated(since = "0.3.1")]
-    pub fn by_filepath<P: AsRef<Path>>(&self, filepath: P) -> Found {
-        let matches: Vec<_> = self
-            .iter()
-            .filter(|(_, a)| {
-                a.matchers.iter().any(|m| match m {
-                    Matcher::Extension(e) => e.matches(&filepath),
-                    Matcher::Filename(f) => f.matches(&filepath),
-                    Matcher::FilepathPattern(p) => p.matches(&filepath),
-                    Matcher::Shebang(_) => false,
-                })
-            })
-            .map(|(key, _)| key.to_owned())
-            .collect();
-        matches.into()
-    }
-
     /// Returns the analyzers that have matched by extension.
     pub fn by_extension<P: AsRef<Path>>(&self, filepath: P) -> Found {
         let matches: Vec<_> = self
