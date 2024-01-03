@@ -155,6 +155,12 @@ CSS:
   matchers:
     extensions:
       - css
+CSV:
+  category: data
+  color: "#1D6F42"
+  matchers:
+    extensions:
+      - csv
 Ceylon:
   category: programming
   color: "#F7941E"
