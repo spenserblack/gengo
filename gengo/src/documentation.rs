@@ -13,18 +13,18 @@ impl Documentation {
         Self { globs }
     }
 
-    pub fn is_documentation<P: AsRef<Path>>(&self, filepath: P, contents: &[u8]) -> bool {
+    pub fn is_documentation(&self, filepath: impl AsRef<Path>, contents: &[u8]) -> bool {
         self.is_documentation_no_read(&filepath)
             || self.is_documentation_with_read(&filepath, contents)
     }
 
-    fn is_documentation_no_read<P: AsRef<Path>>(&self, filepath: P) -> bool {
+    fn is_documentation_no_read(&self, filepath: impl AsRef<Path>) -> bool {
         self.globs
             .iter()
             .any(|g| g.matches_path_with(filepath.as_ref(), GLOB_MATCH_OPTIONS))
     }
 
-    fn is_documentation_with_read<P: AsRef<Path>>(&self, _filepath: P, _contents: &[u8]) -> bool {
+    fn is_documentation_with_read(&self, _filepath: impl AsRef<Path>, _contents: &[u8]) -> bool {
         false
     }
 

@@ -39,7 +39,7 @@ pub trait FileSource<'files>: Sync {
     fn state(&'files self) -> crate::Result<Self::State>;
 
     /// Provides combined overrides for the file.
-    fn overrides<O: AsRef<Path>>(&self, path: O, state: &mut Self::State) -> Overrides {
+    fn overrides(&self, path: impl AsRef<Path>, state: &mut Self::State) -> Overrides {
         Overrides {
             language: self.language_override(&path, state),
             is_documentation: self.is_documentation_override(&path, state),
@@ -50,45 +50,45 @@ pub trait FileSource<'files>: Sync {
     }
 
     /// Provides an optional override for the detected language.
-    fn language_override<O: AsRef<Path>>(
+    fn language_override(
         &self,
-        _path: O,
+        _path: impl AsRef<Path>,
         _state: &mut Self::State,
     ) -> Option<String> {
         None
     }
 
     /// Provides an optional override for documentation file detection.
-    fn is_documentation_override<O: AsRef<Path>>(
+    fn is_documentation_override(
         &self,
-        _path: O,
+        _path: impl AsRef<Path>,
         _state: &mut Self::State,
     ) -> Option<bool> {
         None
     }
 
     /// Provides an optional override for generated file detection.
-    fn is_generated_override<O: AsRef<Path>>(
+    fn is_generated_override(
         &self,
-        _path: O,
+        _path: impl AsRef<Path>,
         _state: &mut Self::State,
     ) -> Option<bool> {
         None
     }
 
     /// Provides an optional override for vendored file detection.
-    fn is_vendored_override<O: AsRef<Path>>(
+    fn is_vendored_override(
         &self,
-        _path: O,
+        _path: impl AsRef<Path>,
         _state: &mut Self::State,
     ) -> Option<bool> {
         None
     }
 
     /// Provides an optional override for if the file is detectable.
-    fn is_detectable_override<O: AsRef<Path>>(
+    fn is_detectable_override(
         &self,
-        _path: O,
+        _path: impl AsRef<Path>,
         _state: &mut Self::State,
     ) -> Option<bool> {
         None

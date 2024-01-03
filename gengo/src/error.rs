@@ -39,10 +39,7 @@ impl Error {
         Self { kind, source: None }
     }
 
-    pub fn with_source<E>(kind: ErrorKind, source: E) -> Self
-    where
-        E: ErrorTrait + 'static,
-    {
+    pub fn with_source(kind: ErrorKind, source: impl ErrorTrait + 'static) -> Self {
         Self {
             kind,
             source: Some(Box::new(source)),

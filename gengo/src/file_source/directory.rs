@@ -25,7 +25,7 @@ impl Directory {
     /// Set `buf_size` to a reasonable value for your system. You most likely
     /// would want to set this to the same value as `read_limit` when building
     /// a [`Gengo`](crate::Gengo) instance with a [`Builder`](crate::Builder).
-    pub fn new<P: AsRef<Path>>(path: P, buf_size: usize) -> Result<Self> {
+    pub fn new(path: impl AsRef<Path>, buf_size: usize) -> Result<Self> {
         let path = path.as_ref();
         if !path.is_dir() {
             return Err("path is not a directory".into());

@@ -132,17 +132,17 @@ impl<FS: for<'fs> FileSource<'fs>> Gengo<FS> {
     }
 
     /// Guesses if a file is generated.
-    pub fn is_generated<P: AsRef<Path>>(&self, filepath: P, contents: &[u8]) -> bool {
+    pub fn is_generated(&self, filepath: impl AsRef<Path>, contents: &[u8]) -> bool {
         self.generated.is_generated(filepath, contents)
     }
 
     /// Guesses if a file is documentation.
-    pub fn is_documentation<P: AsRef<Path>>(&self, filepath: P, contents: &[u8]) -> bool {
+    pub fn is_documentation(&self, filepath: impl AsRef<Path>, contents: &[u8]) -> bool {
         self.documentation.is_documentation(filepath, contents)
     }
 
     /// Guesses if a file is vendored.
-    pub fn is_vendored<P: AsRef<Path>>(&self, filepath: P, contents: &[u8]) -> bool {
+    pub fn is_vendored(&self, filepath: impl AsRef<Path>, contents: &[u8]) -> bool {
         self.vendored.is_vendored(filepath, contents)
     }
 }

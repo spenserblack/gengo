@@ -26,12 +26,12 @@ pub struct Extension {
 
 impl Extension {
     /// Create a new filepath matcher.
-    pub fn new<S: AsRef<OsStr>>(extensions: &[S]) -> Self {
+    pub fn new(extensions: &[impl AsRef<OsStr>]) -> Self {
         let extensions = extensions.iter().map(Into::into).collect();
         Self { extensions }
     }
 
-    pub fn matches<P: AsRef<Path>>(&self, filename: P) -> bool {
+    pub fn matches(&self, filename: impl AsRef<Path>) -> bool {
         self.extensions
             .contains(filename.as_ref().extension().unwrap_or_default())
     }
@@ -45,12 +45,12 @@ pub struct Filename {
 
 impl Filename {
     /// Create a new filepath matcher.
-    pub fn new<S: AsRef<OsStr>>(filenames: &[S]) -> Self {
+    pub fn new(filenames: &[impl AsRef<OsStr>]) -> Self {
         let filenames = filenames.iter().map(Into::into).collect();
         Self { filenames }
     }
 
-    pub fn matches<P: AsRef<Path>>(&self, filename: P) -> bool {
+    pub fn matches(&self, filename: impl AsRef<Path>) -> bool {
         self.filenames
             .contains(filename.as_ref().file_name().unwrap_or_default())
     }
@@ -72,7 +72,7 @@ impl FilepathPattern {
         Self { patterns }
     }
 
-    pub fn matches<P: AsRef<Path>>(&self, filename: P) -> bool {
+    pub fn matches(&self, filename: impl AsRef<Path>) -> bool {
         self.patterns
             .iter()
             .any(|p| p.matches_path_with(filename.as_ref(), GLOB_MATCH_OPTIONS))
@@ -88,7 +88,7 @@ pub struct Shebang {
 impl Shebang {
     const MAX_SHEBANG_LENGTH: usize = 50;
 
-    pub fn new<S: Display>(interpreters: &[S]) -> Self {
+    pub fn new(interpreters: &[impl Display]) -> Self {
         let interpreters = interpreters.iter().map(|s| s.to_string()).collect();
         Self { interpreters }
     }

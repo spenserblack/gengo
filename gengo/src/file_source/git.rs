@@ -20,7 +20,7 @@ struct Builder {
 }
 
 impl Builder {
-    fn new<P: AsRef<Path>>(path: P, rev: &str) -> crate::Result<Self> {
+    fn new(path: impl AsRef<Path>, rev: &str) -> crate::Result<Self> {
         let repository = match gix::discover(path) {
             Ok(r) => r,
             Err(DiscoverError::Discover(err)) => {
@@ -84,7 +84,7 @@ impl Git {
     const GENERATED_OVERRIDE: usize = 2;
     const VENDORED_OVERRIDE: usize = 3;
     const DETECTABLE_OVERRIDE: usize = 4;
-    pub fn new<P: AsRef<Path>>(path: P, rev: &str) -> crate::Result<Self> {
+    pub fn new(path: impl AsRef<Path>, rev: &str) -> crate::Result<Self> {
         Builder::new(path, rev)?.build()
     }
 }
@@ -127,9 +127,9 @@ impl<'repo> FileSource<'repo> for Git {
         Ok((self.state.clone(), self.repository.to_thread_local()))
     }
 
-    fn overrides<O: AsRef<Path>>(
+    fn overrides(
         &self,
-        path: O,
+        path: impl AsRef<Path>,
         (state, repository): &mut Self::State,
     ) -> Overrides {
         let Ok(platform) = state
