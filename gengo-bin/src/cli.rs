@@ -59,7 +59,7 @@ enum Commands {
 }
 
 impl CLI {
-    pub fn run<Out: Write, Err: Write>(&self, mut out: Out, mut err: Err) -> Result<(), io::Error> {
+    pub fn run(&self, mut out: impl Write, mut err: impl Write) -> Result<(), io::Error> {
         let results = self.command.analyze(self.read_limit);
         let results = match results {
             Ok(results) => results,
@@ -102,10 +102,10 @@ impl CLI {
         Ok(())
     }
 
-    fn run_breakdown<Out: Write, Err: Write>(
+    fn run_breakdown(
         &self,
-        mut out: Out,
-        mut _err: Err,
+        mut out: impl Write,
+        mut _err: impl Write,
         results: Analysis,
     ) -> Result<(), io::Error> {
         let files_per_language = {

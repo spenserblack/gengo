@@ -13,17 +13,17 @@ impl Generated {
         Self { globs }
     }
 
-    pub fn is_generated<P: AsRef<Path>>(&self, filepath: P, contents: &[u8]) -> bool {
+    pub fn is_generated(&self, filepath: impl AsRef<Path>, contents: &[u8]) -> bool {
         self.is_generated_no_read(&filepath) || self.is_generated_with_read(&filepath, contents)
     }
 
-    fn is_generated_no_read<P: AsRef<Path>>(&self, filepath: P) -> bool {
+    fn is_generated_no_read(&self, filepath: impl AsRef<Path>) -> bool {
         self.globs
             .iter()
             .any(|g| g.matches_path_with(filepath.as_ref(), GLOB_MATCH_OPTIONS))
     }
 
-    fn is_generated_with_read<P: AsRef<Path>>(&self, _filepath: P, contents: &[u8]) -> bool {
+    fn is_generated_with_read(&self, _filepath: impl AsRef<Path>, contents: &[u8]) -> bool {
         self.likely_minified(contents)
     }
 

@@ -29,7 +29,7 @@ impl Analyzers {
     }
 
     /// Returns the analyzers that have matched by extension.
-    pub fn by_extension<P: AsRef<Path>>(&self, filepath: P) -> Found {
+    pub fn by_extension(&self, filepath: impl AsRef<Path>) -> Found {
         let matches: Vec<_> = self
             .iter()
             .filter(|(_, a)| {
@@ -50,7 +50,7 @@ impl Analyzers {
     }
 
     /// Returns the analyzers that have matched by filename.
-    pub fn by_filename<P: AsRef<Path>>(&self, filepath: P) -> Found {
+    pub fn by_filename(&self, filepath: impl AsRef<Path>) -> Found {
         let matches: Vec<_> = self
             .iter()
             .filter(|(_, a)| {
@@ -71,7 +71,7 @@ impl Analyzers {
     }
 
     /// Returns the analyzers that have matched by filepath pattern.
-    pub fn by_filepath_pattern<P: AsRef<Path>>(&self, filepath: P) -> Found {
+    pub fn by_filepath_pattern(&self, filepath: impl AsRef<Path>) -> Found {
         let matches: Vec<_> = self
             .iter()
             .filter(|(_, a)| {
@@ -117,7 +117,7 @@ impl Analyzers {
     /// It attempts to identify the file in this order:
     /// 1. by shebang (`#!`)
     /// 2. by filepath
-    pub fn simple<P: AsRef<Path>>(&self, filepath: P, contents: &[u8]) -> Found {
+    pub fn simple(&self, filepath: impl AsRef<Path>, contents: &[u8]) -> Found {
         let matches = self.by_shebang(contents);
         if !matches.is_empty() {
             return matches;
@@ -139,9 +139,9 @@ impl Analyzers {
     /// If none of the found heuristics match, returns the original matches.
     ///
     /// Use `limit` to limit the number of bytes to read to match to heuristics.
-    pub fn with_heuristics<P: AsRef<Path>>(
+    pub fn with_heuristics(
         &self,
-        filepath: P,
+        filepath: impl AsRef<Path>,
         contents: &[u8],
         limit: usize,
     ) -> Found {
@@ -213,9 +213,9 @@ impl Analyzers {
     /// let language = analyzers.pick(filename, contents, limit).unwrap();
     /// assert_eq!(language.name(), "Rust");
     /// ```
-    pub fn pick<P: AsRef<Path>>(
+    pub fn pick(
         &self,
-        filepath: P,
+        filepath: impl AsRef<Path>,
         contents: &[u8],
         limit: usize,
     ) -> Option<&Language> {
