@@ -632,6 +632,12 @@ TOML:
     filenames:
       - Cargo.lock
       - poetry.lock
+TSV:
+  category: data
+  color: "#1D6F42"
+  matchers:
+    extensions:
+      - tsv
 TypeScript:
   category: programming
   color: "#2F74C0"
