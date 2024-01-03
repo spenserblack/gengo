@@ -112,7 +112,7 @@ impl Shebang {
         // NOTE Handle trailing spaces, `\r`, etc.
         let first_line = first_line.trim_end();
         static RE: Lazy<Regex> = Lazy::new(|| {
-            Regex::new(r"^#!(?:/usr(?:/local)?)?/bin/(?:env )?([\w\d]+)\r?$").unwrap()
+            Regex::new(r"^#!(?:/usr(?:/local)?)?/bin/(?:env\s+)?([\w\d]+)\r?$").unwrap()
         });
 
         RE.captures(first_line)
@@ -168,6 +168,7 @@ mod tests {
         case(b"#!/usr/local/bin/python\n", true),
         case(b"#!/usr/bin/python3\n", true),
         case(b"#!/usr/bin/env python\n", true),
+        case(b"#!/usr/bin/env\tpython\n", true),
         case(b"#!/bin/sh\n", false)
     )]
     fn test_matches_shebang(pattern: &[u8], matches: bool) {
