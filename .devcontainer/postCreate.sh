@@ -1,2 +1,2 @@
 #!/bin/sh
-cargo install cargo-insta
+cargo install --locked cargo-insta taplo-cli
