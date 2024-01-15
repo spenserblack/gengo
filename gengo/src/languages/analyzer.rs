@@ -234,7 +234,7 @@ impl Analyzers {
             matches.reverse();
             matches
         };
-        matches.get(0).map(|a| &a.language)
+        matches.first().map(|a| &a.language)
     }
 
     /// Creates analyzers from JSON.
