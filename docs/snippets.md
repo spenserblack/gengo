@@ -6,7 +6,7 @@ These are snippets that might be fun for a user to try out.
 
 ```shell
 for rev in $(git log --reverse --format="%H"); do
-	gengo --rev "$rev"
+	gengo git --rev "$rev"
 	echo  # add a newline
 done
 ```
