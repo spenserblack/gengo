@@ -1,5 +1,6 @@
 use super::Entry;
 use indexmap::IndexMap;
+use serde::Serialize;
 
 use std::path::PathBuf;
 
@@ -10,7 +11,7 @@ pub use summary::Summary;
 mod summary;
 
 /// The result of analyzing a repository along with all of its submodules.
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct Analysis(pub(super) IndexMap<PathBuf, Entry>);
 
 impl Analysis {
