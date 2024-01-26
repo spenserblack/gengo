@@ -1,0 +1,66 @@
+---
+source: gengo-bin/tests/test_cli.rs
+expression: json
+---
+{
+  "bin.js": {
+    "detectable": true,
+    "documentation": false,
+    "generated": false,
+    "language": {
+      "category": "programming",
+      "color": "#F0DC4E",
+      "name": "JavaScript"
+    },
+    "size": 28,
+    "vendored": false
+  },
+  "dist/bin.js": {
+    "detectable": true,
+    "documentation": false,
+    "generated": true,
+    "language": {
+      "category": "prose",
+      "color": "#000000",
+      "name": "Plain Text"
+    },
+    "size": 62,
+    "vendored": false
+  },
+  "docs/index.html": {
+    "detectable": false,
+    "documentation": true,
+    "generated": false,
+    "language": {
+      "category": "markup",
+      "color": "#E96228",
+      "name": "HTML"
+    },
+    "size": 26,
+    "vendored": false
+  },
+  "node_modules/my-dependency/index.js": {
+    "detectable": false,
+    "documentation": false,
+    "generated": false,
+    "language": {
+      "category": "programming",
+      "color": "#F0DC4E",
+      "name": "JavaScript"
+    },
+    "size": 29,
+    "vendored": true
+  },
+  "src/bin.ts": {
+    "detectable": true,
+    "documentation": false,
+    "generated": false,
+    "language": {
+      "category": "programming",
+      "color": "#2F74C0",
+      "name": "TypeScript"
+    },
+    "size": 62,
+    "vendored": false
+  }
+}

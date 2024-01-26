@@ -599,7 +599,7 @@ dependencies = [
 
 [[package]]
 name = "gengo"
-version = "0.10.0"
+version = "0.10.1"
 dependencies = [
  "criterion",
  "gix",
@@ -619,13 +619,14 @@ dependencies = [
 
 [[package]]
 name = "gengo-bin"
-version = "0.10.0"
+version = "0.10.1"
 dependencies = [
  "clap",
  "gengo",
  "indexmap",
  "insta",
  "owo-colors",
+ "serde_json",
 ]
 
 [[package]]
@@ -1357,6 +1358,7 @@ dependencies = [
  "console",
  "lazy_static",
  "linked-hash-map",
+ "serde",
  "similar",
  "yaml-rust",
 ]
@@ -1765,7 +1767,7 @@ dependencies = [
 
 [[package]]
 name = "samples-test"
-version = "0.10.0"
+version = "0.10.1"
 dependencies = [
  "gengo",
 ]
