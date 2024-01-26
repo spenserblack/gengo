@@ -36,6 +36,7 @@ use std::path::Path;
 use vendored::Vendored;
 
 use rayon::prelude::{ParallelBridge, ParallelIterator};
+use serde::Serialize;
 
 pub mod analysis;
 mod builder;
@@ -148,7 +149,7 @@ impl<FS: for<'fs> FileSource<'fs>> Gengo<FS> {
 }
 
 /// A single entry in the language statistics.
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct Entry {
     /// The detected language.
     language: Language,
