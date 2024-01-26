@@ -3,4 +3,11 @@
   "[rust]": {
     "editor.defaultFormatter": "rust-lang.rust-analyzer"
   },
+  "cSpell.words": [
+    "gengo",
+    "indexmap",
+    "insta",
+    "rstest",
+    "serde"
+  ],
 }
