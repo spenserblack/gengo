@@ -11,10 +11,10 @@ mod summary;
 
 /// The result of analyzing a repository along with all of its submodules.
 #[derive(Debug)]
-pub struct Analysis(pub(super) Vec<(PathBuf, Entry)>);
+pub struct Analysis(pub(super) IndexMap<PathBuf, Entry>);
 
 impl Analysis {
-    pub fn iter(&self) -> impl Iterator<Item = &(PathBuf, Entry)> {
+    pub fn iter(&self) -> impl Iterator<Item = (&PathBuf, &Entry)> {
         let results = &self.0;
         results.iter()
     }

@@ -14,7 +14,7 @@ fn test_git_javascript() {
     let gengo = Builder::new(git).analyzers(analyzers).build().unwrap();
     let analysis = gengo.analyze().unwrap();
     let mut results: Vec<_> = analysis.iter().collect();
-    results.sort_by_key(|(path, _)| path);
+    results.sort_by_key(|(path, _)| path.to_owned());
     insta::assert_debug_snapshot!(results);
 }
 
