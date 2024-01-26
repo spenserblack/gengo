@@ -26,6 +26,7 @@ use generated::Generated;
 
 pub use file_source::{Directory, FileSource, Git};
 use glob::MatchOptions;
+use indexmap::IndexMap;
 pub use languages::analyzer::Analyzers;
 use languages::Category;
 pub use languages::Language;
@@ -35,7 +36,8 @@ use std::path::Path;
 
 use vendored::Vendored;
 
-use rayon::prelude::{ParallelBridge, ParallelIterator};
+use rayon::prelude::{FromParallelIterator, ParallelBridge, ParallelIterator};
+use serde::Serialize;
 
 pub mod analysis;
 mod builder;
@@ -70,7 +72,7 @@ impl<FS: for<'fs> FileSource<'fs>> Gengo<FS> {
     /// Analyzes each file in the repository at the given revision.
     pub fn analyze(&self) -> Result<Analysis> {
         let state = self.file_source.state()?;
-        let entries: Vec<(_, _)> = self
+        let entries = self
             .file_source
             .entries()?
             .par_bridge()
@@ -80,8 +82,8 @@ impl<FS: for<'fs> FileSource<'fs>> Gengo<FS> {
                 let entry = self.analyze_blob(&filepath, contents, state)?;
                 Some((filepath.as_ref().to_owned(), entry))
             })
-            .filter_map(|entry| entry)
-            .collect();
+            .filter_map(|entry| entry);
+        let entries = IndexMap::from_par_iter(entries);
 
         Ok(Analysis(entries))
     }
@@ -148,7 +150,7 @@ impl<FS: for<'fs> FileSource<'fs>> Gengo<FS> {
 }
 
 /// A single entry in the language statistics.
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct Entry {
     /// The detected language.
     language: Language,

@@ -4,7 +4,7 @@ resolver = "2"
 
 [workspace.package]
 description = "Get the language distribution stats of your repository"
-version = "0.10.0"
+version = "0.10.1"
 edition = "2021"
 repository = "https://github.com/spenserblack/gengo"
 readme = "README.md"

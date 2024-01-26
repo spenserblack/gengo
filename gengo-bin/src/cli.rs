@@ -1,5 +1,5 @@
 use clap::Error as ClapError;
-use clap::{Parser, Subcommand};
+use clap::{Parser, Subcommand, ValueEnum};
 use gengo::{analysis::SummaryOpts, Analysis, Builder, Directory, Git};
 use indexmap::IndexMap;
 use std::error::Error as BaseError;
@@ -28,15 +28,24 @@ pub struct CLI {
     #[arg(short = 'l', long, default_value = "1048576")]
     read_limit: usize,
     /// Report on all files, even if they are not detectable.
+    ///
+    /// This only applies to the pretty format, as machine-readable
+    /// formats always include all files.
     #[arg(short = 'a', long)]
     all: bool,
     /// Include detailed statistics for each language.
+    ///
+    /// This only applies to the pretty format, as machine-readable
+    /// formats always include detailed statistics.
     #[arg(short = 'b', long)]
     breakdown: bool,
     /// Force the output to not have colors.
     #[cfg(feature = "color")]
     #[arg(long)]
     no_color: bool,
+    /// The format to use for output.
+    #[arg(short = 'F', long, default_value = "pretty")]
+    format: Format,
 }
 
 #[derive(Subcommand)]
@@ -58,6 +67,14 @@ enum Commands {
     },
 }
 
+#[derive(ValueEnum, Debug, Clone)]
+enum Format {
+    /// Output for humans.
+    Pretty,
+    /// JSON output.
+    Json,
+}
+
 impl CLI {
     pub fn run(&self, mut out: impl Write, mut err: impl Write) -> Result<(), io::Error> {
         let results = self.command.analyze(self.read_limit);
@@ -68,6 +85,11 @@ impl CLI {
                 return Ok(());
             }
         };
+
+        match self.format {
+            Format::Pretty => (),
+            Format::Json => return self.run_json(results, out, err),
+        }
 
         let mut summary_opts: SummaryOpts = Default::default();
         summary_opts.all = self.all;
@@ -99,6 +121,22 @@ impl CLI {
             self.run_breakdown(out, err, results)?;
         }
 
+        Ok(())
+    }
+
+    fn run_json(
+        &self,
+        analysis: Analysis,
+        mut out: impl Write,
+        mut _err: impl Write,
+    ) -> Result<(), io::Error> {
+        match serde_json::to_string(&analysis) {
+            Ok(s) => writeln!(out, "{s}")?,
+            Err(e) => {
+                writeln!(out, "failed to serialize to JSON: {e}")?;
+                return Ok(());
+            }
+        };
         Ok(())
     }
 
