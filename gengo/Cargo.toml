@@ -1,13 +1,13 @@
 [package]
 name = "gengo"
-description = { workspace = true }
+description.workspace = true
 readme = "crates-io.md"
-version = { workspace = true }
-edition = { workspace = true }
-repository = { workspace = true }
-license = { workspace = true }
+version.workspace = true
+edition.workspace = true
+repository.workspace = true
+license.workspace = true
 
-keywords = { workspace = true }
+keywords.workspace = true
 
 exclude = ["README.md"]
 
