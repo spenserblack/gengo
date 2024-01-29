@@ -25,18 +25,18 @@ gix = { version = ">= 0.56, <= 0.57", default-features = false, features = [
 ] }
 glob = "0.3"
 ignore = "0.4"
-indexmap = { version = "2", features = ["rayon", "serde"] }
+indexmap = { workspace = true, features = ["rayon", "serde"] }
 once_cell = "1"
-owo-colors = { version = ">=3, <=4", optional = true }
+owo-colors = { workspace = true, optional = true }
 rayon = "1"
 regex = "1"
 serde = { version = "1", features = ["derive"] }
-serde_json = "1"
+serde_json.workspace = true
 serde_yaml = "0.9"
 
 [build-dependencies]
 indexmap = { version = "2", features = ["serde"] }
-serde_json = "1"
+serde_json.workspace = true
 serde_yaml = "0.9"
 
 [dev-dependencies]
