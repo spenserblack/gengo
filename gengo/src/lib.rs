@@ -30,7 +30,7 @@ use glob::MatchOptions;
 use indexmap::IndexMap;
 pub use languages::analyzer::Analyzers;
 use languages::Category;
-pub use languages::Language;
+pub use languages::LanguageOld;
 
 use std::error::Error as ErrorTrait;
 use std::path::Path;
@@ -168,7 +168,7 @@ impl<FS: for<'fs> FileSource<'fs>> Gengo<FS> {
 #[derive(Debug, Serialize)]
 pub struct Entry {
     /// The detected language.
-    language: Language,
+    language: LanguageOld,
     /// The size of the file.
     size: usize,
     /// If the file is detectable (should not be ignored).
@@ -183,7 +183,7 @@ pub struct Entry {
 
 impl Entry {
     /// The detected language.
-    pub fn language(&self) -> &Language {
+    pub fn language(&self) -> &LanguageOld {
         &self.language
     }
 

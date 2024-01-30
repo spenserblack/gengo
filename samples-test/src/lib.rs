@@ -10,8 +10,8 @@ mod tests {
 
     #[derive(Debug)]
     struct TestError {
-        expected_language: gengo::Language,
-        actual_language: gengo::Language,
+        expected_language: gengo::LanguageOld,
+        actual_language: gengo::LanguageOld,
         filename: PathBuf,
     }
 

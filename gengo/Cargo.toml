@@ -36,8 +36,12 @@ serde_yaml = "0.9"
 
 [build-dependencies]
 indexmap = { version = "2", features = ["serde"] }
+prettyplease = "0.2"
+proc-macro2 = "1"
 serde_json.workspace = true
 serde_yaml = "0.9"
+syn = "2"
+quote = "1"
 
 [dev-dependencies]
 criterion = "0.5"

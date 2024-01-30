@@ -6,17 +6,20 @@ use std::error::Error;
 pub mod analyzer;
 mod matcher;
 
+include!(concat!(env!("OUT_DIR"), "/languages_generated.rs"));
+
 const LANGUAGE_DEFINITIONS: &str = include_str!(concat!(env!("OUT_DIR"), "/languages.json"));
 
 /// A programming language.
 #[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
-pub struct Language {
+#[deprecated]
+pub struct LanguageOld {
     name: String,
     category: Category,
     color: String,
 }
 
-impl Language {
+impl LanguageOld {
     /// Returns the name of the language.
     pub fn name(&self) -> &str {
         &self.name

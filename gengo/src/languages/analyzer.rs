@@ -1,7 +1,7 @@
 //! Analyzes a language.
 use super::{
     matcher::{Filename, FilepathPattern},
-    Category, Language, LANGUAGE_DEFINITIONS,
+    Category, LanguageOld, LANGUAGE_DEFINITIONS,
 };
 
 use indexmap::IndexMap;
@@ -23,7 +23,7 @@ impl Analyzers {
     }
 
     /// Returns a language by name. This is case insensitive.
-    pub fn get(&self, name: &str) -> Option<&Language> {
+    pub fn get(&self, name: &str) -> Option<&LanguageOld> {
         let name = name.to_lowercase();
         self.0.get(&name).map(|a| &a.language)
     }
@@ -218,7 +218,7 @@ impl Analyzers {
         filepath: impl AsRef<Path>,
         contents: &[u8],
         limit: usize,
-    ) -> Option<&Language> {
+    ) -> Option<&LanguageOld> {
         let matches = self.with_heuristics(filepath, contents, limit);
         let matches = match matches {
             Found::None => return None,
@@ -254,7 +254,7 @@ impl Analyzers {
             .into_iter()
             .map(|(name, args)| {
                 let key = name.to_lowercase();
-                let language = Language {
+                let language = LanguageOld {
                     name,
                     category: args.category,
                     color: args.color,
@@ -285,7 +285,7 @@ impl Default for Analyzers {
 /// Used to match a programming language.
 #[derive(Clone, Debug)]
 pub struct Analyzer {
-    language: Language,
+    language: LanguageOld,
     matchers: Vec<Matcher>,
     heuristics: RegexSet,
     /// A value between `0` and `100` that determines the priority of a match.

@@ -1,10 +1,10 @@
-use crate::Language;
+use crate::LanguageOld;
 use indexmap::map::Iter as IndexMapIter;
 use indexmap::IndexMap;
 
 /// The summary of an analysis.
 #[derive(Debug)]
-pub struct Summary(pub(super) IndexMap<Language, usize>);
+pub struct Summary(pub(super) IndexMap<LanguageOld, usize>);
 
 impl Summary {
     /// Returns the total size of all languages.
@@ -18,10 +18,10 @@ impl Summary {
     }
 }
 
-pub struct Iter<'map>(IndexMapIter<'map, Language, usize>);
+pub struct Iter<'map>(IndexMapIter<'map, LanguageOld, usize>);
 
 impl<'map> Iterator for Iter<'map> {
-    type Item = (&'map Language, &'map usize);
+    type Item = (&'map LanguageOld, &'map usize);
 
     fn next(&mut self) -> Option<Self::Item> {
         self.0.next()
@@ -29,7 +29,7 @@ impl<'map> Iterator for Iter<'map> {
 }
 
 impl<'map> IntoIterator for &'map Summary {
-    type Item = (&'map Language, &'map usize);
+    type Item = (&'map LanguageOld, &'map usize);
     type IntoIter = Iter<'map>;
 
     fn into_iter(self) -> Self::IntoIter {
