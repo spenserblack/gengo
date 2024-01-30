@@ -13,7 +13,6 @@ jobs:
     name: Build ${{ matrix.feature-flags }} (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     needs:
-      - check-languages-file
       - lint
     strategy:
       fail-fast: false
@@ -68,6 +67,8 @@ jobs:
   lint:
     name: Lint
     runs-on: ubuntu-latest
+    needs:
+      - check-languages-file
     steps:
       - uses: actions/checkout@v4
 
@@ -91,6 +92,8 @@ jobs:
   benchmarks:
     name: Benchmarks
     runs-on: ubuntu-latest
+    needs:
+      - lint
     steps:
       - uses: actions/checkout@v4
         with:
