@@ -18,6 +18,7 @@
 #![doc = include_str!(concat!(env!("OUT_DIR"), "/language-list.md"))]
 
 pub use analysis::Analysis;
+use binary::Binary;
 pub use builder::Builder;
 use documentation::Documentation;
 
@@ -40,6 +41,7 @@ use rayon::prelude::{FromParallelIterator, ParallelBridge, ParallelIterator};
 use serde::Serialize;
 
 pub mod analysis;
+mod binary;
 mod builder;
 mod documentation;
 mod error;
@@ -63,6 +65,7 @@ pub struct Gengo<FS: for<'fs> FileSource<'fs>> {
     file_source: FS,
     analyzers: Analyzers,
     read_limit: usize,
+    binary: Binary,
     documentation: Documentation,
     generated: Generated,
     vendored: Vendored,
@@ -79,6 +82,7 @@ impl<FS: for<'fs> FileSource<'fs>> Gengo<FS> {
             .map_with(state, |state, entry| {
                 let filepath = self.file_source.filepath(&entry, state).ok()?;
                 let contents = self.file_source.contents(&entry, state).ok()?;
+
                 let entry = self.analyze_blob(&filepath, contents, state)?;
                 Some((filepath.as_ref().to_owned(), entry))
             })
@@ -97,6 +101,12 @@ impl<FS: for<'fs> FileSource<'fs>> Gengo<FS> {
         let overrides = self.file_source.overrides(&filepath, state);
         let filepath = filepath.as_ref();
         let contents = contents.as_ref();
+
+        // NOTE Users might be surprised if there is an override for a binary file but it
+        //      is still skipped, but this should be a rare case.
+        if self.is_binary(filepath, contents) {
+            return None;
+        }
 
         let lang_override = overrides.language.and_then(|s| self.analyzers.get(&s));
 
@@ -146,6 +156,11 @@ impl<FS: for<'fs> FileSource<'fs>> Gengo<FS> {
     /// Guesses if a file is vendored.
     pub fn is_vendored(&self, filepath: impl AsRef<Path>, contents: &[u8]) -> bool {
         self.vendored.is_vendored(filepath, contents)
+    }
+
+    /// Guesses if a file is binary.
+    pub fn is_binary(&self, filepath: impl AsRef<Path>, contents: &[u8]) -> bool {
+        self.binary.is_binary(filepath, contents)
     }
 }
 

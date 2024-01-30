@@ -1,3 +1,4 @@
+use super::binary::Binary;
 use super::documentation::Documentation;
 use super::generated::Generated;
 use super::vendored::Vendored;
@@ -44,6 +45,7 @@ impl<FS: for<'fs> FileSource<'fs>> Builder<FS> {
         let file_source = self.file_source;
         let analyzers = self.analyzers.unwrap_or_default();
         let read_limit = self.read_limit.unwrap_or(Self::DEFAULT_READ_LIMIT);
+        let binary = Binary::new(read_limit);
         let documentation = Documentation::new();
         let generated = Generated::new();
         let vendored = Vendored::new();
@@ -51,6 +53,7 @@ impl<FS: for<'fs> FileSource<'fs>> Builder<FS> {
             file_source,
             analyzers,
             read_limit,
+            binary,
             documentation,
             generated,
             vendored,
