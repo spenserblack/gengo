@@ -348,6 +348,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let language_file_contents = quote! {
         use once_cell::sync::Lazy;
+        use regex::Regex;
         use std::path::Path;
         use crate::GLOB_MATCH_OPTIONS;
 
@@ -422,6 +423,36 @@ fn main() -> Result<(), Box<dyn Error>> {
                     #(#interpreter_to_langs_mappings ,)*
                     _ => vec![],
                 }
+            }
+
+            /// Gets languages by a shebang.
+            fn from_shebang(contents: &[u8]) -> Vec<Self> {
+                const MAX_SHEBANG_LENGTH: usize = 50;
+
+                let mut lines = contents.split(|&c| c == b'\n');
+                let first_line = lines.next().unwrap_or_default();
+                if first_line.len() < 2 || first_line[0] != b'#' || first_line[1] != b'!' {
+                    return vec![];
+                }
+                let first_line = if first_line.len() > MAX_SHEBANG_LENGTH {
+                    &first_line[..MAX_SHEBANG_LENGTH]
+                } else {
+                    first_line
+                };
+                let first_line = String::from_utf8_lossy(first_line);
+                // NOTE Handle trailing spaces, `\r`, etc.
+                let first_line = first_line.trim_end();
+
+                static RE: Lazy<Regex> = Lazy::new(|| {
+                    Regex::new(r"^#!(?:/usr(?:/local)?)?/bin/(?:env\s+)?([\w\d]+)\r?$").unwrap()
+                });
+
+                RE.captures(first_line)
+                    .and_then(|c| c.get(1))
+                    .map_or(vec![], |m| {
+                        let interpreter = m.as_str();
+                        Self::from_interpreter(interpreter)
+                    })
             }
 
             /// Gets the languages that match a glob pattern.
@@ -504,6 +535,22 @@ fn main() -> Result<(), Box<dyn Error>> {
             fn test_unused_interpreter() {
                 let languages = Language::from_interpreter(".totally-unused-interpreter");
                 assert!(languages.is_empty());
+            }
+
+            #[rstest(
+                shebang,
+                language,
+                case(b"#!/bin/sh", Language::Shell),
+                case(b"#!/bin/sh\n", Language::Shell),
+                case(b"#!/bin/sh\r\n", Language::Shell),
+                case(b"#!/usr/bin/env sh\r\n", Language::Shell),
+            )]
+            fn test_from_shebang(
+                shebang: &[u8],
+                language: Language,
+            ) {
+                let languages = Language::from_shebang(shebang);
+                assert!(languages.contains(&language));
             }
         }
     };
