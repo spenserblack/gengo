@@ -32,6 +32,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         filenames: Vec<String>,
         interpreters: Vec<String>,
         patterns: Vec<String>,
+        heuristics: Vec<String>,
     }
 
     let language_definitions: Vec<_> = languages
@@ -152,6 +153,21 @@ fn main() -> Result<(), Box<dyn Error>> {
                 })
                 .collect();
 
+            let heuristics = language_attrs.get("heuristics").map(|heuristics| {
+                heuristics
+                    .as_array()
+                    .expect("heuristics to be an array")
+                    .to_owned()
+                    .iter()
+                    .map(|heuristic| {
+                        heuristic
+                            .as_str()
+                            .expect("heuristic to be a string")
+                            .to_string()
+                    })
+                    .collect()
+            }).unwrap_or_default();
+
             LanguageDefinition {
                 variant,
                 category,
@@ -162,6 +178,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 filenames,
                 interpreters,
                 patterns,
+                heuristics,
             }
         })
         .collect();
@@ -290,15 +307,22 @@ fn main() -> Result<(), Box<dyn Error>> {
             },
         );
 
+    let heuristic_inserts = language_definitions.iter().filter(|language_definition| !language_definition.heuristics.is_empty()).map(|LanguageDefinition { variant, heuristics, ..}| {
+        quote! {
+            map.insert(Language::#variant, vec![#(regex::Regex::new(#heuristics).unwrap()),*]);
+        }
+    });
+
     let language_file_contents = quote! {
         use once_cell::sync::Lazy;
         use regex::Regex;
+        use std::collections::HashMap;
         use std::path::Path;
         use crate::GLOB_MATCH_OPTIONS;
 
         /// The type of language. Returned by language detection.
         #[non_exhaustive]
-        #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+        #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
         pub enum Language {
             #(#variants,)*
         }
@@ -415,6 +439,25 @@ fn main() -> Result<(), Box<dyn Error>> {
                     .iter()
                     .filter(|gm| gm.patterns.iter().any(|p| p.matches_path_with(path.as_ref(), GLOB_MATCH_OPTIONS)))
                     .map(|gm| gm.language)
+                    .collect()
+            }
+
+            /// Filters an iterable of languages by heuristics.
+            fn filter_by_heuristics(languages: &[Self], contents: &str) -> Vec<Self> {
+                static HEURISTICS: Lazy<HashMap<Language, Vec<Regex>>> = Lazy::new(|| {
+                    let mut map = HashMap::new();
+                    #(#heuristic_inserts)*
+                    map
+                });
+
+                languages
+                    .iter()
+                    .filter(|language| {
+                        HEURISTICS
+                            .get(language)
+                            .map_or(false, |heuristics| heuristics.iter().any(|re| re.is_match(contents)))
+                    })
+                    .cloned()
                     .collect()
             }
         }
