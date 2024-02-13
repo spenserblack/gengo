@@ -228,26 +228,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
     });
 
-    // TODO Name these tests (`case::name()`) to make it easier to see which
-    //      test failed.
-    let test_from_extension_cases = language_definitions.iter().flat_map(
-        |LanguageDefinition {
-             variant,
-             extensions,
-             ..
-         }| {
-            extensions
-                .iter()
-                .cloned()
-                .map(|extension| {
-                    quote! {
-                        case(#extension, Language::#variant)
-                    }
-                })
-                .collect::<Vec<_>>()
-        },
-    );
-
     let filenames_to_langs = language_definitions.iter().fold(
         HashMap::new(),
         |map,
@@ -271,24 +251,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
     });
 
-    let test_from_filename_cases = language_definitions.iter().flat_map(
-        |LanguageDefinition {
-             variant,
-             filenames,
-             ..
-         }| {
-            filenames
-                .iter()
-                .cloned()
-                .map(|filename| {
-                    quote! {
-                        case(#filename, Language::#variant)
-                    }
-                })
-                .collect::<Vec<_>>()
-        },
-    );
-
     let interpreters_to_langs = language_definitions.iter().fold(
         HashMap::new(),
         |map,
@@ -311,24 +273,6 @@ fn main() -> Result<(), Box<dyn Error>> {
             #interpreter => vec![#(Self::#langs),*]
         }
     });
-
-    let test_from_interpreter_cases = language_definitions.iter().flat_map(
-        |LanguageDefinition {
-             variant,
-             interpreters,
-             ..
-         }| {
-            interpreters
-                .iter()
-                .cloned()
-                .map(|interpreter| {
-                    quote! {
-                        case(#interpreter, Language::#variant)
-                    }
-                })
-                .collect::<Vec<_>>()
-        },
-    );
 
     let glob_matchers = language_definitions
         .iter()
@@ -472,85 +416,6 @@ fn main() -> Result<(), Box<dyn Error>> {
                     .filter(|gm| gm.patterns.iter().any(|p| p.matches_path_with(path.as_ref(), GLOB_MATCH_OPTIONS)))
                     .map(|gm| gm.language)
                     .collect()
-            }
-        }
-
-        #[cfg(test)]
-        mod language_tests {
-            use rstest::rstest;
-            use super::*;
-
-            #[rstest(
-                extension,
-                language,
-                #(#test_from_extension_cases),*
-            )]
-            fn test_from_extension(
-                extension: &str,
-                language: Language,
-            ) {
-                let languages = Language::from_extension(extension);
-                assert!(languages.contains(&language));
-            }
-
-            #[test]
-            fn test_unused_extension() {
-                let languages = Language::from_extension("totally.unused.extension");
-                assert!(languages.is_empty());
-            }
-
-            #[rstest(
-                filename,
-                language,
-                #(#test_from_filename_cases),*
-            )]
-            fn test_from_filename(
-                filename: &str,
-                language: Language,
-            ) {
-                let languages = Language::from_filename(filename);
-                assert!(languages.contains(&language));
-            }
-
-            #[test]
-            fn test_unused_filename() {
-                let languages = Language::from_filename("!!!totally-unused-filename!!!");
-                assert!(languages.is_empty());
-            }
-
-            #[rstest(
-                interpreter,
-                language,
-                #(#test_from_interpreter_cases),*
-            )]
-            fn test_from_interpreter(
-                interpreter: &str,
-                language: Language,
-            ) {
-                let languages = Language::from_interpreter(interpreter);
-                assert!(languages.contains(&language));
-            }
-
-            #[test]
-            fn test_unused_interpreter() {
-                let languages = Language::from_interpreter(".totally-unused-interpreter");
-                assert!(languages.is_empty());
-            }
-
-            #[rstest(
-                shebang,
-                language,
-                case(b"#!/bin/sh", Language::Shell),
-                case(b"#!/bin/sh\n", Language::Shell),
-                case(b"#!/bin/sh\r\n", Language::Shell),
-                case(b"#!/usr/bin/env sh\r\n", Language::Shell),
-            )]
-            fn test_from_shebang(
-                shebang: &[u8],
-                language: Language,
-            ) {
-                let languages = Language::from_shebang(shebang);
-                assert!(languages.contains(&language));
             }
         }
     };
