@@ -153,20 +153,23 @@ fn main() -> Result<(), Box<dyn Error>> {
                 })
                 .collect();
 
-            let heuristics = language_attrs.get("heuristics").map(|heuristics| {
-                heuristics
-                    .as_array()
-                    .expect("heuristics to be an array")
-                    .to_owned()
-                    .iter()
-                    .map(|heuristic| {
-                        heuristic
-                            .as_str()
-                            .expect("heuristic to be a string")
-                            .to_string()
-                    })
-                    .collect()
-            }).unwrap_or_default();
+            let heuristics = language_attrs
+                .get("heuristics")
+                .map(|heuristics| {
+                    heuristics
+                        .as_array()
+                        .expect("heuristics to be an array")
+                        .to_owned()
+                        .iter()
+                        .map(|heuristic| {
+                            heuristic
+                                .as_str()
+                                .expect("heuristic to be a string")
+                                .to_string()
+                        })
+                        .collect()
+                })
+                .unwrap_or_default();
 
             LanguageDefinition {
                 variant,
@@ -249,9 +252,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         HashMap::new(),
         |map,
          LanguageDefinition {
-             variant,
-             filenames,
-             ..
+             variant, filenames, ..
          }| {
             filenames.iter().fold(map, |mut map, filename| {
                 map.entry(filename.clone())

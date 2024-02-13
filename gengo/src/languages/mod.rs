@@ -66,7 +66,6 @@ pub enum Category {
     Query,
 }
 
-
 #[cfg(test)]
 mod language_tests {
     use super::*;
@@ -78,12 +77,9 @@ mod language_tests {
         case::simple(b"#!/bin/sh", Language::Shell),
         case::unix_newline(b"#!/bin/sh\n", Language::Shell),
         case::windows_newline(b"#!/bin/sh\r\n", Language::Shell),
-        case::with_env(b"#!/usr/bin/env sh\r\n", Language::Shell),
+        case::with_env(b"#!/usr/bin/env sh\r\n", Language::Shell)
     )]
-    fn test_from_shebang(
-        shebang: &[u8],
-        language: Language,
-    ) {
+    fn test_from_shebang(shebang: &[u8], language: Language) {
         let languages = Language::from_shebang(shebang);
         assert!(languages.contains(&language));
     }

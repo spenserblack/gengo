@@ -30,7 +30,7 @@ use glob::MatchOptions;
 use indexmap::IndexMap;
 pub use languages::analyzer::Analyzers;
 use languages::Category;
-pub use languages::{LanguageOld, Language};
+pub use languages::{Language, LanguageOld};
 
 use std::error::Error as ErrorTrait;
 use std::path::Path;
