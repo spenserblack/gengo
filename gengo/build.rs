@@ -443,6 +443,25 @@ fn main() -> Result<(), Box<dyn Error>> {
                     .collect()
             }
 
+            /// Uses simple checks to find one or more matching languages. Checks by shebang, filename,
+            /// filepath glob, and extension.
+            fn find_simple(path: impl AsRef<Path>, contents: &[u8]) -> Vec<Self> {
+                let languages = Self::from_shebang(contents);
+                if !languages.is_empty() {
+                    return languages;
+                }
+                let languages = Self::from_path_filename(&path);
+                if !languages.is_empty() {
+                    return languages;
+                }
+                let languages = Self::from_glob(&path);
+                if !languages.is_empty() {
+                    return languages;
+                }
+                let languages = Self::from_path_extension(&path);
+                return languages;
+            }
+
             /// Filters an iterable of languages by heuristics.
             fn filter_by_heuristics(languages: &[Self], contents: &str) -> Vec<Self> {
                 static HEURISTICS: Lazy<HashMap<Language, Vec<Regex>>> = Lazy::new(|| {
@@ -460,6 +479,32 @@ fn main() -> Result<(), Box<dyn Error>> {
                     })
                     .cloned()
                     .collect()
+            }
+
+            /// Picks the best guess from a file's name and contents.
+            ///
+            /// When checking heuristics, only the first `read_limit` bytes will be read.
+            pub fn pick(path: impl AsRef<Path>, contents: &[u8], read_limit: usize) -> Option<Self> {
+                let languages = Self::find_simple(&path, contents);
+                if languages.len() == 1 {
+                    return Some(languages[0]);
+                }
+
+                let contents = if contents.len() > read_limit {
+                    &contents[..read_limit]
+                } else {
+                    contents
+                };
+                let heuristic_contents = std::str::from_utf8(contents).unwrap_or_default();
+                let by_heuristics = Self::filter_by_heuristics(&languages, heuristic_contents);
+
+                let found_languages = match by_heuristics.len() {
+                    0 => languages,
+                    1 => return Some(by_heuristics[0]),
+                    _ => by_heuristics,
+                };
+
+                found_languages.into_iter().max_by_key(Self::priority)
             }
         }
     };

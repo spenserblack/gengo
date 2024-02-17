@@ -10,8 +10,8 @@ mod tests {
 
     #[derive(Debug)]
     struct TestError {
-        expected_language: gengo::LanguageOld,
-        actual_language: gengo::LanguageOld,
+        expected_language_name: String,
+        actual_language_name: String,
         filename: PathBuf,
     }
 
@@ -21,8 +21,8 @@ mod tests {
                 f,
                 "Expected {} to be {}, got {}",
                 self.filename.display(),
-                self.expected_language.name(),
-                self.actual_language.name()
+                self.expected_language_name,
+                self.actual_language_name
             )
         }
     }
@@ -31,36 +31,35 @@ mod tests {
 
     #[test]
     fn test_samples() -> Result<(), Vec<TestError>> {
-        let analyzers = gengo::Analyzers::default();
         let manifest_dir = Path::new(env!("CARGO_MANIFEST_DIR"));
         let samples_dir = manifest_dir.join("samples");
         let errors: Vec<_> = samples_dir
             .read_dir()
             .expect("samples directory to be readable")
             .flat_map(|entry| {
+                let samples_dir = samples_dir.clone();
                 let path = entry.expect("entry to be readable").path();
                 let language_dir = path.strip_prefix(&samples_dir).unwrap();
-                let language_name = language_dir.display().to_string();
-                let expected = analyzers.get(&language_name).expect("language to exist");
                 path.read_dir()
                     .expect("language directory to be readable")
                     .map(|entry| {
                         let path = entry.expect("entry to be readable").path();
                         let contents = fs::read(&path).expect("file to be readable");
                         let relative_path = path.strip_prefix(&samples_dir).unwrap();
-                        let actual = analyzers
-                            .pick(relative_path, &contents, 1 << 20)
+                        let actual = gengo::Language::pick(relative_path, &contents, 1 << 20)
                             .expect("language to exist");
-                        if expected.name() != actual.name() {
+                        let actual_language_name = actual.name().to_string();
+                        let expected_language_name = language_dir.display().to_string();
+                        if actual_language_name != expected_language_name {
                             Err(TestError {
-                                expected_language: expected.clone(),
-                                actual_language: actual.clone(),
+                                expected_language_name,
+                                actual_language_name,
                                 filename: relative_path.to_owned(),
                             })
                         } else {
                             Ok(())
                         }
-                    })
+                    }).collect::<Vec<_>>()
             })
             .filter_map(Result::err)
             .collect();
