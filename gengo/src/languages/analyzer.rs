@@ -15,6 +15,7 @@ use std::path::Path;
 
 /// Analyzes and attempts to identify a language.
 #[derive(Debug)]
+#[deprecated]
 pub struct Analyzers(IndexMap<String, Analyzer>);
 
 impl Analyzers {
@@ -284,6 +285,7 @@ impl Default for Analyzers {
 
 /// Used to match a programming language.
 #[derive(Clone, Debug)]
+#[deprecated]
 pub struct Analyzer {
     language: LanguageOld,
     matchers: Vec<Matcher>,
@@ -294,6 +296,7 @@ pub struct Analyzer {
 
 /// The result of an analysis. Either multiple results, one result, or no result.
 #[derive(Debug)]
+#[deprecated]
 pub enum Found {
     None,
     /// A key to get a language.

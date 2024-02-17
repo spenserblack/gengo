@@ -11,6 +11,7 @@ use std::path::Path;
 /// Checks if a file matches.
 #[derive(Clone, Debug)]
 #[non_exhaustive]
+#[deprecated]
 pub enum Matcher {
     Extension(Extension),
     Filename(Filename),
@@ -20,6 +21,7 @@ pub enum Matcher {
 
 /// Matches a file extension.
 #[derive(Clone, Debug)]
+#[deprecated]
 pub struct Extension {
     extensions: IndexSet<OsString>,
 }
@@ -39,6 +41,7 @@ impl Extension {
 
 /// Matches a filename.
 #[derive(Clone, Debug)]
+#[deprecated]
 pub struct Filename {
     filenames: IndexSet<OsString>,
 }
@@ -58,6 +61,7 @@ impl Filename {
 
 /// Matches a filepath pattern
 #[derive(Clone, Debug)]
+#[deprecated]
 pub struct FilepathPattern {
     patterns: Vec<Pattern>,
 }
@@ -81,6 +85,7 @@ impl FilepathPattern {
 
 /// Matches a shebang.
 #[derive(Clone, Debug)]
+#[deprecated]
 pub struct Shebang {
     interpreters: IndexSet<String>,
 }
