@@ -1,2 +1,2 @@
 # For tests
-dist/* gengo-detectable gengo-language=Plain-Text
+dist/* gengo-detectable gengo-language=PlainText
