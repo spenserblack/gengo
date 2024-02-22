@@ -54,6 +54,7 @@ impl Language {
 }
 
 /// A category for a language.
+#[non_exhaustive]
 #[derive(Clone, Debug, serde::Deserialize, Eq, Hash, PartialEq, serde::Serialize)]
 #[serde(rename_all = "lowercase")]
 pub enum Category {
