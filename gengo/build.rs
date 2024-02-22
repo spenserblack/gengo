@@ -19,7 +19,7 @@ const DEFAULT_PRIORITY: u8 = 50;
 fn main() -> Result<(), Box<dyn Error>> {
     // TODO This looks messy, and can use cleanup.
     let languages: IndexMap<String, serde_json::Value> = serde_yaml::from_str(LANGUAGES)?;
-    let languages_target_path = Path::new(&env::var("OUT_DIR")?).join("languages_generated.rs");
+    let languages_target_path = Path::new(&env::var("OUT_DIR")?).join("language_generated.rs");
 
     struct LanguageDefinition {
         variant: Ident,
@@ -207,6 +207,17 @@ fn main() -> Result<(), Box<dyn Error>> {
                 }
             });
 
+    let reverse_variant_mappings = language_definitions.iter().map(
+        |LanguageDefinition {
+             variant, ..
+         }| {
+            let variant_name = variant.to_string();
+            quote! {
+                #variant_name => Some(Self::#variant)
+            }
+        },
+    );
+
     let color_mappings =
         language_definitions
             .iter()
@@ -340,6 +351,14 @@ fn main() -> Result<(), Box<dyn Error>> {
             pub const fn name(&self) -> &'static str {
                 match self {
                     #(#name_mappings ,)*
+                }
+            }
+
+            /// Converts a variant's name back to the language.
+            fn parse_variant(name: &str) -> Option<Self> {
+                match name {
+                    #(#reverse_variant_mappings ,)*
+                    _ => None,
                 }
             }
 
@@ -513,20 +532,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     let language_file_contents = prettyplease::unparse(&language_file_contents);
 
     fs::write(languages_target_path, dbg!(language_file_contents))?;
-    // panic!("force debug output");
-
-    // ----------- Old way -------------
-
-    let languages_target_path = Path::new(&env::var("OUT_DIR")?).join("languages.json");
-    let json = serde_json::to_string(&languages)?;
-    fs::write(languages_target_path, json)?;
-
-    let doc_target_path = Path::new(&env::var("OUT_DIR")?).join("language-list.md");
-    let mut doc_file = File::create(doc_target_path)?;
-    for language in languages.keys() {
-        writeln!(doc_file, "- {}", language)?;
-    }
-
     Ok(())
 }
 

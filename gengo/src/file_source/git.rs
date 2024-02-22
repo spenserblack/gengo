@@ -157,7 +157,7 @@ impl<'repo> FileSource<'repo> for Git {
             attrs[Self::LANGUAGE_OVERRIDE]
                 .as_ref()
                 .and_then(|info| match info.assignment.state {
-                    StateRef::Value(v) => v.as_bstr().to_str().ok().map(|s| s.replace('-', " ")),
+                    StateRef::Value(v) => v.as_bstr().to_str().ok().and_then(|s| s.parse().ok()),
                     _ => None,
                 });
         // NOTE Unspecified attributes are None, so `state.is_set()` is

@@ -1,4 +1,4 @@
-*.snap -whitespace linguist-language=Text gengo-language=Plain-Text
+*.snap -whitespace linguist-language=Text gengo-language=PlainText
 /gengo/languages.yaml gengo-detectable linguist-detectable
 
 # Fix GitHub's detected language

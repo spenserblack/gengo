@@ -4,6 +4,7 @@ pub use directory::Directory;
 pub use git::Git;
 use std::marker::{Send, Sync};
 use std::path::Path;
+use crate::Language;
 
 mod directory;
 mod git;
@@ -54,7 +55,7 @@ pub trait FileSource<'files>: Sync {
         &self,
         _path: impl AsRef<Path>,
         _state: &mut Self::State,
-    ) -> Option<String> {
+    ) -> Option<Language> {
         None
     }
 
@@ -98,7 +99,7 @@ pub trait FileSource<'files>: Sync {
 #[non_exhaustive]
 #[derive(Default)]
 pub struct Overrides {
-    pub language: Option<String>,
+    pub language: Option<Language>,
     pub is_documentation: Option<bool>,
     pub is_generated: Option<bool>,
     pub is_vendored: Option<bool>,
