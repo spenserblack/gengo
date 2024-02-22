@@ -6,13 +6,6 @@ impl Language {
     /// Returns an object that implements `serde::Serialize` for the language to
     /// serialize the language's attributes. This effectively turns the language
     /// from an `enum` into a `struct`.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// let language = gengo::Language::Rust;
-    /// let json = serde_json::to_string(&language.serialize()).unwrap();
-    /// ```
     const fn serialize(&self) -> Serialize {
         Serialize {
             name: self.name(),
