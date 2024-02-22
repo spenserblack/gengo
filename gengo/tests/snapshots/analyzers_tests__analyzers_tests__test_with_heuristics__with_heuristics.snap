@@ -1,7 +1,0 @@
----
-source: gengo/tests/analyzers_tests.rs
-expression: "analyzers.with_heuristics(filepath, contents, 1 << 20)"
----
-One(
-    "json with comments",
-)
