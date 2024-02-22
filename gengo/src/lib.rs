@@ -99,8 +99,9 @@ impl<FS: for<'fs> FileSource<'fs>> Gengo<FS> {
             return None;
         }
 
-        let language =
-            overrides.language.or_else(|| Language::pick(filepath, contents, self.read_limit))?;
+        let language = overrides
+            .language
+            .or_else(|| Language::pick(filepath, contents, self.read_limit))?;
         let generated = overrides
             .is_generated
             .unwrap_or_else(|| self.is_generated(filepath, contents));
@@ -121,7 +122,7 @@ impl<FS: for<'fs> FileSource<'fs>> Gengo<FS> {
 
         let size = contents.len();
         let entry = Entry {
-            language: language.clone(),
+            language,
             size,
             detectable,
             generated,

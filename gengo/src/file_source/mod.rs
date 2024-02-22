@@ -1,10 +1,10 @@
 //! Provides sources to get files and their attributes.
 
+use crate::Language;
 pub use directory::Directory;
 pub use git::Git;
 use std::marker::{Send, Sync};
 use std::path::Path;
-use crate::Language;
 
 mod directory;
 mod git;

@@ -4,8 +4,7 @@ use quote::quote;
 use std::collections::HashMap;
 use std::env;
 use std::error::Error;
-use std::fs::{self, File};
-use std::io::Write;
+use std::fs;
 use std::path::Path;
 
 const LANGUAGES: &str = include_str!("./languages.yaml");
@@ -207,16 +206,15 @@ fn main() -> Result<(), Box<dyn Error>> {
                 }
             });
 
-    let reverse_variant_mappings = language_definitions.iter().map(
-        |LanguageDefinition {
-             variant, ..
-         }| {
-            let variant_name = variant.to_string();
-            quote! {
-                #variant_name => Some(Self::#variant)
-            }
-        },
-    );
+    let reverse_variant_mappings =
+        language_definitions
+            .iter()
+            .map(|LanguageDefinition { variant, .. }| {
+                let variant_name = variant.to_string();
+                quote! {
+                    #variant_name => Some(Self::#variant)
+                }
+            });
 
     let color_mappings =
         language_definitions
@@ -237,7 +235,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         },
     );
 
-    let extension_to_langs = language_definitions.iter().fold(
+    let extension_to_langs: HashMap<_, Vec<_>> = language_definitions.iter().fold(
         HashMap::new(),
         |map,
          LanguageDefinition {
@@ -247,7 +245,7 @@ fn main() -> Result<(), Box<dyn Error>> {
          }| {
             extensions.iter().fold(map, |mut map, extension| {
                 map.entry(extension.clone())
-                    .or_insert_with(Vec::new)
+                    .or_default()
                     .push(variant.clone());
                 map
             })
@@ -259,7 +257,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
     });
 
-    let filenames_to_langs = language_definitions.iter().fold(
+    let filenames_to_langs: HashMap<_, Vec<_>> = language_definitions.iter().fold(
         HashMap::new(),
         |map,
          LanguageDefinition {
@@ -267,7 +265,7 @@ fn main() -> Result<(), Box<dyn Error>> {
          }| {
             filenames.iter().fold(map, |mut map, filename| {
                 map.entry(filename.clone())
-                    .or_insert_with(Vec::new)
+                    .or_default()
                     .push(variant.clone());
                 map
             })
@@ -280,7 +278,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
     });
 
-    let interpreters_to_langs = language_definitions.iter().fold(
+    let interpreters_to_langs: HashMap<_, Vec<_>> = language_definitions.iter().fold(
         HashMap::new(),
         |map,
          LanguageDefinition {
@@ -290,7 +288,7 @@ fn main() -> Result<(), Box<dyn Error>> {
          }| {
             interpreters.iter().fold(map, |mut map, interpreter| {
                 map.entry(interpreter.clone())
-                    .or_insert_with(Vec::new)
+                    .or_default()
                     .push(variant.clone());
                 map
             })
@@ -477,8 +475,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 if !languages.is_empty() {
                     return languages;
                 }
-                let languages = Self::from_path_extension(&path);
-                return languages;
+                Self::from_path_extension(&path)
             }
 
             /// Filters an iterable of languages by heuristics.

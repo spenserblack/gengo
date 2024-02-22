@@ -1,5 +1,4 @@
-use gengo::{Builder, Directory, Git};
-use std::path::Path;
+use gengo::{Builder, Git};
 
 const ROOT: &str = env!("CARGO_MANIFEST_DIR");
 

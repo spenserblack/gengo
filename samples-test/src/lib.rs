@@ -59,7 +59,8 @@ mod tests {
                         } else {
                             Ok(())
                         }
-                    }).collect::<Vec<_>>()
+                    })
+                    .collect::<Vec<_>>()
             })
             .filter_map(Result::err)
             .collect();
