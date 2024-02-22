@@ -1,7 +1,0 @@
----
-source: gengo/tests/analyzers_tests.rs
-expression: "analyzers.simple(\"test.sh\", contents)"
----
-One(
-    "fish",
-)

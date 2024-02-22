@@ -1,7 +1,0 @@
----
-source: gengo/tests/analyzers_tests.rs
-expression: "analyzers.by_filepath(\"test.sh\")"
----
-One(
-    "shell",
-)
