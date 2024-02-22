@@ -673,6 +673,8 @@ XML:
   matchers:
     extensions:
       - ts
+      - wixproj
+      - wxs
       - xml
   priority: 25
 YAML:
