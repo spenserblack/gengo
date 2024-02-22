@@ -1,7 +1,0 @@
-Shell:
-  category: programming
-  color: "#aabbcc"
-  matchers:
-    interpreters:
-      - "sh"
-      - "bash"

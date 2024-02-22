@@ -9,13 +9,6 @@
 //! let gengo = Builder::new(git).build().unwrap();
 //! let results = gengo.analyze().unwrap();
 //! ```
-//! # Built-in Languages
-//!
-//! While it is possible to provide your own definitions for
-//! language detection, Gengo comes with a set of built-in
-//! definitions.
-//!
-#![doc = include_str!(concat!(env!("OUT_DIR"), "/language-list.md"))]
 
 pub use analysis::Analysis;
 use binary::Binary;
@@ -28,9 +21,8 @@ use generated::Generated;
 pub use file_source::{Directory, FileSource, Git};
 use glob::MatchOptions;
 use indexmap::IndexMap;
-pub use languages::analyzer::Analyzers;
-use languages::Category;
-pub use languages::Language;
+use language::Category;
+pub use language::Language;
 
 use std::error::Error as ErrorTrait;
 use std::path::Path;
@@ -47,7 +39,7 @@ mod documentation;
 mod error;
 mod file_source;
 mod generated;
-pub mod languages;
+pub mod language;
 mod vendored;
 
 type GenericError = Box<dyn ErrorTrait>;
@@ -63,7 +55,6 @@ const GLOB_MATCH_OPTIONS: MatchOptions = MatchOptions {
 /// The main entry point for Gengo.
 pub struct Gengo<FS: for<'fs> FileSource<'fs>> {
     file_source: FS,
-    analyzers: Analyzers,
     read_limit: usize,
     binary: Binary,
     documentation: Documentation,
@@ -108,11 +99,9 @@ impl<FS: for<'fs> FileSource<'fs>> Gengo<FS> {
             return None;
         }
 
-        let lang_override = overrides.language.and_then(|s| self.analyzers.get(&s));
-
-        let language =
-            lang_override.or_else(|| self.analyzers.pick(filepath, contents, self.read_limit))?;
-
+        let language = overrides
+            .language
+            .or_else(|| Language::pick(filepath, contents, self.read_limit))?;
         let generated = overrides
             .is_generated
             .unwrap_or_else(|| self.is_generated(filepath, contents));
@@ -133,7 +122,7 @@ impl<FS: for<'fs> FileSource<'fs>> Gengo<FS> {
 
         let size = contents.len();
         let entry = Entry {
-            language: language.clone(),
+            language,
             size,
             detectable,
             generated,
