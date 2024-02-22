@@ -106,7 +106,7 @@ impl CLI {
         for (language, size) in summary.iter() {
             let percentage = (*size * 100) as f64 / total;
             #[cfg(feature = "color")]
-            let color = language.owo_color().unwrap();
+            let color = language.owo_color();
             #[cfg(not(feature = "color"))]
             let color = ();
 
@@ -168,7 +168,7 @@ impl CLI {
 
         for (language, files) in files_per_language.into_iter() {
             #[cfg(feature = "color")]
-            let color = language.owo_color().unwrap();
+            let color = language.owo_color();
             #[cfg(not(feature = "color"))]
             let color = ();
 

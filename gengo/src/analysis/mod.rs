@@ -37,7 +37,7 @@ impl Analysis {
             if !(opts.all || entry.detectable()) {
                 continue;
             }
-            let language = entry.language().clone();
+            let language = *entry.language();
             *summary.entry(language).or_insert(0) += entry.size();
         }
         Summary(summary)

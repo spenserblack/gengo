@@ -51,8 +51,8 @@ deps/* gengo-vendored
 
 # string attributes:
 # Override the detected language for a file
-# Spaces must be replaced with hyphens. Case-insensitive.
-templates/*.js gengo-language=Plain-Text
+# Use the Language enum's variant name (see docs.rs for more details)
+templates/*.js gengo-language=PlainText
 ```
 
 You will need to commit your `.gitattributes` file for it to take effect.

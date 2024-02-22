@@ -3,6 +3,12 @@ updates:
   - package-ecosystem: cargo
     directory: "/"
     groups:
+      proc-macro:
+        patterns:
+          - "prettyplease"
+          - "proc-macro2"
+          - "quote"
+          - "syn"
       serde:
         patterns:
           - serde

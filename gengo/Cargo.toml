@@ -31,18 +31,22 @@ owo-colors = { workspace = true, optional = true }
 rayon = "1"
 regex = "1"
 serde = { version = "1", features = ["derive"] }
-serde_json.workspace = true
-serde_yaml = "0.9"
 
 [build-dependencies]
 indexmap = { version = "2", features = ["serde"] }
+prettyplease = "0.2"
+proc-macro2 = "1"
 serde_json.workspace = true
 serde_yaml = "0.9"
+syn = "2"
+quote = "1"
 
 [dev-dependencies]
 criterion = "0.5"
 insta = "1"
+once_cell = "1"
 rstest = "0.18"
+serde_yaml = "0.9"
 
 [[bench]]
 # NOTE: We run on this repo as a real-world example
