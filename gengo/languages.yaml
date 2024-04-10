@@ -583,6 +583,12 @@ SQL:
   matchers:
     extensions:
       - sql
+SVG:
+  category: data
+  color: "#FFB13B"
+  matchers:
+    extensions:
+      - svg
 Sass:
   category: markup
   color: "#CF649A"

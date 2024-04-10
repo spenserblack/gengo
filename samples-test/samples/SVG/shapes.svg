@@ -1,0 +1,16 @@
+<svg viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg">
+  <rect
+    x="0"
+    y="0"
+    width="100"
+    height="100"
+    style="fill:red;" />
+  <circle
+    cx="150"
+    cy="50"
+    r="50"
+    style="fill:green;" />
+  <polygon
+    points="250,0 200,100 300,100"
+    style="fill:blue;" />
+</svg>
