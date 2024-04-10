@@ -1,0 +1,22 @@
+version: 2
+updates:
+  - package-ecosystem: cargo
+    directory: "/"
+    groups:
+      proc-macro:
+        patterns:
+          - "prettyplease"
+          - "proc-macro2"
+          - "quote"
+          - "syn"
+      serde:
+        patterns:
+          - serde
+          - "serde_*"
+          - "serde-*"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
