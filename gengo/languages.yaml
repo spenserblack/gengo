@@ -597,6 +597,13 @@ Sass:
     extensions:
       - sass
       - scss
+Scheme:
+  category: programming
+  color: "#8800FF"
+  matchers:
+    extensions:
+      - scm
+      - ss
 Shell:
   category: programming
   color: "#262E28"
