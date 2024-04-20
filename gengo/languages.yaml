@@ -12,6 +12,9 @@
 #   # The color associated with the language.
 #   color:
 #
+#   # The icon associated with the language.
+#   icon:
+#
 #   # Regexes unique to the contents of the file to resolve multiple matches. These will
 #   # be used if the matchers (see below) cannot narrow down a file to a single
 #   # language.
@@ -50,6 +53,7 @@
 ".Env":
   category: data
   color: "#ECD53F"
+  icon: "\uf462" # 
   matchers:
     extensions:
       - env
@@ -60,18 +64,21 @@
 ABAP:
   category: programming
   color: "#3C3C3C"
+  icon: "" #
   matchers:
     extensions:
       - abap
 ABNF:
   category: data
   color: "#ABFABF"
+  icon: "" #
   matchers:
     extensions:
       - abnf
 ATS:
   category: programming
   color: "#0005FB"
+  icon: "" #
   matchers:
     extensions:
       - atxt
@@ -81,6 +88,7 @@ ATS:
 Ada:
   category: programming
   color: "#005A00"
+  icon: "\ue6b5" # 
   matchers:
     extensions:
       - ada
@@ -89,12 +97,14 @@ Ada:
 Arduino:
   category: programming
   color: "#189BA1"
+  icon: "\uf34b" # 
   matchers:
     extensions:
       - ino
 Assembly:
   category: programming
   color: "#33AA33"
+  icon: "\ue266" # 
   matchers:
     extensions:
       - asm
@@ -102,12 +112,14 @@ Assembly:
 AutoHotkey:
   category: programming
   color: "#334455"
+  icon: "" #
   matchers:
     extensions:
       - ahk
 Batch File:
   category: programming
   color: "#818B91"
+  icon: "" #
   matchers:
     extensions:
       - bat
@@ -115,6 +127,7 @@ Batch File:
 C:
   category: programming
   color: "#8888CC"
+  icon: "\ue61e" # 
   matchers:
     extensions:
       - c
@@ -123,6 +136,7 @@ C:
 "C#":
   category: programming
   color: "#178600"
+  icon: "\uf031b" # 󰌛
   heuristics:
     - "^\\s*(using\\s+[A-Z][\\s\\w.]+;|namespace\\s*[\\w\\.]+\\s*(\\{|;)|\\/\\/)"
   matchers:
@@ -133,6 +147,7 @@ C:
 "C++":
   category: programming
   color: "#88CC88"
+  icon: "\ue61d" # 
   matchers:
     extensions:
       - c++
@@ -144,6 +159,7 @@ C:
 CMake:
   category: programming
   color: "#CCCCCC"
+  icon: "" #
   matchers:
     extensions:
       - cmake
@@ -152,24 +168,28 @@ CMake:
 CSS:
   category: markup
   color: "#AA88AA"
+  icon: "\ue749" # 
   matchers:
     extensions:
       - css
 CSV:
   category: data
   color: "#1D6F42"
+  icon: "" #
   matchers:
     extensions:
       - csv
 Ceylon:
   category: programming
   color: "#F7941E"
+  icon: "" #
   matchers:
     extensions:
       - ceylon
 Clojure:
   category: programming
   color: "#77F212"
+  icon: "\ue76a" # 
   matchers:
     extensions:
       - clj
@@ -178,6 +198,7 @@ Clojure:
 CoffeeScript:
   category: programming
   color: "#C0FFEE"
+  icon: "\ue751" # 
   matchers:
     extensions:
       - coffee
@@ -186,18 +207,21 @@ CoffeeScript:
 ColdFusion:
   category: programming
   color: "#001C57"
+  icon: "\ue645" # 
   matchers:
     extensions:
       - cfm
 Coq:
   category: programming
   color: "#D0B68C"
+  icon: "" #
   matchers:
     extensions:
       - v
 Crystal:
   category: programming
   color: "#000000"
+  icon: "\ue62f" # 
   matchers:
     extensions:
       - cr
@@ -206,18 +230,21 @@ Crystal:
 D:
   category: programming
   color: "#B03931"
+  icon: "" #
   matchers:
     extensions:
       - d
 Dart:
   category: programming
   color: "#238BDA"
+  icon: "\ue64c" # 
   matchers:
     extensions:
       - dart
 Docker:
   category: programming
   color: "#2496ED"
+  icon: "\ue650" # 
   matchers:
     filenames:
       - "Dockerfile"
@@ -226,6 +253,7 @@ Docker:
 Elixir:
   category: programming
   color: "#6B5674"
+  icon: "\ue62d" # 
   matchers:
     extensions:
       - ex
@@ -235,18 +263,21 @@ Elixir:
 Elm:
   category: programming
   color: "#1293D8"
+  icon: "\ue62c" # 
   matchers:
     extensions:
       - elm
 Emacs Lisp:
   category: programming
   color: "#7F5AB6"
+  icon: "\ue632" # 
   matchers:
     extensions:
       - el
 Emojicode:
   category: programming
   color: "#FCEA2B"
+  icon: "\uf0785" # 󰞅
   matchers:
     extensions:
       - emojic
@@ -254,6 +285,7 @@ Emojicode:
 Erlang:
   category: programming
   color: "#A90433"
+  icon: "\ue7b1" # 
   matchers:
     extensions:
       - erl
@@ -261,6 +293,7 @@ Erlang:
 "F#":
   category: programming
   color: "#F8008F"
+  icon: "\ue7a7" # 
   matchers:
     extensions:
       - fs
@@ -268,6 +301,7 @@ Erlang:
 "FORTRAN Legacy":
   category: programming
   color: "#716152"
+  icon: "\uf121a" # 󱈚
   matchers:
     extensions:
       - f
@@ -278,6 +312,7 @@ Erlang:
 "Fortran Modern":
   category: programming
   color: "#725196"
+  icon: "\uf121a" # 󱈚
   matchers:
     extensions:
       - f03
@@ -287,12 +322,14 @@ Erlang:
 GDScript:
   category: programming
   color: "#355570"
+  icon: "\ue65f" # 
   matchers:
     extensions:
       - gd
 GitHub Workflow:
   category: programming
   color: "#2088FF"
+  icon: "" #
   matchers:
     patterns:
       - ".github/workflows/*.yaml"
@@ -301,18 +338,21 @@ GitHub Workflow:
 Go:
   category: programming
   color: "#00ADD8"
+  icon: "\ue627" # 
   matchers:
     extensions:
       - go
 GraphQL:
   category: query
   color: "#E10098"
+  icon: "\uf0877" # 󰡷
   matchers:
     extensions:
       - graphql
 Groovy:
   category: programming
   color: "#4298B8"
+  icon: "\ue775" # 
   matchers:
     extensions:
       - groovy
@@ -321,24 +361,28 @@ Groovy:
 HTML:
   category: markup
   color: "#E96228"
+  icon: "\ue736" # 
   matchers:
     extensions:
       - html
 Haskell:
   category: programming
   color: "#5E5086"
+  icon: "\ue777" # 
   matchers:
     extensions:
       - hs
 HolyC:
   category: programming
   color: "#FFFF00"
+  icon: "\ueebe" # 
   matchers:
     extensions:
       - hc
 Ignore List:
   category: data
   color: "#330000"
+  icon: "" #
   matchers:
     filenames:
       - ".dockerignore"
@@ -348,6 +392,7 @@ Ignore List:
 JSON:
   category: data
   color: "#AAAAAA"
+  icon: "\ueb0f" # 
   matchers:
     extensions:
       - json
@@ -357,6 +402,7 @@ JSON:
 JSON with Comments:
   category: data
   color: "#CCCCCC"
+  icon: "\ueb0f" # 
   heuristics:
     - "(?m)^\\s*/[/\\*]"
   matchers:
@@ -373,12 +419,14 @@ JSON with Comments:
 Java:
   category: programming
   color: "#5283A2"
+  icon: "\ue738" # 
   matchers:
     extensions:
       - java
 JavaScript:
   category: programming
   color: "#F0DC4E"
+  icon: "\ue74e" # 
   matchers:
     extensions:
       - js
@@ -388,6 +436,7 @@ JavaScript:
 Jinja-like:
   category: markup
   color: "#A00000"
+  icon: "" #
   heuristics:
     - "^\\{%\\sextends\\s"
     - "\\{%\\s.+?\\s%\\}"
@@ -399,6 +448,7 @@ Jinja-like:
 Jsonnet:
   category: programming
   color: "#0064BD"
+  icon: "" #
   matchers:
     extensions:
       - jsonnet
@@ -406,18 +456,21 @@ Jsonnet:
 Julia:
   category: programming
   color: "#9558B2"
+  icon: "\ue624" # 
   matchers:
     extensions:
       - jl
 Jupyter Notebook:
   category: markup
   color: "#F37726"
+  icon: "" #
   matchers:
     extensions:
       - ipynb
 Kotlin:
   category: programming
   color: "#7F52FF"
+  icon: "\ue634" # 
   matchers:
     extensions:
       - kt
@@ -425,6 +478,7 @@ Kotlin:
 Lua:
   category: programming
   color: "#02027D"
+  icon: "\ue620" # 
   matchers:
     extensions:
       - lua
@@ -433,6 +487,7 @@ Lua:
 Makefile:
   category: programming
   color: "#6B482F" # Arbitrary brown color representing a Gnu
+  icon: "\ue673" # 
   matchers:
     filenames:
       - "Makefile"
@@ -441,6 +496,7 @@ Makefile:
 Markdown:
   category: prose
   color: "#03A7DD"
+  icon: "\ue73e" # 
   matchers:
     extensions:
       - markdown
@@ -448,6 +504,7 @@ Markdown:
 Mermaid:
   category: markup
   color: "#FF3670"
+  icon: "" #
   matchers:
     extensions:
       - mermaid
@@ -455,18 +512,21 @@ Mermaid:
 Nim:
   category: programming
   color: "#ffe953"
+  icon: "\ue677" # 
   matchers:
     extensions:
       - nim
 Nix:
   category: programming
   color: "#6898D3" # Average of the two colors in the logo
+  icon: "\uf313" # 
   matchers:
     extensions:
       - nix
 OCaml:
   category: programming
   color: "#f48904"
+  icon: "\ue67a" # 
   matchers:
     extensions:
       - ml
@@ -474,18 +534,21 @@ OCaml:
 Odin:
   category: programming
   color: "#3882D2"
+  icon: "" #
   matchers:
     extensions:
       - odin
 PHP:
   category: programming
   color: "#7A86B8"
+  icon: "\ue608" # 
   matchers:
     extensions:
       - php
 Perl:
   category: programming
   color: "#51547F"
+  icon: "\ue67e" # 
   matchers:
     extensions:
       - cow # cowsay files are Perl
@@ -495,6 +558,7 @@ Perl:
 Plain Text:
   category: prose
   color: "#000000"
+  icon: "" #
   matchers:
     extensions:
       - text
@@ -505,6 +569,7 @@ Plain Text:
 PowerShell:
   category: programming
   color: "#012456"
+  icon: "\uf0a0a" # 󰨊
   matchers:
     extensions:
       - ps1
@@ -513,18 +578,21 @@ PowerShell:
 Pug:
   category: markup
   color: "#A86454"
+  icon: "" #
   matchers:
     extensions:
       - pug
 PureScript:
   category: programming
   color: "#1D222D"
+  icon: "\ue630" # 
   matchers:
     extensions:
       - purs
 Python:
   category: programming
   color: "#3472A6"
+  icon: "\ue73c" # 
   matchers:
     extensions:
       - py
@@ -535,6 +603,7 @@ Python:
 Python Requirements File:
   category: data
   color: "#FFD342"
+  icon: "\ue73c" # 
   matchers:
     filenames:
       - "requirements.txt"
@@ -544,24 +613,28 @@ Python Requirements File:
 R:
   category: programming
   color: "#1F66B7" # Average of the two colors used in the logo gradient: https://www.r-project.org/logo/Rlogo.svg
+  icon: "\ue68a" # 
   matchers:
     extensions:
       - R
 Regex:
   category: data
   color: "#44E03F"
+  icon: "" #
   matchers:
     extensions:
       - regex
 "Ren'Py":
   category: programming
   color: "#FF7F7F"
+  icon: "" #
   matchers:
     extensions:
       - rpy
 Ruby:
   category: programming
   color: "#D21304"
+  icon: "\ue23e" # 
   matchers:
     extensions:
       - gemspec
@@ -574,24 +647,28 @@ Ruby:
 Rust:
   category: programming
   color: "#DD3515"
+  icon: "\ue7a8" # 
   matchers:
     extensions:
       - rs
 SQL:
   category: query
   color: "#FFBF1E"
+  icon: "\ue737" # 
   matchers:
     extensions:
       - sql
 SVG:
   category: data
   color: "#FFB13B"
+  icon: "\uf0721" # 󰜡
   matchers:
     extensions:
       - svg
 Sass:
   category: markup
   color: "#CF649A"
+  icon: "\ue74b" # 
   # NOTE: Sass has two syntaxes. See https://sass-lang.com/guide/
   matchers:
     extensions:
@@ -600,6 +677,7 @@ Sass:
 Scheme:
   category: programming
   color: "#8800FF"
+  icon: "\ue6b1" # 
   matchers:
     extensions:
       - scm
@@ -607,6 +685,7 @@ Scheme:
 Shell:
   category: programming
   color: "#262E28"
+  icon: "\uebca" # 
   matchers:
     extensions:
       - bash
@@ -621,24 +700,28 @@ Shell:
 Solidity:
   category: programming
   color: "#2B247C"
+  icon: "" #
   matchers:
     extensions:
       - sol
 Svelte:
   category: programming
   color: "#FF3E00"
+  icon: "\ue697" # 
   matchers:
     extensions:
       - svelte
 Swift:
   category: programming
   color: "#DC5114"
+  icon: "" #
   matchers:
     extensions:
       - swift
 TOML:
   category: data
   color: "#9C4221"
+  icon: "\ue6b2" # 
   matchers:
     extensions:
       - toml
@@ -648,12 +731,14 @@ TOML:
 TSV:
   category: data
   color: "#1D6F42"
+  icon: "" #
   matchers:
     extensions:
       - tsv
 TypeScript:
   category: programming
   color: "#2F74C0"
+  icon: "\ue628" # 
   heuristics:
     - "(?m)^/// <reference "
     - "(?m)^export\\s+\\w[\\w\\d_]*?"
@@ -667,6 +752,7 @@ TypeScript:
 Vim Script:
   category: programming
   color: "#019833"
+  icon: "\ue62b" # 
   matchers:
     extensions:
       - vim
@@ -675,12 +761,14 @@ Vim Script:
 Vue:
   category: programming
   color: "#3FB27F"
+  icon: "\ue6a0" # 
   matchers:
     extensions:
       - vue
 XML:
   category: data
   color: "#005FAF"
+  icon: "\uf05c0" # 󰗀
   heuristics:
     - "<TS version=\"\\d+(?:\\.d+)+\" language=\""
   matchers:
@@ -693,6 +781,7 @@ XML:
 YAML:
   category: data
   color: "#CC1018"
+  icon: "\ue6a8" # 
   matchers:
     extensions:
       - yaml
@@ -700,6 +789,7 @@ YAML:
 Zig:
   category: programming
   color: "#F7A41D"
+  icon: "\ue6a9" # 
   matchers:
     extensions:
       - zig
