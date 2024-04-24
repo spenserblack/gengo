@@ -1,6 +1,13 @@
 use std::str::FromStr;
 
+macro_rules! _include {
+    ($path:literal) => {
+        include!(concat!(env!("OUT_DIR"), "/languages/", $path));
+    };
+}
+
 include!(concat!(env!("OUT_DIR"), "/language_generated.rs"));
+_include!("language.rs");
 
 impl Language {
     /// Returns an object that implements `serde::Serialize` for the language to

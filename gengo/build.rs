@@ -18,6 +18,8 @@ const DEFAULT_PRIORITY: u8 = 50;
 fn main() -> Result<(), Box<dyn Error>> {
     // TODO This looks messy, and can use cleanup.
     let languages: IndexMap<String, serde_json::Value> = serde_yaml::from_str(LANGUAGES)?;
+    let languages_target_dir = Path::new(&env::var("OUT_DIR")?).join("languages");
+    fs::create_dir_all(&languages_target_dir)?;
     let languages_target_path = Path::new(&env::var("OUT_DIR")?).join("language_generated.rs");
 
     struct LanguageDefinition {
@@ -186,6 +188,18 @@ fn main() -> Result<(), Box<dyn Error>> {
         .collect();
 
     let variants = language_definitions.iter().map(|def| &def.variant);
+    let language = quote! {
+        /// The type of language. Returned by language detection.
+        #[non_exhaustive]
+        #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
+        pub enum Language {
+            #(#variants,)*
+        }
+    };
+    fs::write(
+        languages_target_dir.join("language.rs"),
+        language.to_string(),
+    )?;
 
     let category_mappings = language_definitions.iter().map(
         |LanguageDefinition {
@@ -329,13 +343,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         use std::collections::HashMap;
         use std::path::Path;
         use crate::GLOB_MATCH_OPTIONS;
-
-        /// The type of language. Returned by language detection.
-        #[non_exhaustive]
-        #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
-        pub enum Language {
-            #(#variants,)*
-        }
 
         impl Language {
             /// Gets the category of the language.
