@@ -13,10 +13,11 @@ A special thanks to all listed below ([emoji key](https://allcontributors.org/do
       <td align="center" valign="top" width="14.28%"><a href="https://pyhsieh.net/"><img src="https://avatars.githubusercontent.com/u/6328813?v=4?s=100" width="100px;" alt="Po-Yu Hsieh"/><br /><sub><b>Po-Yu Hsieh</b></sub></a><br /><a href="#data-pykenny" title="Data">🔣</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Sh4rk-Byte"><img src="https://avatars.githubusercontent.com/u/99561766?v=4?s=100" width="100px;" alt="Rostislav Otevrel"/><br /><sub><b>Rostislav Otevrel</b></sub></a><br /><a href="#data-Sh4rk-Byte" title="Data">🔣</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://keybase.io/byronbates"><img src="https://avatars.githubusercontent.com/u/63622?v=4?s=100" width="100px;" alt="Sebastian Thiel"/><br /><sub><b>Sebastian Thiel</b></sub></a><br /><a href="#ideas-Byron" title="Ideas, Planning, & Feedback">🤔</a> <a href="#code-Byron" title="Code">💻</a> <a href="#userTesting-Byron" title="User Testing">📓</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/hasecilu"><img src="https://avatars.githubusercontent.com/u/53124818?v=4?s=100" width="100px;" alt="Ulices"/><br /><sub><b>Ulices</b></sub></a><br /><a href="#data-hasecilu" title="Data">🔣</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/jake-87"><img src="https://avatars.githubusercontent.com/u/68929154?v=4?s=100" width="100px;" alt="j"/><br /><sub><b>j</b></sub></a><br /><a href="#data-jake-87" title="Data">🔣</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="http://sandwichman.dev"><img src="https://avatars.githubusercontent.com/u/73349893?v=4?s=100" width="100px;" alt="sandwich"/><br /><sub><b>sandwich</b></sub></a><br /><a href="#data-spsandwichman" title="Data">🔣</a></td>
     </tr>
     <tr>
+      <td align="center" valign="top" width="14.28%"><a href="http://sandwichman.dev"><img src="https://avatars.githubusercontent.com/u/73349893?v=4?s=100" width="100px;" alt="sandwich"/><br /><sub><b>sandwich</b></sub></a><br /><a href="#data-spsandwichman" title="Data">🔣</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://linktr.ee/vinhegde"><img src="https://avatars.githubusercontent.com/u/73926849?v=4?s=100" width="100px;" alt="vinhegde"/><br /><sub><b>vinhegde</b></sub></a><br /><a href="#data-vinayakhegde1" title="Data">🔣</a></td>
     </tr>
   </tbody>
