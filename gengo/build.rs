@@ -210,6 +210,20 @@ fn main() -> Result<(), Box<dyn Error>> {
             }
         },
     );
+    let category_mixin = quote! {
+        impl Language {
+            /// Gets the category of the language.
+            pub const fn category(&self) -> Category {
+                match self {
+                    #(#category_mappings ,)*
+                }
+            }
+        }
+    };
+    fs::write(
+        languages_target_dir.join("category_mixin.rs"),
+        category_mixin.to_string(),
+    )?;
 
     let name_mappings =
         language_definitions
@@ -219,6 +233,20 @@ fn main() -> Result<(), Box<dyn Error>> {
                     Self::#variant => #name
                 }
             });
+    let name_mixin = quote! {
+        impl Language {
+            /// Gets the name of the language.
+            pub const fn name(&self) -> &'static str {
+                match self {
+                    #(#name_mappings ,)*
+                }
+            }
+        }
+    };
+    fs::write(
+        languages_target_dir.join("name_mixin.rs"),
+        name_mixin.to_string(),
+    )?;
 
     let reverse_variant_mappings =
         language_definitions
@@ -229,6 +257,21 @@ fn main() -> Result<(), Box<dyn Error>> {
                     #variant_name => Some(Self::#variant)
                 }
             });
+    let parse_variant_mixin = quote! {
+        impl Language {
+            /// Converts a variant's name back to the language.
+            fn parse_variant(name: &str) -> Option<Self> {
+                match name {
+                    #(#reverse_variant_mappings ,)*
+                    _ => None,
+                }
+            }
+        }
+    };
+    fs::write(
+        languages_target_dir.join("parse_variant_mixin.rs"),
+        parse_variant_mixin.to_string(),
+    )?;
 
     let color_mappings =
         language_definitions
@@ -238,6 +281,20 @@ fn main() -> Result<(), Box<dyn Error>> {
                     Self::#variant => #color
                 }
             });
+    let color_mixin = quote! {
+        impl Language {
+            /// Gets the color associated with the language.
+            pub const fn color(&self) -> &'static str {
+                match self {
+                    #(#color_mappings ,)*
+                }
+            }
+        }
+    };
+    fs::write(
+        languages_target_dir.join("color_mixin.rs"),
+        color_mixin.to_string(),
+    )?;
 
     let priority_mappings = language_definitions.iter().map(
         |LanguageDefinition {
@@ -248,6 +305,21 @@ fn main() -> Result<(), Box<dyn Error>> {
             }
         },
     );
+    let priority_mixin = quote! {
+        impl Language {
+            /// Gets the priority of the language. This is useful for sorting languages
+            /// when multiple languages are detected.
+            pub const fn priority(&self) -> u8 {
+                match self {
+                    #(#priority_mappings ,)*
+                }
+            }
+        }
+    };
+    fs::write(
+        languages_target_dir.join("priority_mixin.rs"),
+        priority_mixin.to_string(),
+    )?;
 
     let extension_to_langs: HashMap<_, Vec<_>> = language_definitions.iter().fold(
         HashMap::new(),
@@ -345,43 +417,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         use crate::GLOB_MATCH_OPTIONS;
 
         impl Language {
-            /// Gets the category of the language.
-            pub const fn category(&self) -> Category {
-                match self {
-                    #(#category_mappings ,)*
-                }
-            }
-
-            /// Gets the name of the language.
-            pub const fn name(&self) -> &'static str {
-                match self {
-                    #(#name_mappings ,)*
-                }
-            }
-
-            /// Converts a variant's name back to the language.
-            fn parse_variant(name: &str) -> Option<Self> {
-                match name {
-                    #(#reverse_variant_mappings ,)*
-                    _ => None,
-                }
-            }
-
-            /// Gets the color associated with the language.
-            pub const fn color(&self) -> &'static str {
-                match self {
-                    #(#color_mappings ,)*
-                }
-            }
-
-            /// Gets the priority of the language. This is useful for sorting languages
-            /// when multiple languages are detected.
-            const fn priority(&self) -> u8 {
-                match self {
-                    #(#priority_mappings ,)*
-                }
-            }
-
             /// Gets languages by extension.
             pub fn from_extension(extension: &str) -> Vec<Self> {
                 match extension {

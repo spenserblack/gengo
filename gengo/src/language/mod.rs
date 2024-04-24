@@ -8,6 +8,11 @@ macro_rules! _include {
 
 include!(concat!(env!("OUT_DIR"), "/language_generated.rs"));
 _include!("language.rs");
+_include!("category_mixin.rs");
+_include!("name_mixin.rs");
+_include!("parse_variant_mixin.rs");
+_include!("color_mixin.rs");
+_include!("priority_mixin.rs");
 
 impl Language {
     /// Returns an object that implements `serde::Serialize` for the language to
