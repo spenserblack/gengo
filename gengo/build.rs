@@ -372,12 +372,26 @@ fn main() -> Result<(), Box<dyn Error>> {
             })
         },
     );
-
     let filenames_to_langs_mappings = filenames_to_langs.iter().map(|(filename, langs)| {
         quote! {
             #filename => vec![#(Self::#langs),*]
         }
     });
+    let from_filename_mixin = quote! {
+        impl Language {
+            /// Gets languages by filename.
+            pub fn from_filename(filename: &str) -> Vec<Self> {
+                match filename {
+                    #(#filenames_to_langs_mappings ,)*
+                    _ => vec![],
+                }
+            }
+        }
+    };
+    fs::write(
+        languages_target_dir.join("from_filename_mixin.rs"),
+        from_filename_mixin.to_string(),
+    )?;
 
     let interpreters_to_langs: HashMap<_, Vec<_>> = language_definitions.iter().fold(
         HashMap::new(),
@@ -432,19 +446,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         use crate::GLOB_MATCH_OPTIONS;
 
         impl Language {
-            /// Gets languages by filename.
-            pub fn from_filename(filename: &str) -> Vec<Self> {
-                match filename {
-                    #(#filenames_to_langs_mappings ,)*
-                    _ => vec![],
-                }
-            }
-
-            /// Gets languages from a path's filename.
-            fn from_path_filename(path: impl AsRef<Path>) -> Vec<Self> {
-                let filename = path.as_ref().file_name().and_then(|filename| filename.to_str());
-                filename.map_or(vec![], Self::from_filename)
-            }
 
             /// Gets languages by interpreter (typically found as part of a shebang).
             pub fn from_interpreter(interpreter: &str) -> Vec<Self> {
