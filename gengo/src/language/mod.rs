@@ -13,8 +13,15 @@ _include!("name_mixin.rs");
 _include!("parse_variant_mixin.rs");
 _include!("color_mixin.rs");
 _include!("priority_mixin.rs");
+_include!("from_extension_mixin.rs");
 
 impl Language {
+    /// Gets languages from a path's extension.
+    fn from_path_extension(path: impl AsRef<Path>) -> Vec<Self> {
+        let extension = path.as_ref().extension().and_then(|ext| ext.to_str());
+        extension.map_or(vec![], Self::from_extension)
+    }
+
     /// Returns an object that implements `serde::Serialize` for the language to
     /// serialize the language's attributes. This effectively turns the language
     /// from an `enum` into a `struct`.

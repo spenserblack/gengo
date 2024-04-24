@@ -342,6 +342,21 @@ fn main() -> Result<(), Box<dyn Error>> {
             #extension => vec![#(Self::#langs),*]
         }
     });
+    let from_extension_mixin = quote! {
+        impl Language {
+            /// Gets languages by extension.
+            pub fn from_extension(extension: &str) -> Vec<Self> {
+                match extension {
+                    #(#extension_to_langs_mappings ,)*
+                    _ => vec![],
+                }
+            }
+        }
+    };
+    fs::write(
+        languages_target_dir.join("from_extension_mixin.rs"),
+        from_extension_mixin.to_string(),
+    )?;
 
     let filenames_to_langs: HashMap<_, Vec<_>> = language_definitions.iter().fold(
         HashMap::new(),
@@ -417,20 +432,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         use crate::GLOB_MATCH_OPTIONS;
 
         impl Language {
-            /// Gets languages by extension.
-            pub fn from_extension(extension: &str) -> Vec<Self> {
-                match extension {
-                    #(#extension_to_langs_mappings ,)*
-                    _ => vec![],
-                }
-            }
-
-            /// Gets languages from a path's extension.
-            fn from_path_extension(path: impl AsRef<Path>) -> Vec<Self> {
-                let extension = path.as_ref().extension().and_then(|ext| ext.to_str());
-                extension.map_or(vec![], Self::from_extension)
-            }
-
             /// Gets languages by filename.
             pub fn from_filename(filename: &str) -> Vec<Self> {
                 match filename {
