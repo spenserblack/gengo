@@ -438,13 +438,25 @@ fn main() -> Result<(), Box<dyn Error>> {
                  variant, patterns, ..
              }| {
                 quote! {
-                   GlobMapping {
-                       patterns: vec![#(glob::Pattern::new( #patterns ).unwrap()),*],
-                       language: Language::#variant,
-                   }
+                   (
+                       vec![#(#patterns),*],
+                       Language::#variant,
+                   )
                 }
             },
         );
+    let glob_mappings_mixin = quote! {
+        impl Language {
+            /// Gets the mappings used to map a glob to its language.
+            fn glob_mappings() -> Vec<(Vec<&'static str>, Self)> {
+                vec![#(#glob_matchers),*]
+            }
+        }
+    };
+    fs::write(
+        languages_target_dir.join("glob_mappings_mixin.rs"),
+        glob_mappings_mixin.to_string(),
+    )?;
 
     let heuristic_inserts = language_definitions.iter().filter(|language_definition| !language_definition.heuristics.is_empty()).map(|LanguageDefinition { variant, heuristics, ..}| {
         quote! {
@@ -460,25 +472,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         use crate::GLOB_MATCH_OPTIONS;
 
         impl Language {
-            /// Gets the languages that match a glob pattern.
-            pub fn from_glob(path: impl AsRef<Path>) -> Vec<Self> {
-                let path = path.as_ref();
-
-                struct GlobMapping {
-                    patterns: Vec<glob::Pattern>,
-                    language: Language,
-                }
-                static GLOB_MAPPINGS: Lazy<Vec<GlobMapping>> = Lazy::new(|| {
-                    vec![#(#glob_matchers),*]
-                });
-
-                GLOB_MAPPINGS
-                    .iter()
-                    .filter(|gm| gm.patterns.iter().any(|p| p.matches_path_with(path.as_ref(), GLOB_MATCH_OPTIONS)))
-                    .map(|gm| gm.language)
-                    .collect()
-            }
-
             /// Uses simple checks to find one or more matching languages. Checks by shebang, filename,
             /// filepath glob, and extension.
             fn find_simple(path: impl AsRef<Path>, contents: &[u8]) -> Vec<Self> {

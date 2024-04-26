@@ -16,6 +16,7 @@ _include!("priority_mixin.rs");
 _include!("from_extension_mixin.rs");
 _include!("from_filename_mixin.rs");
 _include!("from_interpreter_mixin.rs");
+_include!("glob_mappings_mixin.rs");
 
 impl Language {
     /// Gets languages from a path's extension.
@@ -61,6 +62,38 @@ impl Language {
                 let interpreter = m.as_str();
                 Self::from_interpreter(interpreter)
             })
+    }
+
+    /// Gets the languages that match a glob pattern.
+    pub fn from_glob(path: impl AsRef<Path>) -> Vec<Self> {
+        let path = path.as_ref();
+
+        struct GlobMapping {
+            patterns: Vec<glob::Pattern>,
+            language: Language,
+        }
+        static GLOB_MAPPINGS: Lazy<Vec<GlobMapping>> = Lazy::new(|| {
+            Language::glob_mappings()
+                .into_iter()
+                .map(|(patterns, language)| {
+                    let patterns = patterns
+                        .into_iter()
+                        .map(|pattern| glob::Pattern::new(pattern).unwrap())
+                        .collect();
+                    GlobMapping { patterns, language }
+                })
+                .collect()
+        });
+
+        GLOB_MAPPINGS
+            .iter()
+            .filter(|gm| {
+                gm.patterns
+                    .iter()
+                    .any(|p| p.matches_path_with(path.as_ref(), GLOB_MATCH_OPTIONS))
+            })
+            .map(|gm| gm.language)
+            .collect()
     }
 
     /// Returns an object that implements `serde::Serialize` for the language to
