@@ -1,8 +1,176 @@
+use crate::GLOB_MATCH_OPTIONS;
+use once_cell::sync::Lazy;
+use regex::Regex;
+use std::collections::HashMap;
+use std::path::Path;
 use std::str::FromStr;
 
-include!(concat!(env!("OUT_DIR"), "/language_generated.rs"));
+macro_rules! _include {
+    ($path:literal) => {
+        include!(concat!(env!("OUT_DIR"), "/languages/", $path));
+    };
+}
+
+_include!("language.rs");
+_include!("category_mixin.rs");
+_include!("name_mixin.rs");
+_include!("parse_variant_mixin.rs");
+_include!("color_mixin.rs");
+_include!("priority_mixin.rs");
+_include!("from_extension_mixin.rs");
+_include!("from_filename_mixin.rs");
+_include!("from_interpreter_mixin.rs");
+_include!("glob_mappings_mixin.rs");
+_include!("heuristic_mappings_mixin.rs");
 
 impl Language {
+    /// Gets languages from a path's extension.
+    fn from_path_extension(path: impl AsRef<Path>) -> Vec<Self> {
+        let extension = path.as_ref().extension().and_then(|ext| ext.to_str());
+        extension.map_or(vec![], Self::from_extension)
+    }
+
+    /// Gets languages from a path's filename.
+    fn from_path_filename(path: impl AsRef<Path>) -> Vec<Self> {
+        let filename = path
+            .as_ref()
+            .file_name()
+            .and_then(|filename| filename.to_str());
+        filename.map_or(vec![], Self::from_filename)
+    }
+
+    /// Gets languages by a shebang.
+    fn from_shebang(contents: &[u8]) -> Vec<Self> {
+        const MAX_SHEBANG_LENGTH: usize = 50;
+
+        let mut lines = contents.split(|&c| c == b'\n');
+        let first_line = lines.next().unwrap_or_default();
+        if first_line.len() < 2 || first_line[0] != b'#' || first_line[1] != b'!' {
+            return vec![];
+        }
+        let first_line = if first_line.len() > MAX_SHEBANG_LENGTH {
+            &first_line[..MAX_SHEBANG_LENGTH]
+        } else {
+            first_line
+        };
+        let first_line = String::from_utf8_lossy(first_line);
+        // NOTE Handle trailing spaces, `\r`, etc.
+        let first_line = first_line.trim_end();
+
+        static RE: Lazy<Regex> = Lazy::new(|| {
+            Regex::new(r"^#!(?:/usr(?:/local)?)?/bin/(?:env\s+)?([\w\d]+)\r?$").unwrap()
+        });
+
+        RE.captures(first_line)
+            .and_then(|c| c.get(1))
+            .map_or(vec![], |m| {
+                let interpreter = m.as_str();
+                Self::from_interpreter(interpreter)
+            })
+    }
+
+    /// Gets the languages that match a glob pattern.
+    pub fn from_glob(path: impl AsRef<Path>) -> Vec<Self> {
+        let path = path.as_ref();
+
+        struct GlobMapping {
+            patterns: Vec<glob::Pattern>,
+            language: Language,
+        }
+        static GLOB_MAPPINGS: Lazy<Vec<GlobMapping>> = Lazy::new(|| {
+            Language::glob_mappings()
+                .into_iter()
+                .map(|(patterns, language)| {
+                    let patterns = patterns
+                        .into_iter()
+                        .map(|pattern| glob::Pattern::new(pattern).unwrap())
+                        .collect();
+                    GlobMapping { patterns, language }
+                })
+                .collect()
+        });
+
+        GLOB_MAPPINGS
+            .iter()
+            .filter(|gm| {
+                gm.patterns
+                    .iter()
+                    .any(|p| p.matches_path_with(path.as_ref(), GLOB_MATCH_OPTIONS))
+            })
+            .map(|gm| gm.language)
+            .collect()
+    }
+
+    /// Filters an iterable of languages by heuristics.
+    fn filter_by_heuristics(languages: &[Self], contents: &str) -> Vec<Self> {
+        static HEURISTICS: Lazy<HashMap<Language, Vec<Regex>>> = Lazy::new(|| {
+            Language::heuristic_mappings()
+                .into_iter()
+                .map(|(language, patterns)| {
+                    let patterns = patterns
+                        .into_iter()
+                        .map(|pattern| Regex::new(pattern).unwrap())
+                        .collect();
+                    (language, patterns)
+                })
+                .collect()
+        });
+
+        languages
+            .iter()
+            .filter(|language| {
+                HEURISTICS.get(language).map_or(false, |heuristics| {
+                    heuristics.iter().any(|re| re.is_match(contents))
+                })
+            })
+            .cloned()
+            .collect()
+    }
+
+    /// Uses simple checks to find one or more matching languages. Checks by shebang, filename,
+    /// filepath glob, and extension.
+    fn find_simple(path: impl AsRef<Path>, contents: &[u8]) -> Vec<Self> {
+        let languages = Self::from_shebang(contents);
+        if !languages.is_empty() {
+            return languages;
+        }
+        let languages = Self::from_path_filename(&path);
+        if !languages.is_empty() {
+            return languages;
+        }
+        let languages = Self::from_glob(&path);
+        if !languages.is_empty() {
+            return languages;
+        }
+        Self::from_path_extension(&path)
+    }
+
+    /// Picks the best guess from a file's name and contents.
+    ///
+    /// When checking heuristics, only the first `read_limit` bytes will be read.
+    pub fn pick(path: impl AsRef<Path>, contents: &[u8], read_limit: usize) -> Option<Self> {
+        let languages = Self::find_simple(&path, contents);
+        if languages.len() == 1 {
+            return Some(languages[0]);
+        }
+
+        let contents = if contents.len() > read_limit {
+            &contents[..read_limit]
+        } else {
+            contents
+        };
+        let heuristic_contents = std::str::from_utf8(contents).unwrap_or_default();
+        let by_heuristics = Self::filter_by_heuristics(&languages, heuristic_contents);
+
+        let found_languages = match by_heuristics.len() {
+            0 => languages,
+            1 => return Some(by_heuristics[0]),
+            _ => by_heuristics,
+        };
+
+        found_languages.into_iter().max_by_key(Self::priority)
+    }
+
     /// Returns an object that implements `serde::Serialize` for the language to
     /// serialize the language's attributes. This effectively turns the language
     /// from an `enum` into a `struct`.
