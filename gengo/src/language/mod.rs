@@ -180,6 +180,7 @@ impl Language {
             name: self.name(),
             category: self.category(),
             color: self.color(),
+            nerd_font_glyph: self.nerd_font_glyph(),
         }
     }
 }
@@ -245,6 +246,7 @@ struct Serialize {
     name: &'static str,
     category: Category,
     color: &'static str,
+    nerd_font_glyph: Option<&'static str>,
 }
 
 #[cfg(test)]

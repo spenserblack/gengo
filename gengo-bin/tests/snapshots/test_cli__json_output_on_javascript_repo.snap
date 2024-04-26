@@ -10,7 +10,8 @@ expression: json
     "language": {
       "category": "programming",
       "color": "#F0DC4E",
-      "name": "JavaScript"
+      "name": "JavaScript",
+      "nerd_font_glyph": ""
     },
     "size": 28,
     "vendored": false
@@ -22,7 +23,8 @@ expression: json
     "language": {
       "category": "prose",
       "color": "#000000",
-      "name": "Plain Text"
+      "name": "Plain Text",
+      "nerd_font_glyph": null
     },
     "size": 62,
     "vendored": false
@@ -34,7 +36,8 @@ expression: json
     "language": {
       "category": "markup",
       "color": "#E96228",
-      "name": "HTML"
+      "name": "HTML",
+      "nerd_font_glyph": ""
     },
     "size": 26,
     "vendored": false
@@ -46,7 +49,8 @@ expression: json
     "language": {
       "category": "programming",
       "color": "#F0DC4E",
-      "name": "JavaScript"
+      "name": "JavaScript",
+      "nerd_font_glyph": ""
     },
     "size": 29,
     "vendored": true
@@ -58,7 +62,8 @@ expression: json
     "language": {
       "category": "programming",
       "color": "#2F74C0",
-      "name": "TypeScript"
+      "name": "TypeScript",
+      "nerd_font_glyph": ""
     },
     "size": 62,
     "vendored": false
