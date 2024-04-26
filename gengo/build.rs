@@ -20,7 +20,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     let languages: IndexMap<String, serde_json::Value> = serde_yaml::from_str(LANGUAGES)?;
     let languages_target_dir = Path::new(&env::var("OUT_DIR")?).join("languages");
     fs::create_dir_all(&languages_target_dir)?;
-    let languages_target_path = Path::new(&env::var("OUT_DIR")?).join("language_generated.rs");
 
     struct LanguageDefinition {
         variant: Ident,
@@ -485,64 +484,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         heuristic_mappings_mixin.to_string(),
     )?;
 
-    let language_file_contents = quote! {
-        use once_cell::sync::Lazy;
-        use regex::Regex;
-        use std::collections::HashMap;
-        use std::path::Path;
-        use crate::GLOB_MATCH_OPTIONS;
-
-        impl Language {
-            /// Uses simple checks to find one or more matching languages. Checks by shebang, filename,
-            /// filepath glob, and extension.
-            fn find_simple(path: impl AsRef<Path>, contents: &[u8]) -> Vec<Self> {
-                let languages = Self::from_shebang(contents);
-                if !languages.is_empty() {
-                    return languages;
-                }
-                let languages = Self::from_path_filename(&path);
-                if !languages.is_empty() {
-                    return languages;
-                }
-                let languages = Self::from_glob(&path);
-                if !languages.is_empty() {
-                    return languages;
-                }
-                Self::from_path_extension(&path)
-            }
-
-            /// Picks the best guess from a file's name and contents.
-            ///
-            /// When checking heuristics, only the first `read_limit` bytes will be read.
-            pub fn pick(path: impl AsRef<Path>, contents: &[u8], read_limit: usize) -> Option<Self> {
-                let languages = Self::find_simple(&path, contents);
-                if languages.len() == 1 {
-                    return Some(languages[0]);
-                }
-
-                let contents = if contents.len() > read_limit {
-                    &contents[..read_limit]
-                } else {
-                    contents
-                };
-                let heuristic_contents = std::str::from_utf8(contents).unwrap_or_default();
-                let by_heuristics = Self::filter_by_heuristics(&languages, heuristic_contents);
-
-                let found_languages = match by_heuristics.len() {
-                    0 => languages,
-                    1 => return Some(by_heuristics[0]),
-                    _ => by_heuristics,
-                };
-
-                found_languages.into_iter().max_by_key(Self::priority)
-            }
-        }
-    };
-
-    let language_file_contents: syn::File = syn::parse2(language_file_contents).unwrap();
-    let language_file_contents = prettyplease::unparse(&language_file_contents);
-
-    fs::write(languages_target_path, dbg!(language_file_contents))?;
     Ok(())
 }
 

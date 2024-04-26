@@ -1,3 +1,8 @@
+use crate::GLOB_MATCH_OPTIONS;
+use once_cell::sync::Lazy;
+use regex::Regex;
+use std::collections::HashMap;
+use std::path::Path;
 use std::str::FromStr;
 
 macro_rules! _include {
@@ -6,7 +11,6 @@ macro_rules! _include {
     };
 }
 
-include!(concat!(env!("OUT_DIR"), "/language_generated.rs"));
 _include!("language.rs");
 _include!("category_mixin.rs");
 _include!("name_mixin.rs");
@@ -121,6 +125,50 @@ impl Language {
             })
             .cloned()
             .collect()
+    }
+
+    /// Uses simple checks to find one or more matching languages. Checks by shebang, filename,
+    /// filepath glob, and extension.
+    fn find_simple(path: impl AsRef<Path>, contents: &[u8]) -> Vec<Self> {
+        let languages = Self::from_shebang(contents);
+        if !languages.is_empty() {
+            return languages;
+        }
+        let languages = Self::from_path_filename(&path);
+        if !languages.is_empty() {
+            return languages;
+        }
+        let languages = Self::from_glob(&path);
+        if !languages.is_empty() {
+            return languages;
+        }
+        Self::from_path_extension(&path)
+    }
+
+    /// Picks the best guess from a file's name and contents.
+    ///
+    /// When checking heuristics, only the first `read_limit` bytes will be read.
+    pub fn pick(path: impl AsRef<Path>, contents: &[u8], read_limit: usize) -> Option<Self> {
+        let languages = Self::find_simple(&path, contents);
+        if languages.len() == 1 {
+            return Some(languages[0]);
+        }
+
+        let contents = if contents.len() > read_limit {
+            &contents[..read_limit]
+        } else {
+            contents
+        };
+        let heuristic_contents = std::str::from_utf8(contents).unwrap_or_default();
+        let by_heuristics = Self::filter_by_heuristics(&languages, heuristic_contents);
+
+        let found_languages = match by_heuristics.len() {
+            0 => languages,
+            1 => return Some(by_heuristics[0]),
+            _ => by_heuristics,
+        };
+
+        found_languages.into_iter().max_by_key(Self::priority)
     }
 
     /// Returns an object that implements `serde::Serialize` for the language to
