@@ -16,6 +16,7 @@ _include!("category_mixin.rs");
 _include!("name_mixin.rs");
 _include!("parse_variant_mixin.rs");
 _include!("color_mixin.rs");
+_include!("nerd_font_glyph_mixin.rs");
 _include!("priority_mixin.rs");
 _include!("from_extension_mixin.rs");
 _include!("from_filename_mixin.rs");
@@ -179,6 +180,7 @@ impl Language {
             name: self.name(),
             category: self.category(),
             color: self.color(),
+            nerd_font_glyph: self.nerd_font_glyph(),
         }
     }
 }
@@ -244,6 +246,7 @@ struct Serialize {
     name: &'static str,
     category: Category,
     color: &'static str,
+    nerd_font_glyph: Option<&'static str>,
 }
 
 #[cfg(test)]

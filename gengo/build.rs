@@ -27,6 +27,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         category: Ident,
         name: Literal,
         color: Literal,
+        nerd_font_glyph: Option<Literal>,
         priority: Literal,
         extensions: Vec<String>,
         filenames: Vec<String>,
@@ -63,6 +64,11 @@ fn main() -> Result<(), Box<dyn Error>> {
                 .as_str()
                 .expect("color to be a string");
             let color = Literal::string(color);
+
+            let nerd_font_glyph = language_attrs.get("nerd-font-glyph").map(|glyph| {
+                let glyph = glyph.as_str().expect("nerd font glyph to be a string");
+                Literal::string(glyph)
+            });
 
             let priority = language_attrs
                 .get("priority")
@@ -176,6 +182,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 category,
                 name,
                 color,
+                nerd_font_glyph,
                 priority,
                 extensions,
                 filenames,
@@ -293,6 +300,35 @@ fn main() -> Result<(), Box<dyn Error>> {
     fs::write(
         languages_target_dir.join("color_mixin.rs"),
         color_mixin.to_string(),
+    )?;
+
+    let nerd_font_glyph_mappings = language_definitions.iter().filter_map(
+        |LanguageDefinition {
+             variant,
+             nerd_font_glyph,
+             ..
+         }| {
+            nerd_font_glyph.as_ref().map(|glyph| {
+                quote! {
+                    Self::#variant => Some(#glyph)
+                }
+            })
+        },
+    );
+    let nerd_font_glyph_mixin = quote! {
+        impl Language {
+            /// Gets the Nerd Font glyph associated with the language.
+            pub const fn nerd_font_glyph(&self) -> Option<&'static str> {
+                match self {
+                    #(#nerd_font_glyph_mappings ,)*
+                    _ => None,
+                }
+            }
+        }
+    };
+    fs::write(
+        languages_target_dir.join("nerd_font_glyph_mixin.rs"),
+        nerd_font_glyph_mixin.to_string(),
     )?;
 
     let priority_mappings = language_definitions.iter().map(
