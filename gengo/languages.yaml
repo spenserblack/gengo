@@ -12,7 +12,7 @@
 #   # The color associated with the language.
 #   color:
 #
-#   # The icon associated with the language.
+#   # The icon associated with the language (optional).
 #   icon:
 #
 #   # Regexes unique to the contents of the file to resolve multiple matches. These will
@@ -64,21 +64,18 @@
 ABAP:
   category: programming
   color: "#3C3C3C"
-  icon: "" #
   matchers:
     extensions:
       - abap
 ABNF:
   category: data
   color: "#ABFABF"
-  icon: "" #
   matchers:
     extensions:
       - abnf
 ATS:
   category: programming
   color: "#0005FB"
-  icon: "" #
   matchers:
     extensions:
       - atxt
@@ -112,14 +109,12 @@ Assembly:
 AutoHotkey:
   category: programming
   color: "#334455"
-  icon: "" #
   matchers:
     extensions:
       - ahk
 Batch File:
   category: programming
   color: "#818B91"
-  icon: "" #
   matchers:
     extensions:
       - bat
@@ -159,7 +154,6 @@ C:
 CMake:
   category: programming
   color: "#CCCCCC"
-  icon: "" #
   matchers:
     extensions:
       - cmake
@@ -175,14 +169,12 @@ CSS:
 CSV:
   category: data
   color: "#1D6F42"
-  icon: "" #
   matchers:
     extensions:
       - csv
 Ceylon:
   category: programming
   color: "#F7941E"
-  icon: "" #
   matchers:
     extensions:
       - ceylon
@@ -214,7 +206,6 @@ ColdFusion:
 Coq:
   category: programming
   color: "#D0B68C"
-  icon: "" #
   matchers:
     extensions:
       - v
@@ -230,7 +221,6 @@ Crystal:
 D:
   category: programming
   color: "#B03931"
-  icon: "" #
   matchers:
     extensions:
       - d
@@ -329,7 +319,6 @@ GDScript:
 GitHub Workflow:
   category: programming
   color: "#2088FF"
-  icon: "" #
   matchers:
     patterns:
       - ".github/workflows/*.yaml"
@@ -382,7 +371,6 @@ HolyC:
 Ignore List:
   category: data
   color: "#330000"
-  icon: "" #
   matchers:
     filenames:
       - ".dockerignore"
@@ -436,7 +424,6 @@ JavaScript:
 Jinja-like:
   category: markup
   color: "#A00000"
-  icon: "" #
   heuristics:
     - "^\\{%\\sextends\\s"
     - "\\{%\\s.+?\\s%\\}"
@@ -448,7 +435,6 @@ Jinja-like:
 Jsonnet:
   category: programming
   color: "#0064BD"
-  icon: "" #
   matchers:
     extensions:
       - jsonnet
@@ -463,7 +449,6 @@ Julia:
 Jupyter Notebook:
   category: markup
   color: "#F37726"
-  icon: "" #
   matchers:
     extensions:
       - ipynb
@@ -504,7 +489,6 @@ Markdown:
 Mermaid:
   category: markup
   color: "#FF3670"
-  icon: "" #
   matchers:
     extensions:
       - mermaid
@@ -534,7 +518,6 @@ OCaml:
 Odin:
   category: programming
   color: "#3882D2"
-  icon: "" #
   matchers:
     extensions:
       - odin
@@ -558,7 +541,6 @@ Perl:
 Plain Text:
   category: prose
   color: "#000000"
-  icon: "" #
   matchers:
     extensions:
       - text
@@ -578,7 +560,6 @@ PowerShell:
 Pug:
   category: markup
   color: "#A86454"
-  icon: "" #
   matchers:
     extensions:
       - pug
@@ -620,14 +601,12 @@ R:
 Regex:
   category: data
   color: "#44E03F"
-  icon: "" #
   matchers:
     extensions:
       - regex
 "Ren'Py":
   category: programming
   color: "#FF7F7F"
-  icon: "" #
   matchers:
     extensions:
       - rpy
@@ -700,7 +679,6 @@ Shell:
 Solidity:
   category: programming
   color: "#2B247C"
-  icon: "" #
   matchers:
     extensions:
       - sol
@@ -714,7 +692,6 @@ Svelte:
 Swift:
   category: programming
   color: "#DC5114"
-  icon: "" #
   matchers:
     extensions:
       - swift
@@ -731,7 +708,6 @@ TOML:
 TSV:
   category: data
   color: "#1D6F42"
-  icon: "" #
   matchers:
     extensions:
       - tsv
