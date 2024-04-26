@@ -409,12 +409,26 @@ fn main() -> Result<(), Box<dyn Error>> {
             })
         },
     );
-
     let interpreter_to_langs_mappings = interpreters_to_langs.iter().map(|(interpreter, langs)| {
         quote! {
             #interpreter => vec![#(Self::#langs),*]
         }
     });
+    let from_interpreter_mixin = quote! {
+        impl Language {
+            /// Gets languages by interpreter (typically found as part of a shebang).
+            pub fn from_interpreter(interpreter: &str) -> Vec<Self> {
+                match interpreter {
+                    #(#interpreter_to_langs_mappings ,)*
+                    _ => vec![],
+                }
+            }
+        }
+    };
+    fs::write(
+        languages_target_dir.join("from_interpreter_mixin.rs"),
+        from_interpreter_mixin.to_string(),
+    )?;
 
     let glob_matchers = language_definitions
         .iter()
@@ -446,45 +460,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         use crate::GLOB_MATCH_OPTIONS;
 
         impl Language {
-
-            /// Gets languages by interpreter (typically found as part of a shebang).
-            pub fn from_interpreter(interpreter: &str) -> Vec<Self> {
-                match interpreter {
-                    #(#interpreter_to_langs_mappings ,)*
-                    _ => vec![],
-                }
-            }
-
-            /// Gets languages by a shebang.
-            fn from_shebang(contents: &[u8]) -> Vec<Self> {
-                const MAX_SHEBANG_LENGTH: usize = 50;
-
-                let mut lines = contents.split(|&c| c == b'\n');
-                let first_line = lines.next().unwrap_or_default();
-                if first_line.len() < 2 || first_line[0] != b'#' || first_line[1] != b'!' {
-                    return vec![];
-                }
-                let first_line = if first_line.len() > MAX_SHEBANG_LENGTH {
-                    &first_line[..MAX_SHEBANG_LENGTH]
-                } else {
-                    first_line
-                };
-                let first_line = String::from_utf8_lossy(first_line);
-                // NOTE Handle trailing spaces, `\r`, etc.
-                let first_line = first_line.trim_end();
-
-                static RE: Lazy<Regex> = Lazy::new(|| {
-                    Regex::new(r"^#!(?:/usr(?:/local)?)?/bin/(?:env\s+)?([\w\d]+)\r?$").unwrap()
-                });
-
-                RE.captures(first_line)
-                    .and_then(|c| c.get(1))
-                    .map_or(vec![], |m| {
-                        let interpreter = m.as_str();
-                        Self::from_interpreter(interpreter)
-                    })
-            }
-
             /// Gets the languages that match a glob pattern.
             pub fn from_glob(path: impl AsRef<Path>) -> Vec<Self> {
                 let path = path.as_ref();

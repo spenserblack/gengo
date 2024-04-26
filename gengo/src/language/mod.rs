@@ -15,6 +15,7 @@ _include!("color_mixin.rs");
 _include!("priority_mixin.rs");
 _include!("from_extension_mixin.rs");
 _include!("from_filename_mixin.rs");
+_include!("from_interpreter_mixin.rs");
 
 impl Language {
     /// Gets languages from a path's extension.
@@ -30,6 +31,36 @@ impl Language {
             .file_name()
             .and_then(|filename| filename.to_str());
         filename.map_or(vec![], Self::from_filename)
+    }
+
+    /// Gets languages by a shebang.
+    fn from_shebang(contents: &[u8]) -> Vec<Self> {
+        const MAX_SHEBANG_LENGTH: usize = 50;
+
+        let mut lines = contents.split(|&c| c == b'\n');
+        let first_line = lines.next().unwrap_or_default();
+        if first_line.len() < 2 || first_line[0] != b'#' || first_line[1] != b'!' {
+            return vec![];
+        }
+        let first_line = if first_line.len() > MAX_SHEBANG_LENGTH {
+            &first_line[..MAX_SHEBANG_LENGTH]
+        } else {
+            first_line
+        };
+        let first_line = String::from_utf8_lossy(first_line);
+        // NOTE Handle trailing spaces, `\r`, etc.
+        let first_line = first_line.trim_end();
+
+        static RE: Lazy<Regex> = Lazy::new(|| {
+            Regex::new(r"^#!(?:/usr(?:/local)?)?/bin/(?:env\s+)?([\w\d]+)\r?$").unwrap()
+        });
+
+        RE.captures(first_line)
+            .and_then(|c| c.get(1))
+            .map_or(vec![], |m| {
+                let interpreter = m.as_str();
+                Self::from_interpreter(interpreter)
+            })
     }
 
     /// Returns an object that implements `serde::Serialize` for the language to
