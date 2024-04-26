@@ -458,11 +458,32 @@ fn main() -> Result<(), Box<dyn Error>> {
         glob_mappings_mixin.to_string(),
     )?;
 
-    let heuristic_inserts = language_definitions.iter().filter(|language_definition| !language_definition.heuristics.is_empty()).map(|LanguageDefinition { variant, heuristics, ..}| {
-        quote! {
-            map.insert(Language::#variant, vec![#(regex::Regex::new(#heuristics).unwrap()),*]);
+    let heuristic_tuples = language_definitions
+        .iter()
+        .filter(|language_definition| !language_definition.heuristics.is_empty())
+        .map(
+            |LanguageDefinition {
+                 variant,
+                 heuristics,
+                 ..
+             }| {
+                quote! {
+                    (Self::#variant, vec![#(#heuristics),*])
+                }
+            },
+        );
+    let heuristic_mappings_mixin = quote! {
+        impl Language {
+            /// Gets the heuristics used to determine a language.
+            fn heuristic_mappings() -> Vec<(Self, Vec<&'static str>)> {
+                vec![#(#heuristic_tuples ,)*]
+            }
         }
-    });
+    };
+    fs::write(
+        languages_target_dir.join("heuristic_mappings_mixin.rs"),
+        heuristic_mappings_mixin.to_string(),
+    )?;
 
     let language_file_contents = quote! {
         use once_cell::sync::Lazy;
@@ -488,25 +509,6 @@ fn main() -> Result<(), Box<dyn Error>> {
                     return languages;
                 }
                 Self::from_path_extension(&path)
-            }
-
-            /// Filters an iterable of languages by heuristics.
-            fn filter_by_heuristics(languages: &[Self], contents: &str) -> Vec<Self> {
-                static HEURISTICS: Lazy<HashMap<Language, Vec<Regex>>> = Lazy::new(|| {
-                    let mut map = HashMap::new();
-                    #(#heuristic_inserts)*
-                    map
-                });
-
-                languages
-                    .iter()
-                    .filter(|language| {
-                        HEURISTICS
-                            .get(language)
-                            .map_or(false, |heuristics| heuristics.iter().any(|re| re.is_match(contents)))
-                    })
-                    .cloned()
-                    .collect()
             }
 
             /// Picks the best guess from a file's name and contents.

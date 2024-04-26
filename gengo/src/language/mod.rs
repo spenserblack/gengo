@@ -17,6 +17,7 @@ _include!("from_extension_mixin.rs");
 _include!("from_filename_mixin.rs");
 _include!("from_interpreter_mixin.rs");
 _include!("glob_mappings_mixin.rs");
+_include!("heuristic_mappings_mixin.rs");
 
 impl Language {
     /// Gets languages from a path's extension.
@@ -93,6 +94,32 @@ impl Language {
                     .any(|p| p.matches_path_with(path.as_ref(), GLOB_MATCH_OPTIONS))
             })
             .map(|gm| gm.language)
+            .collect()
+    }
+
+    /// Filters an iterable of languages by heuristics.
+    fn filter_by_heuristics(languages: &[Self], contents: &str) -> Vec<Self> {
+        static HEURISTICS: Lazy<HashMap<Language, Vec<Regex>>> = Lazy::new(|| {
+            Language::heuristic_mappings()
+                .into_iter()
+                .map(|(language, patterns)| {
+                    let patterns = patterns
+                        .into_iter()
+                        .map(|pattern| Regex::new(pattern).unwrap())
+                        .collect();
+                    (language, patterns)
+                })
+                .collect()
+        });
+
+        languages
+            .iter()
+            .filter(|language| {
+                HEURISTICS.get(language).map_or(false, |heuristics| {
+                    heuristics.iter().any(|re| re.is_match(contents))
+                })
+            })
+            .cloned()
             .collect()
     }
 
