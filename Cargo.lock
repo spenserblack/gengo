@@ -621,7 +621,6 @@ dependencies = [
  "insta",
  "once_cell",
  "owo-colors",
- "prettyplease",
  "proc-macro2",
  "quote",
  "rayon",
@@ -630,7 +629,6 @@ dependencies = [
  "serde",
  "serde_json",
  "serde_yaml",
- "syn",
 ]
 
 [[package]]
@@ -1631,16 +1629,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "38f6d39893cca0701371e3c27294f09797214b86f1fb951b89ade8ec04e2abab"
 dependencies = [
  "plotters-backend",
-]
-
-[[package]]
-name = "prettyplease"
-version = "0.2.19"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5ac2cf0f2e4f42b49f5ffd07dae8d746508ef7526c13940e5f524012ae6c6550"
-dependencies = [
- "proc-macro2",
- "syn",
 ]
 
 [[package]]

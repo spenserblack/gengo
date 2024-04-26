@@ -18,7 +18,8 @@ const DEFAULT_PRIORITY: u8 = 50;
 fn main() -> Result<(), Box<dyn Error>> {
     // TODO This looks messy, and can use cleanup.
     let languages: IndexMap<String, serde_json::Value> = serde_yaml::from_str(LANGUAGES)?;
-    let languages_target_path = Path::new(&env::var("OUT_DIR")?).join("language_generated.rs");
+    let languages_target_dir = Path::new(&env::var("OUT_DIR")?).join("languages");
+    fs::create_dir_all(&languages_target_dir)?;
 
     struct LanguageDefinition {
         variant: Ident,
@@ -186,6 +187,18 @@ fn main() -> Result<(), Box<dyn Error>> {
         .collect();
 
     let variants = language_definitions.iter().map(|def| &def.variant);
+    let language = quote! {
+        /// The type of language. Returned by language detection.
+        #[non_exhaustive]
+        #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
+        pub enum Language {
+            #(#variants,)*
+        }
+    };
+    fs::write(
+        languages_target_dir.join("language.rs"),
+        language.to_string(),
+    )?;
 
     let category_mappings = language_definitions.iter().map(
         |LanguageDefinition {
@@ -196,6 +209,20 @@ fn main() -> Result<(), Box<dyn Error>> {
             }
         },
     );
+    let category_mixin = quote! {
+        impl Language {
+            /// Gets the category of the language.
+            pub const fn category(&self) -> Category {
+                match self {
+                    #(#category_mappings ,)*
+                }
+            }
+        }
+    };
+    fs::write(
+        languages_target_dir.join("category_mixin.rs"),
+        category_mixin.to_string(),
+    )?;
 
     let name_mappings =
         language_definitions
@@ -205,6 +232,20 @@ fn main() -> Result<(), Box<dyn Error>> {
                     Self::#variant => #name
                 }
             });
+    let name_mixin = quote! {
+        impl Language {
+            /// Gets the name of the language.
+            pub const fn name(&self) -> &'static str {
+                match self {
+                    #(#name_mappings ,)*
+                }
+            }
+        }
+    };
+    fs::write(
+        languages_target_dir.join("name_mixin.rs"),
+        name_mixin.to_string(),
+    )?;
 
     let reverse_variant_mappings =
         language_definitions
@@ -215,6 +256,21 @@ fn main() -> Result<(), Box<dyn Error>> {
                     #variant_name => Some(Self::#variant)
                 }
             });
+    let parse_variant_mixin = quote! {
+        impl Language {
+            /// Converts a variant's name back to the language.
+            fn parse_variant(name: &str) -> Option<Self> {
+                match name {
+                    #(#reverse_variant_mappings ,)*
+                    _ => None,
+                }
+            }
+        }
+    };
+    fs::write(
+        languages_target_dir.join("parse_variant_mixin.rs"),
+        parse_variant_mixin.to_string(),
+    )?;
 
     let color_mappings =
         language_definitions
@@ -224,6 +280,20 @@ fn main() -> Result<(), Box<dyn Error>> {
                     Self::#variant => #color
                 }
             });
+    let color_mixin = quote! {
+        impl Language {
+            /// Gets the color associated with the language.
+            pub const fn color(&self) -> &'static str {
+                match self {
+                    #(#color_mappings ,)*
+                }
+            }
+        }
+    };
+    fs::write(
+        languages_target_dir.join("color_mixin.rs"),
+        color_mixin.to_string(),
+    )?;
 
     let priority_mappings = language_definitions.iter().map(
         |LanguageDefinition {
@@ -234,6 +304,21 @@ fn main() -> Result<(), Box<dyn Error>> {
             }
         },
     );
+    let priority_mixin = quote! {
+        impl Language {
+            /// Gets the priority of the language. This is useful for sorting languages
+            /// when multiple languages are detected.
+            pub const fn priority(&self) -> u8 {
+                match self {
+                    #(#priority_mappings ,)*
+                }
+            }
+        }
+    };
+    fs::write(
+        languages_target_dir.join("priority_mixin.rs"),
+        priority_mixin.to_string(),
+    )?;
 
     let extension_to_langs: HashMap<_, Vec<_>> = language_definitions.iter().fold(
         HashMap::new(),
@@ -256,6 +341,21 @@ fn main() -> Result<(), Box<dyn Error>> {
             #extension => vec![#(Self::#langs),*]
         }
     });
+    let from_extension_mixin = quote! {
+        impl Language {
+            /// Gets languages by extension.
+            pub fn from_extension(extension: &str) -> Vec<Self> {
+                match extension {
+                    #(#extension_to_langs_mappings ,)*
+                    _ => vec![],
+                }
+            }
+        }
+    };
+    fs::write(
+        languages_target_dir.join("from_extension_mixin.rs"),
+        from_extension_mixin.to_string(),
+    )?;
 
     let filenames_to_langs: HashMap<_, Vec<_>> = language_definitions.iter().fold(
         HashMap::new(),
@@ -271,12 +371,26 @@ fn main() -> Result<(), Box<dyn Error>> {
             })
         },
     );
-
     let filenames_to_langs_mappings = filenames_to_langs.iter().map(|(filename, langs)| {
         quote! {
             #filename => vec![#(Self::#langs),*]
         }
     });
+    let from_filename_mixin = quote! {
+        impl Language {
+            /// Gets languages by filename.
+            pub fn from_filename(filename: &str) -> Vec<Self> {
+                match filename {
+                    #(#filenames_to_langs_mappings ,)*
+                    _ => vec![],
+                }
+            }
+        }
+    };
+    fs::write(
+        languages_target_dir.join("from_filename_mixin.rs"),
+        from_filename_mixin.to_string(),
+    )?;
 
     let interpreters_to_langs: HashMap<_, Vec<_>> = language_definitions.iter().fold(
         HashMap::new(),
@@ -294,12 +408,26 @@ fn main() -> Result<(), Box<dyn Error>> {
             })
         },
     );
-
     let interpreter_to_langs_mappings = interpreters_to_langs.iter().map(|(interpreter, langs)| {
         quote! {
             #interpreter => vec![#(Self::#langs),*]
         }
     });
+    let from_interpreter_mixin = quote! {
+        impl Language {
+            /// Gets languages by interpreter (typically found as part of a shebang).
+            pub fn from_interpreter(interpreter: &str) -> Vec<Self> {
+                match interpreter {
+                    #(#interpreter_to_langs_mappings ,)*
+                    _ => vec![],
+                }
+            }
+        }
+    };
+    fs::write(
+        languages_target_dir.join("from_interpreter_mixin.rs"),
+        from_interpreter_mixin.to_string(),
+    )?;
 
     let glob_matchers = language_definitions
         .iter()
@@ -309,226 +437,53 @@ fn main() -> Result<(), Box<dyn Error>> {
                  variant, patterns, ..
              }| {
                 quote! {
-                   GlobMapping {
-                       patterns: vec![#(glob::Pattern::new( #patterns ).unwrap()),*],
-                       language: Language::#variant,
-                   }
+                   (
+                       vec![#(#patterns),*],
+                       Language::#variant,
+                   )
                 }
             },
         );
-
-    let heuristic_inserts = language_definitions.iter().filter(|language_definition| !language_definition.heuristics.is_empty()).map(|LanguageDefinition { variant, heuristics, ..}| {
-        quote! {
-            map.insert(Language::#variant, vec![#(regex::Regex::new(#heuristics).unwrap()),*]);
-        }
-    });
-
-    let language_file_contents = quote! {
-        use once_cell::sync::Lazy;
-        use regex::Regex;
-        use std::collections::HashMap;
-        use std::path::Path;
-        use crate::GLOB_MATCH_OPTIONS;
-
-        /// The type of language. Returned by language detection.
-        #[non_exhaustive]
-        #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
-        pub enum Language {
-            #(#variants,)*
-        }
-
+    let glob_mappings_mixin = quote! {
         impl Language {
-            /// Gets the category of the language.
-            pub const fn category(&self) -> Category {
-                match self {
-                    #(#category_mappings ,)*
-                }
-            }
-
-            /// Gets the name of the language.
-            pub const fn name(&self) -> &'static str {
-                match self {
-                    #(#name_mappings ,)*
-                }
-            }
-
-            /// Converts a variant's name back to the language.
-            fn parse_variant(name: &str) -> Option<Self> {
-                match name {
-                    #(#reverse_variant_mappings ,)*
-                    _ => None,
-                }
-            }
-
-            /// Gets the color associated with the language.
-            pub const fn color(&self) -> &'static str {
-                match self {
-                    #(#color_mappings ,)*
-                }
-            }
-
-            /// Gets the priority of the language. This is useful for sorting languages
-            /// when multiple languages are detected.
-            const fn priority(&self) -> u8 {
-                match self {
-                    #(#priority_mappings ,)*
-                }
-            }
-
-            /// Gets languages by extension.
-            pub fn from_extension(extension: &str) -> Vec<Self> {
-                match extension {
-                    #(#extension_to_langs_mappings ,)*
-                    _ => vec![],
-                }
-            }
-
-            /// Gets languages from a path's extension.
-            fn from_path_extension(path: impl AsRef<Path>) -> Vec<Self> {
-                let extension = path.as_ref().extension().and_then(|ext| ext.to_str());
-                extension.map_or(vec![], Self::from_extension)
-            }
-
-            /// Gets languages by filename.
-            pub fn from_filename(filename: &str) -> Vec<Self> {
-                match filename {
-                    #(#filenames_to_langs_mappings ,)*
-                    _ => vec![],
-                }
-            }
-
-            /// Gets languages from a path's filename.
-            fn from_path_filename(path: impl AsRef<Path>) -> Vec<Self> {
-                let filename = path.as_ref().file_name().and_then(|filename| filename.to_str());
-                filename.map_or(vec![], Self::from_filename)
-            }
-
-            /// Gets languages by interpreter (typically found as part of a shebang).
-            pub fn from_interpreter(interpreter: &str) -> Vec<Self> {
-                match interpreter {
-                    #(#interpreter_to_langs_mappings ,)*
-                    _ => vec![],
-                }
-            }
-
-            /// Gets languages by a shebang.
-            fn from_shebang(contents: &[u8]) -> Vec<Self> {
-                const MAX_SHEBANG_LENGTH: usize = 50;
-
-                let mut lines = contents.split(|&c| c == b'\n');
-                let first_line = lines.next().unwrap_or_default();
-                if first_line.len() < 2 || first_line[0] != b'#' || first_line[1] != b'!' {
-                    return vec![];
-                }
-                let first_line = if first_line.len() > MAX_SHEBANG_LENGTH {
-                    &first_line[..MAX_SHEBANG_LENGTH]
-                } else {
-                    first_line
-                };
-                let first_line = String::from_utf8_lossy(first_line);
-                // NOTE Handle trailing spaces, `\r`, etc.
-                let first_line = first_line.trim_end();
-
-                static RE: Lazy<Regex> = Lazy::new(|| {
-                    Regex::new(r"^#!(?:/usr(?:/local)?)?/bin/(?:env\s+)?([\w\d]+)\r?$").unwrap()
-                });
-
-                RE.captures(first_line)
-                    .and_then(|c| c.get(1))
-                    .map_or(vec![], |m| {
-                        let interpreter = m.as_str();
-                        Self::from_interpreter(interpreter)
-                    })
-            }
-
-            /// Gets the languages that match a glob pattern.
-            pub fn from_glob(path: impl AsRef<Path>) -> Vec<Self> {
-                let path = path.as_ref();
-
-                struct GlobMapping {
-                    patterns: Vec<glob::Pattern>,
-                    language: Language,
-                }
-                static GLOB_MAPPINGS: Lazy<Vec<GlobMapping>> = Lazy::new(|| {
-                    vec![#(#glob_matchers),*]
-                });
-
-                GLOB_MAPPINGS
-                    .iter()
-                    .filter(|gm| gm.patterns.iter().any(|p| p.matches_path_with(path.as_ref(), GLOB_MATCH_OPTIONS)))
-                    .map(|gm| gm.language)
-                    .collect()
-            }
-
-            /// Uses simple checks to find one or more matching languages. Checks by shebang, filename,
-            /// filepath glob, and extension.
-            fn find_simple(path: impl AsRef<Path>, contents: &[u8]) -> Vec<Self> {
-                let languages = Self::from_shebang(contents);
-                if !languages.is_empty() {
-                    return languages;
-                }
-                let languages = Self::from_path_filename(&path);
-                if !languages.is_empty() {
-                    return languages;
-                }
-                let languages = Self::from_glob(&path);
-                if !languages.is_empty() {
-                    return languages;
-                }
-                Self::from_path_extension(&path)
-            }
-
-            /// Filters an iterable of languages by heuristics.
-            fn filter_by_heuristics(languages: &[Self], contents: &str) -> Vec<Self> {
-                static HEURISTICS: Lazy<HashMap<Language, Vec<Regex>>> = Lazy::new(|| {
-                    let mut map = HashMap::new();
-                    #(#heuristic_inserts)*
-                    map
-                });
-
-                languages
-                    .iter()
-                    .filter(|language| {
-                        HEURISTICS
-                            .get(language)
-                            .map_or(false, |heuristics| heuristics.iter().any(|re| re.is_match(contents)))
-                    })
-                    .cloned()
-                    .collect()
-            }
-
-            /// Picks the best guess from a file's name and contents.
-            ///
-            /// When checking heuristics, only the first `read_limit` bytes will be read.
-            pub fn pick(path: impl AsRef<Path>, contents: &[u8], read_limit: usize) -> Option<Self> {
-                let languages = Self::find_simple(&path, contents);
-                if languages.len() == 1 {
-                    return Some(languages[0]);
-                }
-
-                let contents = if contents.len() > read_limit {
-                    &contents[..read_limit]
-                } else {
-                    contents
-                };
-                let heuristic_contents = std::str::from_utf8(contents).unwrap_or_default();
-                let by_heuristics = Self::filter_by_heuristics(&languages, heuristic_contents);
-
-                let found_languages = match by_heuristics.len() {
-                    0 => languages,
-                    1 => return Some(by_heuristics[0]),
-                    _ => by_heuristics,
-                };
-
-                found_languages.into_iter().max_by_key(Self::priority)
+            /// Gets the mappings used to map a glob to its language.
+            fn glob_mappings() -> Vec<(Vec<&'static str>, Self)> {
+                vec![#(#glob_matchers),*]
             }
         }
     };
+    fs::write(
+        languages_target_dir.join("glob_mappings_mixin.rs"),
+        glob_mappings_mixin.to_string(),
+    )?;
 
-    let language_file_contents: syn::File = syn::parse2(language_file_contents).unwrap();
-    let language_file_contents = prettyplease::unparse(&language_file_contents);
+    let heuristic_tuples = language_definitions
+        .iter()
+        .filter(|language_definition| !language_definition.heuristics.is_empty())
+        .map(
+            |LanguageDefinition {
+                 variant,
+                 heuristics,
+                 ..
+             }| {
+                quote! {
+                    (Self::#variant, vec![#(#heuristics),*])
+                }
+            },
+        );
+    let heuristic_mappings_mixin = quote! {
+        impl Language {
+            /// Gets the heuristics used to determine a language.
+            fn heuristic_mappings() -> Vec<(Self, Vec<&'static str>)> {
+                vec![#(#heuristic_tuples ,)*]
+            }
+        }
+    };
+    fs::write(
+        languages_target_dir.join("heuristic_mappings_mixin.rs"),
+        heuristic_mappings_mixin.to_string(),
+    )?;
 
-    fs::write(languages_target_path, dbg!(language_file_contents))?;
     Ok(())
 }
 
