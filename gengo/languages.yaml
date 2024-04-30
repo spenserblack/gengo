@@ -326,6 +326,26 @@ GDScript:
   matchers:
     extensions:
       - gd
+GLSL:
+  category: programming
+  color: "#5586A4"
+  matchers:
+    extensions:
+      - comp
+      - frag
+      - geom
+      - glsl
+      - mesh
+      - rahit
+      - rcall
+      - rchit
+      - rgen
+      - rint
+      - rmiss
+      - task
+      - tesc
+      - tese
+      - vert
 GitHub Workflow:
   category: programming
   color: "#2088FF"
