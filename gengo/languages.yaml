@@ -299,6 +299,16 @@ Erlang:
       - for
       - ftn
       - pfo
+Forth:
+  category: programming
+  color: "#EF5350"
+  matchers:
+    extensions:
+      - fs
+      - fth
+      - 4th
+      - f
+      - forth
 "Fortran Modern":
   category: programming
   color: "#725196"
