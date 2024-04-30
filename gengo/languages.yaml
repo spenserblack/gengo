@@ -304,11 +304,11 @@ Forth:
   color: "#EF5350"
   matchers:
     extensions:
-      - fs
-      - fth
       - 4th
       - f
       - forth
+      - fs
+      - fth
 "Fortran Modern":
   category: programming
   color: "#725196"
