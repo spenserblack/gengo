@@ -391,6 +391,12 @@ Haskell:
   matchers:
     extensions:
       - hs
+Haxe:
+  category: programming
+  color: "#F68712"
+  matchers:
+    extensions:
+      - hx
 HolyC:
   category: programming
   color: "#FFFF00"
