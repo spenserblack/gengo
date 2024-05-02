@@ -557,6 +557,13 @@ Odin:
   matchers:
     extensions:
       - odin
+OpenSCAD:
+  category: programming
+  color: "#F9D72C"
+  nerd-font-glyph: "\uf34e"
+  matchers:
+    extensions:
+      - scad
 PHP:
   category: programming
   color: "#7A86B8"
