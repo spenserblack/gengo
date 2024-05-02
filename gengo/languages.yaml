@@ -106,6 +106,12 @@ Assembly:
     extensions:
       - asm
       - s
+Astro:
+  category: programming
+  color: "#FF5A1D"
+  matchers:
+    extensions:
+      - astro
 AutoHotkey:
   category: programming
   color: "#334455"
