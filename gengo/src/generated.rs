@@ -1,16 +1,19 @@
 use super::GLOB_MATCH_OPTIONS;
 use glob::Pattern;
+use std::collections::HashSet;
 use std::path::Path;
 
 pub struct Generated {
+    filenames: HashSet<&'static str>,
     globs: Vec<Pattern>,
 }
 
 impl Generated {
     pub fn new() -> Self {
+        let filenames = Self::filenames();
         let globs = Self::globs();
 
-        Self { globs }
+        Self { filenames, globs }
     }
 
     pub fn is_generated(&self, filepath: impl AsRef<Path>, contents: &[u8]) -> bool {
@@ -18,13 +21,22 @@ impl Generated {
     }
 
     fn is_generated_no_read(&self, filepath: impl AsRef<Path>) -> bool {
-        self.globs
-            .iter()
-            .any(|g| g.matches_path_with(filepath.as_ref(), GLOB_MATCH_OPTIONS))
+        self.matches_filenames(&filepath) || self.matches_globs(&filepath)
     }
 
     fn is_generated_with_read(&self, _filepath: impl AsRef<Path>, contents: &[u8]) -> bool {
         self.likely_minified(contents)
+    }
+
+    fn matches_filenames(&self, filepath: impl AsRef<Path>) -> bool {
+        let filename = filepath.as_ref().file_name().and_then(|f| f.to_str());
+        filename.map_or(false, |f| self.filenames.contains(f))
+    }
+
+    fn matches_globs(&self, filepath: impl AsRef<Path>) -> bool {
+        self.globs
+            .iter()
+            .any(|g| g.matches_path_with(filepath.as_ref(), GLOB_MATCH_OPTIONS))
     }
 
     fn likely_minified(&self, contents: &[u8]) -> bool {
@@ -33,6 +45,10 @@ impl Generated {
             .split(|&b| b == b'\n')
             .take(10)
             .any(|line| line.len() > 250)
+    }
+
+    fn filenames() -> HashSet<&'static str> {
+        HashSet::from_iter(["gradlew", "gradlew.bat"])
     }
 
     fn globs() -> Vec<Pattern> {
@@ -66,7 +82,9 @@ mod tests {
         case("path/to/something.min.css", true),
         case(".yarn/releases/yarn-1.2.3.cjs", true),
         case("migrations/0001_initial.py", true),
-        case("myapp/migrations/0001_initial.py", true)
+        case("myapp/migrations/0001_initial.py", true),
+        case("gradlew", true),
+        case("gradlew.bat", true)
     )]
     fn test_is_generated_no_read(filepath: &str, expected: bool) {
         let generated = Generated::new();
