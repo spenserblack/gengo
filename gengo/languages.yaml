@@ -496,6 +496,8 @@ Kotlin:
     extensions:
       - kt
       - kts
+    interpreters:
+      - kotlin
 Lua:
   category: programming
   color: "#02027D"
