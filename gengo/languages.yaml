@@ -383,6 +383,14 @@ Groovy:
       - groovy
     interpreters:
       - groovy
+HCL:
+  category: programming
+  color: "#7B42BC"
+  matchers:
+    extensions:
+      - hcl
+      - tf
+      - tfvars
 HTML:
   category: markup
   color: "#E96228"
