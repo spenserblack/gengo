@@ -209,6 +209,14 @@ ColdFusion:
   matchers:
     extensions:
       - cfm
+Common Lisp:
+  category: programming
+  color: "#2D5FB4"
+  matchers:
+    extensions:
+      - asd
+      - lisp
+      - lsp
 Coq:
   category: programming
   color: "#D0B68C"
