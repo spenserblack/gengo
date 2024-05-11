@@ -399,6 +399,12 @@ HCL:
       - hcl
       - tf
       - tfvars
+HLSL:
+  category: programming
+  color: "#85BB00"
+  matchers:
+    extensions:
+      - hlsl
 HTML:
   category: markup
   color: "#E96228"
