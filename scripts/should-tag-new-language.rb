@@ -10,8 +10,8 @@ if ARGV.length != 2
   exit 2
 end
 
-old_languages_yaml = YAML.load_file(ARGV[0])
-new_languages_yaml = YAML.load_file(ARGV[1])
+old_languages_yaml = YAML.load_file(ARGV[0]) || {}
+new_languages_yaml = YAML.load_file(ARGV[1]) || {}
 
 old_languages = old_languages_yaml.keys.to_set
 new_languages = new_languages_yaml.keys.to_set
