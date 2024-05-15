@@ -19,5 +19,8 @@ new_languages = new_languages_yaml.keys.to_set
 removed_languages = old_languages - new_languages
 added_languages = new_languages - old_languages
 
+$stderr.puts "Removed languages: #{removed_languages.to_a.join(', ')}"
+$stderr.puts "Added languages: #{added_languages.to_a.join(', ')}"
+
 exit_code = removed_languages.size == 0 && added_languages.size == 1 ? 0 : 1
 exit exit_code
