@@ -432,6 +432,13 @@ HolyC:
   matchers:
     extensions:
       - hc
+Idris:
+  category: programming
+  color: "#C74350"
+  matchers:
+    extensions:
+      - idr
+      - lidr
 Ignore List:
   category: data
   color: "#330000"
