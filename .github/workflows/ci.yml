@@ -79,16 +79,16 @@ jobs:
           target/
         key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
     - name: Bin Cache
+      id: bin-cache
       uses: actions/cache@v4
       with:
         path: |
           ~/.cargo/bin/
         key: ${{ runner.os }}-cargo-bin-grcov-${{ env.GRCOV_VERSION }}
     - name: Install grcov
+      if: steps.bin-cache.outputs.cache-hit != 'true'
       run: cargo install "grcov@$GRCOV_VERSION"
       shell: bash
-      # NOTE: The last step fails if grcov is already installed
-      continue-on-error: true
     - name: Build
       run: cargo build
     - name: Test
