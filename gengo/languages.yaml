@@ -533,6 +533,12 @@ Kotlin:
       - kts
     interpreters:
       - kotlin
+LLVM:
+  category: programming
+  color: "#09637D"
+  matchers:
+    extensions:
+      - ll
 Lua:
   category: programming
   color: "#02027D"
