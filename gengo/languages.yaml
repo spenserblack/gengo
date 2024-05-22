@@ -594,6 +594,13 @@ OCaml:
     extensions:
       - ml
       - mli
+Objective-C:
+  category: programming
+  color: "#0BC0BC"
+  matchers:
+    extensions:
+      - h
+      - m
 Odin:
   category: programming
   color: "#3882D2"
