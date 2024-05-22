@@ -596,7 +596,7 @@ OCaml:
       - mli
 Objective-C:
   category: programming
-  color:
+  color: "#0BC0BC"
   matchers:
     extensions:
       - h
