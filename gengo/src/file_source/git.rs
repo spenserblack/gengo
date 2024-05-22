@@ -5,7 +5,7 @@ use gix::{
     attrs::StateRef,
     bstr::ByteSlice,
     discover::Error as DiscoverError,
-    index,
+    index::{self, entry::Mode as EntryMode},
     worktree::{stack::state::attributes::Source as AttrSource, Stack as WTStack},
     Repository, ThreadSafeRepository,
 };
@@ -132,10 +132,11 @@ impl<'repo> FileSource<'repo> for Git {
         path: impl AsRef<Path>,
         (state, repository): &mut Self::State,
     ) -> Overrides {
-        let Ok(platform) = state
-            .attr_stack
-            .at_path(path, Some(false), &repository.objects)
-        else {
+        let Ok(platform) = state.attr_stack.at_path(
+            path,
+            Some(EntryMode::FILE | EntryMode::FILE_EXECUTABLE),
+            &repository.objects,
+        ) else {
             // NOTE If we cannot get overrides, simply don't return them.
             return Default::default();
         };
@@ -194,11 +195,9 @@ impl<'repo> Iterator for Iter<'repo> {
     type Item = &'repo index::Entry;
 
     fn next(&mut self) -> Option<Self::Item> {
-        use gix::index::entry::Mode;
-
         let entry = loop {
             let entry = self.entries.next()?;
-            if matches!(entry.mode, Mode::FILE | Mode::FILE_EXECUTABLE) {
+            if matches!(entry.mode, EntryMode::FILE | EntryMode::FILE_EXECUTABLE) {
                 break entry;
             }
         };
