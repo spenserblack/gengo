@@ -54,16 +54,12 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - macOS-latest
           - ubuntu-latest
-          - windows-latest
         feature-flags:
           - --no-default-features
           - --no-default-features --features color
     env:
-      GRCOV_VERSION: "0.8.19"
-      RUSTFLAGS: "-Cinstrument-coverage"
-      LLVM_PROFILE_FILE: "coverage.profraw"
+      TARPAULIN_VERSION: "0.30.0"
 
     steps:
     - uses: actions/checkout@v4
@@ -84,18 +80,13 @@ jobs:
       with:
         path: |
           ~/.cargo/bin/
-        key: ${{ runner.os }}-cargo-bin-grcov-${{ env.GRCOV_VERSION }}
-    - name: Install grcov
+        key: ${{ runner.os }}-cargo-bin-tarpaulin-${{ env.TARPAULIN_VERSION }}
+    - name: Install Tarpualin
       if: steps.bin-cache.outputs.cache-hit != 'true'
-      run: cargo install "grcov@$GRCOV_VERSION"
+      run: cargo install "cargo-tarpaulin@$TARPAULIN_VERSION"
       shell: bash
-    - name: Build
-      run: cargo build
-    - name: Test
-      run: cargo test
-    - name: Run grcov
-      run: grcov . --llvm --output-types lcov --output-path lcov.info --source-dir . --service-name "$GITHUB_WORKFLOW" --commit-sha "$GITHUB_SHA" --binary-path ./target/debug
-      shell: bash
+    - name: Generate Coverage
+      run: cargo tarpaulin --verbose ${{ matrix.feature-flags }} --workspace --timeout 120 --out xml
     - name: Upload Coverage
       uses: codecov/codecov-action@v4
       with:
