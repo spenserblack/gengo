@@ -627,6 +627,12 @@ PHP:
   matchers:
     extensions:
       - php
+Pascal:
+  category: programming
+  color: "#79A0DE"
+  matchers:
+    extensions:
+      - pas
 Perl:
   category: programming
   color: "#51547F"
