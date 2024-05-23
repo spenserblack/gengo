@@ -614,6 +614,12 @@ OpenSCAD:
   matchers:
     extensions:
       - scad
+Org:
+  category: prose
+  color: "#77AA99"
+  matchers:
+    extensions:
+      - org
 PHP:
   category: programming
   color: "#7A86B8"
