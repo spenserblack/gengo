@@ -1,0 +1,32 @@
+* Org
+** Text
+
+Paragraphs are blocks of text. They are separated by a new line.
+
+See? This is a new paragraph.
+
+Text can by styled. /Italicize/ with a slash or *bold* with asterisks,
+or mark something as ~code~ with tildes.
+
+-----
+
+Oh, and you can separate with 5 hyphens.
+
+** Lists
+
++ unordered
++ with
++ plus symbol
+
+1. order
+2. with
+3. numbers
+
+-----
+
+Go to [[https://example.com][a link]]!
+
+#+begin_quote
+The syntax for blocks is too weird to describe in text. Just read this file's source
+code.
+#+end_quote
