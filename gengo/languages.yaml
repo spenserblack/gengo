@@ -703,6 +703,19 @@ R:
   matchers:
     extensions:
       - R
+Raku:
+  category: programming
+  color: "#FFFF00"
+  matchers:
+    extensions:
+      - p6
+      - pl
+      - raku
+      - rakumod
+      - t
+    interpreters:
+      - perl6
+      - raku
 Regex:
   category: data
   color: "#44E03F"
