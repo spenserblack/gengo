@@ -643,6 +643,7 @@ Perl:
       - pl
     interpreters:
       - perl
+  priority: 75
 Plain Text:
   category: prose
   color: "#000000"
@@ -662,6 +663,12 @@ PowerShell:
       - ps1
     interpreters:
       - pwsh
+Processing:
+  category: programming
+  color: "#1E32AA"
+  matchers:
+    extensions:
+      - pde
 Prolog:
   category: programming
   color: "#EF9439"
