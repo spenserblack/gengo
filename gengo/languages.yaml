@@ -643,6 +643,7 @@ Perl:
       - pl
     interpreters:
       - perl
+  priority: 75
 Plain Text:
   category: prose
   color: "#000000"
