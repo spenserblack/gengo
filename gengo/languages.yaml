@@ -669,6 +669,14 @@ Processing:
   matchers:
     extensions:
       - pde
+Prolog:
+  category: programming
+  color: "#EF9439"
+  matchers:
+    extensions:
+      - P
+      - pl
+      - pro
 Pug:
   category: markup
   color: "#A86454"
