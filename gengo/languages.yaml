@@ -662,6 +662,12 @@ PowerShell:
       - ps1
     interpreters:
       - pwsh
+Processing:
+  category: programming
+  color: "#1E32AA"
+  matchers:
+    extensions:
+      - pde
 Pug:
   category: markup
   color: "#A86454"
