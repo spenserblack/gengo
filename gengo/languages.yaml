@@ -677,6 +677,12 @@ Prolog:
       - P
       - pl
       - pro
+Protocol Buffer:
+  category: data
+  color: "#33383E"
+  matchers:
+    extensions:
+      - proto
 Pug:
   category: markup
   color: "#A86454"
