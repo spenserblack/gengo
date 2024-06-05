@@ -807,12 +807,10 @@ Shell:
   matchers:
     extensions:
       - bash
-      - fish
       - sh
       - zsh
     interpreters:
       - bash
-      - fish
       - sh
       - zsh
 Solidity:
@@ -908,3 +906,11 @@ Zig:
   matchers:
     extensions:
       - zig
+fish:  # NOTE: fish is always lowercase in their documentation
+  category: programming
+  color: "#4AAE47"
+  matchers:
+    extensions:
+      - fish
+    interpreters:
+      - fish
