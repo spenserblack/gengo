@@ -4,6 +4,9 @@
     "dockerfile": "Dockerfile",
     "args": { "VARIANT": "1" }
   },
+  "features": {
+    "ghcr.io/devcontainers/features/ruby:1": {}
+  },
   "customizations": {
     "codespaces": {
       "openFiles": ["docs/CONTRIBUTING.md", "docs/HACKING.md", "gengo/languages.yaml"]
@@ -11,7 +14,6 @@
     "vscode": {
       "extensions": [
         "EditorConfig.EditorConfig",
-        "Shopify.ruby-lsp",
         "rust-lang.rust-analyzer",
         "tomoyukim.vscode-mermaid-editor"
       ],
