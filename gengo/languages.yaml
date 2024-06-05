@@ -61,14 +61,6 @@
       - ".env"
     patterns:
       - ".env.*" # .env.local, .env.example
-fish:  # NOTE: fish is always lowercase in their documentation
-  category: programming
-  color: "#4AAE47"
-  matchers:
-    extensions:
-      - fish
-    interpreters:
-      - fish
 ABAP:
   category: programming
   color: "#3C3C3C"
@@ -914,3 +906,11 @@ Zig:
   matchers:
     extensions:
       - zig
+fish:  # NOTE: fish is always lowercase in their documentation
+  category: programming
+  color: "#4AAE47"
+  matchers:
+    extensions:
+      - fish
+    interpreters:
+      - fish
