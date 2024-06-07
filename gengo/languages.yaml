@@ -717,6 +717,12 @@ Python Requirements File:
     patterns:
       - "requirements-*.txt"
   priority: 75
+QML:
+  category: markup
+  color: "#41CD52"
+  matchers:
+    extensions:
+      - qml
 R:
   category: programming
   color: "#1F66B7" # Average of the two colors used in the logo gradient: https://www.r-project.org/logo/Rlogo.svg
