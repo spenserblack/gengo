@@ -805,6 +805,14 @@ Sass:
     extensions:
       - sass
       - scss
+Scala:
+  category: programming
+  color: "#DC3431"
+  matchers:
+    extensions:
+      - sbt
+      - sc
+      - scala
 Scheme:
   category: programming
   color: "#8800FF"
