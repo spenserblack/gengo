@@ -730,6 +730,13 @@ R:
   matchers:
     extensions:
       - R
+Racket:
+  category: programming
+  color: "#0679A7"
+  matchers:
+    extensions:
+      - rkt
+      - scrbl  # NOTE Should this be separated into a "Racket Scribble" language?
 Raku:
   category: programming
   color: "#FFFF00"
