@@ -883,6 +883,12 @@ TypeScript:
       - tsx
     interpreters:
       - deno
+Verilog:
+  category: programming
+  color: "#088020"
+  matchers:
+    extensions:
+      - v
 Vim Script:
   category: programming
   color: "#019833"
