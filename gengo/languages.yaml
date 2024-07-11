@@ -853,6 +853,13 @@ Swift:
   matchers:
     extensions:
       - swift
+SystemVerilog:
+  category: programming
+  color: "#20C040"
+  matchers:
+    extensions:
+      - sv
+      - svh
 TOML:
   category: data
   color: "#9C4221"
@@ -883,6 +890,12 @@ TypeScript:
       - tsx
     interpreters:
       - deno
+Verilog:
+  category: programming
+  color: "#088020"
+  matchers:
+    extensions:
+      - v
 Vim Script:
   category: programming
   color: "#019833"
