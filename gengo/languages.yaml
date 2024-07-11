@@ -853,6 +853,13 @@ Swift:
   matchers:
     extensions:
       - swift
+SystemVerilog:
+  category: programming
+  color: "#20C040"
+  matchers:
+    extensions:
+      - sv
+      - svh
 TOML:
   category: data
   color: "#9C4221"
