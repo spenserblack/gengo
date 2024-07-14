@@ -876,6 +876,12 @@ TSV:
   matchers:
     extensions:
       - tsv
+Tcl:
+  category: programming
+  color: "#F14524"
+  matchers:
+    extensions:
+      - tcl
 TypeScript:
   category: programming
   color: "#2F74C0"
