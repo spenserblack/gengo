@@ -882,6 +882,12 @@ Tcl:
   matchers:
     extensions:
       - tcl
+TeX:
+  category: markup
+  color: "#000080"
+  matchers:
+    extensions:
+      - tex
 TypeScript:
   category: programming
   color: "#2F74C0"
