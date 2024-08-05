@@ -15,7 +15,8 @@ _include!("language.rs");
 _include!("category_mixin.rs");
 _include!("name_mixin.rs");
 _include!("parse_variant_mixin.rs");
-_include!("color_mixin.rs");
+_include!("color_hex_mixin.rs");
+_include!("color_rgb_mixin.rs");
 _include!("nerd_font_glyph_mixin.rs");
 _include!("priority_mixin.rs");
 _include!("from_extension_mixin.rs");
@@ -212,13 +213,8 @@ impl serde::Serialize for Language {
 #[cfg(feature = "owo-colors")]
 impl Language {
     /// Converts the color to RGB.
-    pub fn owo_color(&self) -> owo_colors::Rgb {
-        let hex_string = self.color().strip_prefix('#').expect("'#' prefix");
-        assert_eq!(hex_string.len(), 6, "Expected 6 characters");
-        let bytes = u32::from_str_radix(hex_string, 16).expect("valid hex string");
-        let r = ((bytes >> 16) & 0xFF) as u8;
-        let g = ((bytes >> 8) & 0xFF) as u8;
-        let b = (bytes & 0xFF) as u8;
+    pub const fn owo_color(&self) -> owo_colors::Rgb {
+        let (r, g, b) = self.color_rgb();
         owo_colors::Rgb(r, g, b)
     }
 }
