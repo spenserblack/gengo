@@ -26,7 +26,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         /// See `Category`.
         category: Ident,
         name: Literal,
-        color: Literal,
+        color_hex: Literal,
         nerd_font_glyph: Option<Literal>,
         priority: Literal,
         extensions: Vec<String>,
@@ -63,7 +63,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             let color = language_attrs["color"]
                 .as_str()
                 .expect("color to be a string");
-            let color = Literal::string(color);
+            let color_hex = Literal::string(color);
 
             let nerd_font_glyph = language_attrs.get("nerd-font-glyph").map(|glyph| {
                 let glyph = glyph.as_str().expect("nerd font glyph to be a string");
@@ -181,7 +181,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 variant,
                 category,
                 name,
-                color,
+                color_hex,
                 nerd_font_glyph,
                 priority,
                 extensions,
@@ -279,27 +279,28 @@ fn main() -> Result<(), Box<dyn Error>> {
         parse_variant_mixin.to_string(),
     )?;
 
-    let color_mappings =
-        language_definitions
-            .iter()
-            .map(|LanguageDefinition { variant, color, .. }| {
-                quote! {
-                    Self::#variant => #color
-                }
-            });
-    let color_mixin = quote! {
+    let color_hex_mappings = language_definitions.iter().map(
+        |LanguageDefinition {
+             variant, color_hex, ..
+         }| {
+            quote! {
+                Self::#variant => #color_hex
+            }
+        },
+    );
+    let color_hex_mixin = quote! {
         impl Language {
             /// Gets the color associated with the language.
             pub const fn color(&self) -> &'static str {
                 match self {
-                    #(#color_mappings ,)*
+                    #(#color_hex_mappings ,)*
                 }
             }
         }
     };
     fs::write(
-        languages_target_dir.join("color_mixin.rs"),
-        color_mixin.to_string(),
+        languages_target_dir.join("color_hex_mixin.rs"),
+        color_hex_mixin.to_string(),
     )?;
 
     let nerd_font_glyph_mappings = language_definitions.iter().filter_map(

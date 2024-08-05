@@ -15,7 +15,7 @@ _include!("language.rs");
 _include!("category_mixin.rs");
 _include!("name_mixin.rs");
 _include!("parse_variant_mixin.rs");
-_include!("color_mixin.rs");
+_include!("color_hex_mixin.rs");
 _include!("nerd_font_glyph_mixin.rs");
 _include!("priority_mixin.rs");
 _include!("from_extension_mixin.rs");
