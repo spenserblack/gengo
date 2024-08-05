@@ -213,7 +213,7 @@ impl serde::Serialize for Language {
 #[cfg(feature = "owo-colors")]
 impl Language {
     /// Converts the color to RGB.
-    pub fn owo_color(&self) -> owo_colors::Rgb {
+    pub const fn owo_color(&self) -> owo_colors::Rgb {
         let (r, g, b) = self.color_rgb();
         owo_colors::Rgb(r, g, b)
     }
