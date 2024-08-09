@@ -10,7 +10,7 @@ env:
 
 jobs:
   build:
-    name: Build ${{ matrix.feature-flags }} (${{ matrix.os }})
+    name: Build ${{ matrix.feature-flags }} (${{ matrix.rust-version }} ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     needs:
       - check-languages-file
@@ -24,11 +24,19 @@ jobs:
         feature-flags:
           - --no-default-features
           - --no-default-features --features color
+        rust-version:
+          - "1.80"
+          - "stable"
 
     steps:
       - uses: actions/checkout@v4
       - name: Fetch Test Branches
         run: git fetch origin test/javascript:test/javascript
+      - name: Setup Rust ${{ matrix.rust-version }}
+        uses: dtolnay/rust-toolchain@master
+        id: setup-rust
+        with:
+          toolchain: ${{ matrix.rust-version }}
       - name: Cache
         uses: actions/cache@v4
         with:
@@ -37,7 +45,7 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
             target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ runner.os }}-${{ steps.setup-rust.outputs.cachekey }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Build
         run: cargo build --verbose ${{ matrix.feature-flags }}
@@ -65,6 +73,9 @@ jobs:
     - uses: actions/checkout@v4
     - name: Fetch Test Branches
       run: git fetch origin test/javascript:test/javascript
+    - name: Setup Rust
+      uses: dtolnay/rust-toolchain@1.80
+      id: setup-rust
     - name: Main Cache
       uses: actions/cache@v4
       with:
@@ -73,14 +84,14 @@ jobs:
           ~/.cargo/registry/cache/
           ~/.cargo/git/db/
           target/
-        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+        key: ${{ runner.os }}-${{ steps.setup-rust.outputs.cachekey }}-cargo-${{ hashFiles('**/Cargo.lock') }}
     - name: Bin Cache
       id: bin-cache
       uses: actions/cache@v4
       with:
         path: |
           ~/.cargo/bin/
-        key: ${{ runner.os }}-cargo-bin-tarpaulin-${{ env.TARPAULIN_VERSION }}
+        key: ${{ runner.os }}-${{ steps.setup-rust.outputs.cachekey }}-cargo-bin-tarpaulin-${{ env.TARPAULIN_VERSION }}
     - name: Install Tarpualin
       if: steps.bin-cache.outputs.cache-hit != 'true'
       run: cargo install "cargo-tarpaulin@$TARPAULIN_VERSION"
@@ -101,7 +112,11 @@ jobs:
       - build
     steps:
       - uses: actions/checkout@v4
-
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@1.80
+        id: setup-rust
+        with:
+          components: clippy, rustfmt
       - name: Cache
         uses: actions/cache@v4
         with:
@@ -110,7 +125,7 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
             target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ runner.os }}-${{ steps.setup-rust.outputs.cachekey }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Check Format
         run: cargo fmt -- --check
@@ -138,7 +153,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 3
-
+      - name: Setup Rust 1.80
+        uses: dtolnay/rust-toolchain@master
+        id: setup-rust
+        with:
+          toolchain: "1.80"
       - name: Cache
         uses: actions/cache@v4
         with:
@@ -147,7 +166,7 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
             target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ runner.os }}-${{ steps.setup-rust.outputs.cachekey }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Fetch Test Branches
         run: git fetch origin test/javascript:test/javascript
