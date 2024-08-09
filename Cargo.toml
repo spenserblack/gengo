@@ -14,5 +14,6 @@ edition = "2021"
 repository = "https://github.com/spenserblack/gengo"
 readme = "README.md"
 license = "MIT OR Apache-2.0"
+rust-version = "1.80"
 
 keywords = ["language-statistics"]
