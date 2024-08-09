@@ -1,9 +1,9 @@
 use crate::GLOB_MATCH_OPTIONS;
-use once_cell::sync::Lazy;
 use regex::Regex;
 use std::collections::HashMap;
 use std::path::Path;
 use std::str::FromStr;
+use std::sync::LazyLock;
 
 macro_rules! _include {
     ($path:literal) => {
@@ -59,7 +59,7 @@ impl Language {
         // NOTE Handle trailing spaces, `\r`, etc.
         let first_line = first_line.trim_end();
 
-        static RE: Lazy<Regex> = Lazy::new(|| {
+        static RE: LazyLock<Regex> = LazyLock::new(|| {
             Regex::new(r"^#!(?:/usr(?:/local)?)?/bin/(?:env\s+)?([\w\d]+)\r?$").unwrap()
         });
 
@@ -79,7 +79,7 @@ impl Language {
             patterns: Vec<glob::Pattern>,
             language: Language,
         }
-        static GLOB_MAPPINGS: Lazy<Vec<GlobMapping>> = Lazy::new(|| {
+        static GLOB_MAPPINGS: LazyLock<Vec<GlobMapping>> = LazyLock::new(|| {
             Language::glob_mappings()
                 .into_iter()
                 .map(|(patterns, language)| {
@@ -105,7 +105,7 @@ impl Language {
 
     /// Filters an iterable of languages by heuristics.
     fn filter_by_heuristics(languages: &[Self], contents: &str) -> Vec<Self> {
-        static HEURISTICS: Lazy<HashMap<Language, Vec<Regex>>> = Lazy::new(|| {
+        static HEURISTICS: LazyLock<HashMap<Language, Vec<Regex>>> = LazyLock::new(|| {
             Language::heuristic_mappings()
                 .into_iter()
                 .map(|(language, patterns)| {

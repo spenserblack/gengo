@@ -1,10 +1,10 @@
 use gengo::Language;
-use once_cell::sync::Lazy;
 use std::collections::HashMap;
+use std::sync::LazyLock;
 
 const LANGUAGES: &str = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/languages.yaml"));
-static LANGUAGES_MAP: Lazy<HashMap<String, serde_yaml::Value>> =
-    Lazy::new(|| serde_yaml::from_str(LANGUAGES).unwrap());
+static LANGUAGES_MAP: LazyLock<HashMap<String, serde_yaml::Value>> =
+    LazyLock::new(|| serde_yaml::from_str(LANGUAGES).unwrap());
 
 fn get_matchers(name: &str) -> Vec<(String, Vec<String>)> {
     LANGUAGES_MAP
