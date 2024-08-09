@@ -1,6 +1,6 @@
 use gengo::Language;
-use std::sync::LazyLock;
 use std::collections::HashMap;
+use std::sync::LazyLock;
 
 const LANGUAGES: &str = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/languages.yaml"));
 static LANGUAGES_MAP: LazyLock<HashMap<String, serde_yaml::Value>> =
