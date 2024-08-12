@@ -74,7 +74,7 @@ jobs:
     - name: Fetch Test Branches
       run: git fetch origin test/javascript:test/javascript
     - name: Setup Rust
-      uses: dtolnay/rust-toolchain@1.80
+      uses: dtolnay/rust-toolchain@1.90
       id: setup-rust
     - name: Main Cache
       uses: actions/cache@v4
@@ -113,7 +113,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Setup Rust
-        uses: dtolnay/rust-toolchain@1.80
+        uses: dtolnay/rust-toolchain@1.90
         id: setup-rust
         with:
           components: clippy, rustfmt
