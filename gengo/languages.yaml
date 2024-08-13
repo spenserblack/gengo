@@ -902,6 +902,12 @@ TypeScript:
       - tsx
     interpreters:
       - deno
+Vala:
+  category: programming
+  color: "#7239B3"
+  matchers:
+    extensions:
+      - vala
 Verilog:
   category: programming
   color: "#088020"
