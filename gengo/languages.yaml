@@ -917,6 +917,12 @@ Vim Script:
       - vim
     filenames:
       - ".vimrc"
+Visual Basic:
+  category: programming
+  color: "#004E8C"
+  matchers:
+    extensions:
+      - vb
 Vue:
   category: programming
   color: "#3FB27F"
