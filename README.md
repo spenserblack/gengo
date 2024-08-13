@@ -5,7 +5,7 @@
 [![CI](https://github.com/spenserblack/gengo/actions/workflows/ci.yml/badge.svg)](https://github.com/spenserblack/gengo/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/spenserblack/gengo/branch/main/graph/badge.svg?token=ihIEUQWwSt)](https://codecov.io/gh/spenserblack/gengo)
 
-A bit like [tokei][tokei], a lot like [linguist][linguist].
+A linguist-inspired language classifier with multiple file source handlers
 
 ## Comparison
 
