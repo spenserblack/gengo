@@ -496,6 +496,7 @@ JavaScript:
 Jinja-like:
   category: markup
   color: "#A00000"
+  nerd-font-glyph: "\U0000e66f"
   heuristics:
     - "^\\{%\\sextends\\s"
     - "\\{%\\s.+?\\s%\\}"
