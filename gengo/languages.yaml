@@ -363,6 +363,7 @@ GLSL:
 GitHub Workflow:
   category: programming
   color: "#2088FF"
+  nerd-font-glyph: "\U0000eaff"
   matchers:
     patterns:
       - ".github/workflows/*.yaml"
