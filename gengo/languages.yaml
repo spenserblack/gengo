@@ -53,7 +53,7 @@
 ".Env":
   category: data
   color: "#ECD53F"
-  nerd-font-glyph: "\uf462"
+  nerd-font-glyph: "\U0000f462"
   matchers:
     extensions:
       - env
@@ -85,7 +85,7 @@ ATS:
 Ada:
   category: programming
   color: "#005A00"
-  nerd-font-glyph: "\ue6b5"
+  nerd-font-glyph: "\U0000e6b5"
   matchers:
     extensions:
       - ada
@@ -94,14 +94,14 @@ Ada:
 Arduino:
   category: programming
   color: "#189BA1"
-  nerd-font-glyph: "\uf34b"
+  nerd-font-glyph: "\U0000f34b"
   matchers:
     extensions:
       - ino
 Assembly:
   category: programming
   color: "#33AA33"
-  nerd-font-glyph: "\ue266"
+  nerd-font-glyph: "\U0000e266"
   matchers:
     extensions:
       - asm
@@ -128,7 +128,7 @@ Batch File:
 C:
   category: programming
   color: "#8888CC"
-  nerd-font-glyph: "\ue61e"
+  nerd-font-glyph: "\U0000e61e"
   matchers:
     extensions:
       - c
@@ -137,7 +137,7 @@ C:
 "C#":
   category: programming
   color: "#178600"
-  nerd-font-glyph: "\uf031b"
+  nerd-font-glyph: "\U000f031b"
   heuristics:
     - "^\\s*(using\\s+[A-Z][\\s\\w.]+;|namespace\\s*[\\w\\.]+\\s*(\\{|;)|\\/\\/)"
   matchers:
@@ -148,7 +148,7 @@ C:
 "C++":
   category: programming
   color: "#88CC88"
-  nerd-font-glyph: "\ue61d"
+  nerd-font-glyph: "\U0000e61d"
   matchers:
     extensions:
       - c++
@@ -168,7 +168,7 @@ CMake:
 CSS:
   category: markup
   color: "#AA88AA"
-  nerd-font-glyph: "\ue749"
+  nerd-font-glyph: "\U0000e749"
   matchers:
     extensions:
       - css
@@ -187,7 +187,7 @@ Ceylon:
 Clojure:
   category: programming
   color: "#77F212"
-  nerd-font-glyph: "\ue76a"
+  nerd-font-glyph: "\U0000e76a"
   matchers:
     extensions:
       - clj
@@ -196,7 +196,7 @@ Clojure:
 CoffeeScript:
   category: programming
   color: "#C0FFEE"
-  nerd-font-glyph: "\ue751"
+  nerd-font-glyph: "\U0000e751"
   matchers:
     extensions:
       - coffee
@@ -205,7 +205,7 @@ CoffeeScript:
 ColdFusion:
   category: programming
   color: "#001C57"
-  nerd-font-glyph: "\ue645"
+  nerd-font-glyph: "\U0000e645"
   matchers:
     extensions:
       - cfm
@@ -226,7 +226,7 @@ Coq:
 Crystal:
   category: programming
   color: "#000000"
-  nerd-font-glyph: "\ue62f"
+  nerd-font-glyph: "\U0000e62f"
   matchers:
     extensions:
       - cr
@@ -241,14 +241,14 @@ D:
 Dart:
   category: programming
   color: "#238BDA"
-  nerd-font-glyph: "\ue64c"
+  nerd-font-glyph: "\U0000e64c"
   matchers:
     extensions:
       - dart
 Docker:
   category: programming
   color: "#2496ED"
-  nerd-font-glyph: "\ue650"
+  nerd-font-glyph: "\U0000e650"
   matchers:
     filenames:
       - "Dockerfile"
@@ -257,7 +257,7 @@ Docker:
 Elixir:
   category: programming
   color: "#6B5674"
-  nerd-font-glyph: "\ue62d"
+  nerd-font-glyph: "\U0000e62d"
   matchers:
     extensions:
       - ex
@@ -267,21 +267,21 @@ Elixir:
 Elm:
   category: programming
   color: "#1293D8"
-  nerd-font-glyph: "\ue62c"
+  nerd-font-glyph: "\U0000e62c"
   matchers:
     extensions:
       - elm
 Emacs Lisp:
   category: programming
   color: "#7F5AB6"
-  nerd-font-glyph: "\ue632"
+  nerd-font-glyph: "\U0000e632"
   matchers:
     extensions:
       - el
 Emojicode:
   category: programming
   color: "#FCEA2B"
-  nerd-font-glyph: "\uf0785"
+  nerd-font-glyph: "\U000f0785"
   matchers:
     extensions:
       - emojic
@@ -289,7 +289,7 @@ Emojicode:
 Erlang:
   category: programming
   color: "#A90433"
-  nerd-font-glyph: "\ue7b1"
+  nerd-font-glyph: "\U0000e7b1"
   matchers:
     extensions:
       - erl
@@ -297,7 +297,7 @@ Erlang:
 "F#":
   category: programming
   color: "#F8008F"
-  nerd-font-glyph: "\ue7a7"
+  nerd-font-glyph: "\U0000e7a7"
   matchers:
     extensions:
       - fs
@@ -305,7 +305,7 @@ Erlang:
 "FORTRAN Legacy":
   category: programming
   color: "#716152"
-  nerd-font-glyph: "\uf121a"
+  nerd-font-glyph: "\U000f121a"
   matchers:
     extensions:
       - f
@@ -326,7 +326,7 @@ Forth:
 "Fortran Modern":
   category: programming
   color: "#725196"
-  nerd-font-glyph: "\uf121a"
+  nerd-font-glyph: "\U000f121a"
   matchers:
     extensions:
       - f03
@@ -336,7 +336,7 @@ Forth:
 GDScript:
   category: programming
   color: "#355570"
-  nerd-font-glyph: "\ue65f"
+  nerd-font-glyph: "\U0000e65f"
   matchers:
     extensions:
       - gd
@@ -371,21 +371,21 @@ GitHub Workflow:
 Go:
   category: programming
   color: "#00ADD8"
-  nerd-font-glyph: "\ue627"
+  nerd-font-glyph: "\U0000e627"
   matchers:
     extensions:
       - go
 GraphQL:
   category: query
   color: "#E10098"
-  nerd-font-glyph: "\uf0877"
+  nerd-font-glyph: "\U000f0877"
   matchers:
     extensions:
       - graphql
 Groovy:
   category: programming
   color: "#4298B8"
-  nerd-font-glyph: "\ue775"
+  nerd-font-glyph: "\U0000e775"
   matchers:
     extensions:
       - groovy
@@ -408,14 +408,14 @@ HLSL:
 HTML:
   category: markup
   color: "#E96228"
-  nerd-font-glyph: "\ue736"
+  nerd-font-glyph: "\U0000e736"
   matchers:
     extensions:
       - html
 Haskell:
   category: programming
   color: "#5E5086"
-  nerd-font-glyph: "\ue777"
+  nerd-font-glyph: "\U0000e777"
   matchers:
     extensions:
       - hs
@@ -428,7 +428,7 @@ Haxe:
 HolyC:
   category: programming
   color: "#FFFF00"
-  nerd-font-glyph: "\ueebe"
+  nerd-font-glyph: "\U0000eebe"
   matchers:
     extensions:
       - hc
@@ -451,7 +451,7 @@ Ignore List:
 JSON:
   category: data
   color: "#AAAAAA"
-  nerd-font-glyph: "\ueb0f"
+  nerd-font-glyph: "\U0000eb0f"
   matchers:
     extensions:
       - json
@@ -461,7 +461,7 @@ JSON:
 JSON with Comments:
   category: data
   color: "#CCCCCC"
-  nerd-font-glyph: "\ueb0f"
+  nerd-font-glyph: "\U0000eb0f"
   heuristics:
     - "(?m)^\\s*/[/\\*]"
   matchers:
@@ -478,14 +478,14 @@ JSON with Comments:
 Java:
   category: programming
   color: "#5283A2"
-  nerd-font-glyph: "\ue738"
+  nerd-font-glyph: "\U0000e738"
   matchers:
     extensions:
       - java
 JavaScript:
   category: programming
   color: "#F0DC4E"
-  nerd-font-glyph: "\ue74e"
+  nerd-font-glyph: "\U0000e74e"
   matchers:
     extensions:
       - js
@@ -513,7 +513,7 @@ Jsonnet:
 Julia:
   category: programming
   color: "#9558B2"
-  nerd-font-glyph: "\ue624"
+  nerd-font-glyph: "\U0000e624"
   matchers:
     extensions:
       - jl
@@ -526,7 +526,7 @@ Jupyter Notebook:
 Kotlin:
   category: programming
   color: "#7F52FF"
-  nerd-font-glyph: "\ue634"
+  nerd-font-glyph: "\U0000e634"
   matchers:
     extensions:
       - kt
@@ -542,7 +542,7 @@ LLVM:
 Lua:
   category: programming
   color: "#02027D"
-  nerd-font-glyph: "\ue620"
+  nerd-font-glyph: "\U0000e620"
   matchers:
     extensions:
       - lua
@@ -551,7 +551,7 @@ Lua:
 Makefile:
   category: programming
   color: "#6B482F" # Arbitrary brown color representing a Gnu
-  nerd-font-glyph: "\ue673"
+  nerd-font-glyph: "\U0000e673"
   matchers:
     filenames:
       - "Makefile"
@@ -560,7 +560,7 @@ Makefile:
 Markdown:
   category: prose
   color: "#03A7DD"
-  nerd-font-glyph: "\ue73e"
+  nerd-font-glyph: "\U0000e73e"
   matchers:
     extensions:
       - markdown
@@ -575,21 +575,21 @@ Mermaid:
 Nim:
   category: programming
   color: "#ffe953"
-  nerd-font-glyph: "\ue677"
+  nerd-font-glyph: "\U0000e677"
   matchers:
     extensions:
       - nim
 Nix:
   category: programming
   color: "#6898D3" # Average of the two colors in the logo
-  nerd-font-glyph: "\uf313"
+  nerd-font-glyph: "\U0000f313"
   matchers:
     extensions:
       - nix
 OCaml:
   category: programming
   color: "#f48904"
-  nerd-font-glyph: "\ue67a"
+  nerd-font-glyph: "\U0000e67a"
   matchers:
     extensions:
       - ml
@@ -610,7 +610,7 @@ Odin:
 OpenSCAD:
   category: programming
   color: "#F9D72C"
-  nerd-font-glyph: "\uf34e"
+  nerd-font-glyph: "\U0000f34e"
   matchers:
     extensions:
       - scad
@@ -623,7 +623,7 @@ Org:
 PHP:
   category: programming
   color: "#7A86B8"
-  nerd-font-glyph: "\ue608"
+  nerd-font-glyph: "\U0000e608"
   matchers:
     extensions:
       - php
@@ -636,7 +636,7 @@ Pascal:
 Perl:
   category: programming
   color: "#51547F"
-  nerd-font-glyph: "\ue67e"
+  nerd-font-glyph: "\U0000e67e"
   matchers:
     extensions:
       - cow # cowsay files are Perl
@@ -657,7 +657,7 @@ Plain Text:
 PowerShell:
   category: programming
   color: "#012456"
-  nerd-font-glyph: "\uf0a0a"
+  nerd-font-glyph: "\U000f0a0a"
   matchers:
     extensions:
       - ps1
@@ -692,14 +692,14 @@ Pug:
 PureScript:
   category: programming
   color: "#1D222D"
-  nerd-font-glyph: "\ue630"
+  nerd-font-glyph: "\U0000e630"
   matchers:
     extensions:
       - purs
 Python:
   category: programming
   color: "#3472A6"
-  nerd-font-glyph: "\ue73c"
+  nerd-font-glyph: "\U0000e73c"
   matchers:
     extensions:
       - py
@@ -710,7 +710,7 @@ Python:
 Python Requirements File:
   category: data
   color: "#FFD342"
-  nerd-font-glyph: "\ue73c"
+  nerd-font-glyph: "\U0000e73c"
   matchers:
     filenames:
       - "requirements.txt"
@@ -726,7 +726,7 @@ QML:
 R:
   category: programming
   color: "#1F66B7" # Average of the two colors used in the logo gradient: https://www.r-project.org/logo/Rlogo.svg
-  nerd-font-glyph: "\ue68a"
+  nerd-font-glyph: "\U0000e68a"
   matchers:
     extensions:
       - R
@@ -765,7 +765,7 @@ Regex:
 Ruby:
   category: programming
   color: "#D21304"
-  nerd-font-glyph: "\ue23e"
+  nerd-font-glyph: "\U0000e23e"
   matchers:
     extensions:
       - gemspec
@@ -778,28 +778,28 @@ Ruby:
 Rust:
   category: programming
   color: "#DD3515"
-  nerd-font-glyph: "\ue7a8"
+  nerd-font-glyph: "\U0000e7a8"
   matchers:
     extensions:
       - rs
 SQL:
   category: query
   color: "#FFBF1E"
-  nerd-font-glyph: "\ue737"
+  nerd-font-glyph: "\U0000e737"
   matchers:
     extensions:
       - sql
 SVG:
   category: data
   color: "#FFB13B"
-  nerd-font-glyph: "\uf0721"
+  nerd-font-glyph: "\U000f0721"
   matchers:
     extensions:
       - svg
 Sass:
   category: markup
   color: "#CF649A"
-  nerd-font-glyph: "\ue74b"
+  nerd-font-glyph: "\U0000e74b"
   # NOTE: Sass has two syntaxes. See https://sass-lang.com/guide/
   matchers:
     extensions:
@@ -816,7 +816,7 @@ Scala:
 Scheme:
   category: programming
   color: "#8800FF"
-  nerd-font-glyph: "\ue6b1"
+  nerd-font-glyph: "\U0000e6b1"
   matchers:
     extensions:
       - scm
@@ -824,7 +824,7 @@ Scheme:
 Shell:
   category: programming
   color: "#262E28"
-  nerd-font-glyph: "\uebca"
+  nerd-font-glyph: "\U0000ebca"
   matchers:
     extensions:
       - bash
@@ -843,7 +843,7 @@ Solidity:
 Svelte:
   category: programming
   color: "#FF3E00"
-  nerd-font-glyph: "\ue697"
+  nerd-font-glyph: "\U0000e697"
   matchers:
     extensions:
       - svelte
@@ -863,7 +863,7 @@ SystemVerilog:
 TOML:
   category: data
   color: "#9C4221"
-  nerd-font-glyph: "\ue6b2"
+  nerd-font-glyph: "\U0000e6b2"
   matchers:
     extensions:
       - toml
@@ -891,7 +891,7 @@ TeX:
 TypeScript:
   category: programming
   color: "#2F74C0"
-  nerd-font-glyph: "\ue628"
+  nerd-font-glyph: "\U0000e628"
   heuristics:
     - "(?m)^/// <reference "
     - "(?m)^export\\s+\\w[\\w\\d_]*?"
@@ -917,7 +917,7 @@ Verilog:
 Vim Script:
   category: programming
   color: "#019833"
-  nerd-font-glyph: "\ue62b"
+  nerd-font-glyph: "\U0000e62b"
   matchers:
     extensions:
       - vim
@@ -932,14 +932,14 @@ Visual Basic:
 Vue:
   category: programming
   color: "#3FB27F"
-  nerd-font-glyph: "\ue6a0"
+  nerd-font-glyph: "\U0000e6a0"
   matchers:
     extensions:
       - vue
 XML:
   category: data
   color: "#005FAF"
-  nerd-font-glyph: "\uf05c0"
+  nerd-font-glyph: "\U000f05c0"
   heuristics:
     - "<TS version=\"\\d+(?:\\.d+)+\" language=\""
   matchers:
@@ -952,7 +952,7 @@ XML:
 YAML:
   category: data
   color: "#CC1018"
-  nerd-font-glyph: "\ue6a8"
+  nerd-font-glyph: "\U0000e6a8"
   matchers:
     extensions:
       - yaml
@@ -960,7 +960,7 @@ YAML:
 Zig:
   category: programming
   color: "#F7A41D"
-  nerd-font-glyph: "\ue6a9"
+  nerd-font-glyph: "\U0000e6a9"
   matchers:
     extensions:
       - zig
