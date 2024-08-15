@@ -175,6 +175,7 @@ CSS:
 CSV:
   category: data
   color: "#1D6F42"
+  nerd-font-glyph: "\U0000e64a"
   matchers:
     extensions:
       - csv
@@ -363,6 +364,7 @@ GLSL:
 GitHub Workflow:
   category: programming
   color: "#2088FF"
+  nerd-font-glyph: "\U0000eaff"
   matchers:
     patterns:
       - ".github/workflows/*.yaml"
@@ -495,6 +497,7 @@ JavaScript:
 Jinja-like:
   category: markup
   color: "#A00000"
+  nerd-font-glyph: "\U0000e66f"
   heuristics:
     - "^\\{%\\sextends\\s"
     - "\\{%\\s.+?\\s%\\}"
@@ -753,6 +756,7 @@ Raku:
 Regex:
   category: data
   color: "#44E03F"
+  nerd-font-glyph: "\U0000eb38"
   matchers:
     extensions:
       - regex
@@ -873,6 +877,7 @@ TOML:
 TSV:
   category: data
   color: "#1D6F42"
+  nerd-font-glyph: "\U0000e64a"
   matchers:
     extensions:
       - tsv
@@ -967,6 +972,7 @@ Zig:
 fish:  # NOTE: fish is always lowercase in their documentation
   category: programming
   color: "#4AAE47"
+  nerd-font-glyph: "\U0000ee41"
   matchers:
     extensions:
       - fish
