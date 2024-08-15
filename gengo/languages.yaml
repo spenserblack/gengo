@@ -755,6 +755,7 @@ Raku:
 Regex:
   category: data
   color: "#44E03F"
+  nerd-font-glyph: "\U0000eb38"
   matchers:
     extensions:
       - regex
