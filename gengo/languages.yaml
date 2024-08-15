@@ -175,6 +175,7 @@ CSS:
 CSV:
   category: data
   color: "#1D6F42"
+  nerd-font-glyph: "\U0000e64a"
   matchers:
     extensions:
       - csv
@@ -876,6 +877,7 @@ TOML:
 TSV:
   category: data
   color: "#1D6F42"
+  nerd-font-glyph: "\U0000e64a"
   matchers:
     extensions:
       - tsv
