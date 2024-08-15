@@ -972,6 +972,7 @@ Zig:
 fish:  # NOTE: fish is always lowercase in their documentation
   category: programming
   color: "#4AAE47"
+  nerd-font-glyph: "\U0000ee41"
   matchers:
     extensions:
       - fish
