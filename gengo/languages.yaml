@@ -948,6 +948,13 @@ Vue:
   matchers:
     extensions:
       - vue
+WebAssembly:
+  category: programming
+  color: "#654ff0"
+  matchers:
+    extensions:
+      - wast
+      - wat
 XML:
   category: data
   color: "#005FAF"
