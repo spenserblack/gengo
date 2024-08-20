@@ -907,6 +907,13 @@ TypeScript:
       - tsx
     interpreters:
       - deno
+VHDL:
+  category: programming
+  color: "#888888"
+  matchers:
+    extensions:
+      - vhd
+      - vhdl
 Vala:
   category: programming
   color: "#7239B3"
