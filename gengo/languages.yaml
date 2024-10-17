@@ -955,6 +955,14 @@ WebAssembly:
     extensions:
       - wast
       - wat
+Wolfram:
+  category: programming
+  color: "#DD1100"
+  matchers:
+    extensions:
+      - m
+      - nb
+      - wl
 XML:
   category: data
   color: "#005FAF"
