@@ -960,8 +960,8 @@ Wolfram:
   color: "#DD1100"
   matchers:
     extensions:
-      - nb
       - m
+      - nb
       - wl
 XML:
   category: data
