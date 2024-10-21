@@ -963,6 +963,13 @@ Wolfram:
       - m
       - nb
       - wl
+# NOTE: This is XML, and could possibly be combined
+XAML:
+  category: markup
+  color: "#8A2BE2"
+  matchers:
+    extensions:
+      - xaml
 XML:
   category: data
   color: "#005FAF"
