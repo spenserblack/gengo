@@ -91,6 +91,12 @@ Ada:
       - ada
       - adb
       - ads
+Agda:
+  category: programming
+  color: "#FFFFFF"
+  matchers:
+    extensions:
+      - agda
 Arduino:
   category: programming
   color: "#189BA1"
