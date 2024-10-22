@@ -91,6 +91,12 @@ Ada:
       - ada
       - adb
       - ads
+Agda:
+  category: programming
+  color: "#FFFFFF"
+  matchers:
+    extensions:
+      - agda
 Arduino:
   category: programming
   color: "#189BA1"
@@ -989,6 +995,13 @@ XML:
       - wxs
       - xml
   priority: 25
+XSL:
+  category: markup
+  color: "#33A9DC"
+  matchers:
+    extensions:
+      - xsl
+      - xslt
 YAML:
   category: data
   color: "#CC1018"
