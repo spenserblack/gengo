@@ -623,6 +623,12 @@ Org:
   matchers:
     extensions:
       - org
+Oz:
+  category: programming
+  color: "#FCAF3E"
+  matchers:
+    extensions:
+      - oz
 PHP:
   category: programming
   color: "#7A86B8"
