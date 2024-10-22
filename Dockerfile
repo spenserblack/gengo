@@ -1,4 +1,4 @@
-FROM rust:1-alpine3.18
+FROM rust:1-alpine3.19
 WORKDIR app
 COPY . .
 RUN apk --update add cmake make musl-dev pkgconfig && \
