@@ -989,6 +989,13 @@ XML:
       - wxs
       - xml
   priority: 25
+XSL:
+  category: markup
+  color: "#33A9DC"
+  matchers:
+    extensions:
+      - xsl
+      - xslt
 YAML:
   category: data
   color: "#CC1018"
