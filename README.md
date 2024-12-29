@@ -9,16 +9,16 @@ A [linguist][linguist]-inspired language classifier with multiple file source ha
 
 ## Comparison
 
-| Feature/Behavior | [linguist][linguist] | [tokei][tokei] | gengo |
-| :--------------: | :------------------: | :------------: | :---: |
-| **Analyze Git Revision** | Yes | No | Yes |
-| **Analyze Directory** | No | Yes | Yes |
-| **Requires Git Repository** | Yes | No | No |
-| **Detect Language by Extension** | Yes | Yes | Yes |
-| **Detect Language by Filename** | Yes | Yes | Yes |
-| **Detect by Filepath Pattern** | No | No | Yes |
-| **Detect Language with Heuristics** | Yes | No | Yes |
-| **Detect Language with Classifier** | Yes | No | Not Yet ;) |
+|          Feature/Behavior           | [linguist][linguist] |   gengo    |
+| :---------------------------------: | :------------------: | :--------: |
+|      **Analyze Git Revision**       |         Yes          |    Yes     |
+|        **Analyze Directory**        |          No          |    Yes     |
+|     **Requires Git Repository**     |         Yes          |     No     |
+|  **Detect Language by Extension**   |         Yes          |    Yes     |
+|   **Detect Language by Filename**   |         Yes          |    Yes     |
+|   **Detect by Filepath Pattern**    |          No          |    Yes     |
+| **Detect Language with Heuristics** |         Yes          |    Yes     |
+| **Detect Language with Classifier** |         Yes          | Not Yet ;) |
 
 ## Installation
 
@@ -30,7 +30,6 @@ This tool has multiple file sources. Each file source can have unique usage to t
 strengths and work around its weaknesses.
 
 ### Directory File Source
-
 
 This is a very generic file source that tries not to make many assumptions about your environment
 and workspace.
@@ -48,8 +47,8 @@ Its goal is to behave similarly to [linguist].
 #### Overrides
 
 Like [linguist][linguist], you can override behavior using a `.gitattributes` file.
-Basically, just replace `linguist-FOO` with `gengo-FOO`. *Unlike* linguist,
-`gengo-detectable` will *always* make a file be included in statistics (linguist
+Basically, just replace `linguist-FOO` with `gengo-FOO`. _Unlike_ linguist,
+`gengo-detectable` will _always_ make a file be included in statistics (linguist
 will still exclude them if they're generated or vendored).
 
 ```gitattributes
@@ -76,4 +75,3 @@ You will need to commit your `.gitattributes` file for it to take effect.
 [ignore-crate]: https://docs.rs/ignore
 [install-docs]: ./docs/INSTALLATION.md
 [linguist]: https://github.com/github-linguist/linguist
-[tokei]: https://github.com/xampprocky/tokei
