@@ -205,15 +205,15 @@ impl CLI {
 
     #[cfg(feature = "color")]
     fn colorize(&self, s: &str, color: owo_colors::Rgb) -> String {
-        use owo_colors::{AnsiColors::*, OwoColorize};
+        use owo_colors::{AnsiColors::*, OwoColorize, Rgb};
         use ColorControl::*;
 
         match self.color {
             Never => String::from(s),
             Always => {
                 let fg = Self::is_bright(color.0, color.1, color.2)
-                    .then_some(Black)
-                    .unwrap_or(White);
+                    .then_some(Rgb(0, 0, 0))
+                    .unwrap_or(Rgb(0xFF, 0xFF, 0xFF));
                 s.on_color(color).color(fg).to_string()
             }
             Ansi => {
