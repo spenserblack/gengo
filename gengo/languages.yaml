@@ -6,7 +6,7 @@
 # # The name of the language.
 # Language:
 #
-#   # data, markup, programming, prose, or query
+#   # data, markup, pattern, programming, prose, or query
 #   category:
 #
 #   # The color associated with the language.
@@ -68,7 +68,7 @@ ABAP:
     extensions:
       - abap
 ABNF:
-  category: data
+  category: pattern
   color: "#ABFABF"
   matchers:
     extensions:
@@ -766,7 +766,7 @@ Raku:
       - perl6
       - raku
 Regex:
-  category: data
+  category: pattern
   color: "#44E03F"
   nerd-font-glyph: "\U0000eb38"
   matchers:

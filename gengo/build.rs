@@ -52,6 +52,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             let category = match category {
                 "data" => "Data",
                 "markup" => "Markup",
+                "pattern" => "Pattern",
                 "programming" => "Programming",
                 "prose" => "Prose",
                 "query" => "Query",
