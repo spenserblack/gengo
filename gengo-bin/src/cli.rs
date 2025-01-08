@@ -232,11 +232,12 @@ impl CLI {
 
     #[cfg(feature = "color")]
     fn is_bright(r: u8, g: u8, b: u8) -> bool {
-        // NOTE Adapted from https://css-tricks.com/converting-color-spaces-in-javascript/#aa-rgb-to-hsl
-        let min: u16 = [r, g, b].into_iter().min().unwrap().into();
-        let max: u16 = [r, g, b].into_iter().max().unwrap().into();
-        let lightness = (max + min) / 2;
-        lightness > 0x7F
+        // NOTE See https://en.wikipedia.org/wiki/Relative_luminance
+        [(r, 0.2126), (g, 0.7152), (b, 0.0722)]
+            .into_iter()
+            .map(|(channel, weight)| (f32::from(channel) / 255.0) * weight)
+            .sum::<f32>()
+            > 0.5
     }
 
     #[cfg(feature = "color")]
