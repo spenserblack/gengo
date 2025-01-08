@@ -114,7 +114,7 @@ impl<FS: for<'fs> FileSource<'fs>> Gengo<FS> {
 
         let detectable = match language.category() {
             Category::Data | Category::Prose => false,
-            Category::Programming | Category::Markup | Category::Query => {
+            Category::Pattern | Category::Programming | Category::Markup | Category::Query => {
                 !(generated || documentation || vendored)
             }
         };
