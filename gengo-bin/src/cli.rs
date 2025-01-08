@@ -246,6 +246,7 @@ impl CLI {
         [
             (Black, (0u8, 0u8, 0u8)),
             (Red, (0xFF, 0, 0)),
+            (Green, (0, 0xFF, 0)),
             (Yellow, (0xFF, 0xFF, 0)),
             (Blue, (0, 0, 0xFF)),
             (Magenta, (0xFF, 0, 0xFF)),
