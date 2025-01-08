@@ -18,7 +18,7 @@ max-performance = ["gix/max-performance"]
 max-performance-safe = ["gix/max-performance-safe"]
 
 [dependencies]
-gix = { version = ">= 0.56, <= 0.68", default-features = false, features = [
+gix = { version = ">= 0.56, <= 0.69", default-features = false, features = [
     "attributes",
     "index",
     "parallel",
@@ -42,7 +42,7 @@ quote = "1"
 [dev-dependencies]
 criterion = { version = "0.5", default-features = false, features = ["rayon", "cargo_bench_support"] }
 insta = "1"
-rstest = { version = "0.23", default-features = false }
+rstest = { version = "0.24", default-features = false }
 serde_yaml = "0.9"
 
 [[bench]]
