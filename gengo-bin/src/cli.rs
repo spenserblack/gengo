@@ -211,14 +211,20 @@ impl CLI {
         match self.color {
             Never => String::from(s),
             Always => {
-                let fg = Self::is_bright(color.0, color.1, color.2)
-                    .then_some(Rgb(0, 0, 0))
-                    .unwrap_or(Rgb(0xFF, 0xFF, 0xFF));
+                let fg = if Self::is_bright(color.0, color.1, color.2) {
+                    Rgb(0, 0, 0)
+                } else {
+                    Rgb(0xFF, 0xFF, 0xFF)
+                };
                 s.on_color(color).color(fg).to_string()
             }
             Ansi => {
                 let (bg, (r, g, b)) = Self::closest_color(color);
-                let fg = Self::is_bright(r, g, b).then_some(Black).unwrap_or(White);
+                let fg = if Self::is_bright(r, g, b) {
+                    Black
+                } else {
+                    White
+                };
                 s.on_color(bg).color(fg).to_string()
             }
         }
