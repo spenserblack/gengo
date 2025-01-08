@@ -228,6 +228,8 @@ pub enum Category {
     Data,
     /// Markup languages. Examples: HTML, Pug, etc.
     Markup,
+    /// Languages that define text patterns. Examples: Regex, ABNF, etc.
+    Pattern,
     /// Programming languages. Examples: Rust, C, C++, Java, etc.
     Programming,
     /// Prose. Examples: Plain text, Markdown, etc.
