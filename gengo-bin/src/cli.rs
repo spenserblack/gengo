@@ -2,7 +2,9 @@ use clap::Error as ClapError;
 use clap::{Parser, Subcommand, ValueEnum};
 use gengo::{analysis::SummaryOpts, Analysis, Builder, Directory, Git};
 use indexmap::IndexMap;
+#[cfg(feature = "color")]
 use owo_colors::Rgb;
+#[cfg(feature = "color")]
 use relative_luminance::Luminance;
 use std::error::Error as BaseError;
 use std::io::{self, Write};
