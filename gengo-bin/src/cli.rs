@@ -289,22 +289,30 @@ impl Commands {
     }
 }
 
-struct RgbWrapper(Rgb);
+#[cfg(feature = "color")]
+mod color_support {
+    use super::*;
 
-impl Luminance<f32> for RgbWrapper {
-    fn luminance_rgb(&self) -> relative_luminance::Rgb<f32> {
-        let Rgb(r, g, b) = self.0;
-        // NOTE Normalize to the range [0.0, 1.0]
-        relative_luminance::Rgb::new(
-            f32::from(r) / 255.0,
-            f32::from(g) / 255.0,
-            f32::from(b) / 255.0,
-        )
+    pub(super) struct RgbWrapper(Rgb);
+
+    impl Luminance<f32> for RgbWrapper {
+        fn luminance_rgb(&self) -> relative_luminance::Rgb<f32> {
+            let Rgb(r, g, b) = self.0;
+            // NOTE Normalize to the range [0.0, 1.0]
+            relative_luminance::Rgb::new(
+                f32::from(r) / 255.0,
+                f32::from(g) / 255.0,
+                f32::from(b) / 255.0,
+            )
+        }
+    }
+
+    impl From<Rgb> for RgbWrapper {
+        fn from(rgb: Rgb) -> Self {
+            Self(rgb)
+        }
     }
 }
 
-impl From<Rgb> for RgbWrapper {
-    fn from(rgb: Rgb) -> Self {
-        Self(rgb)
-    }
-}
+#[cfg(feature = "color")]
+use color_support::*;
