@@ -2,6 +2,10 @@ use clap::Error as ClapError;
 use clap::{Parser, Subcommand, ValueEnum};
 use gengo::{analysis::SummaryOpts, Analysis, Builder, Directory, Git};
 use indexmap::IndexMap;
+#[cfg(feature = "color")]
+use owo_colors::Rgb;
+#[cfg(feature = "color")]
+use relative_luminance::Luminance;
 use std::error::Error as BaseError;
 use std::io::{self, Write};
 
@@ -211,7 +215,7 @@ impl CLI {
         match self.color {
             Never => String::from(s),
             Always => {
-                let fg = if Self::is_bright(color.0, color.1, color.2) {
+                let fg = if Self::is_bright(color) {
                     Rgb(0, 0, 0)
                 } else {
                     Rgb(0xFF, 0xFF, 0xFF)
@@ -220,7 +224,7 @@ impl CLI {
             }
             Ansi => {
                 let (bg, (r, g, b)) = Self::closest_color(color);
-                let fg = if Self::is_bright(r, g, b) {
+                let fg = if Self::is_bright(Rgb(r, g, b)) {
                     Black
                 } else {
                     White
@@ -231,13 +235,8 @@ impl CLI {
     }
 
     #[cfg(feature = "color")]
-    fn is_bright(r: u8, g: u8, b: u8) -> bool {
-        // NOTE See https://en.wikipedia.org/wiki/Relative_luminance
-        [(r, 0.2126), (g, 0.7152), (b, 0.0722)]
-            .into_iter()
-            .map(|(channel, weight)| (f32::from(channel) / 255.0) * weight)
-            .sum::<f32>()
-            > 0.5
+    fn is_bright<T: Into<RgbWrapper>>(color: T) -> bool {
+        color.into().relative_luminance() > 0.5
     }
 
     #[cfg(feature = "color")]
@@ -291,3 +290,31 @@ impl Commands {
         }
     }
 }
+
+#[cfg(feature = "color")]
+mod color_support {
+    use super::*;
+
+    pub(super) struct RgbWrapper(Rgb);
+
+    impl Luminance<f32> for RgbWrapper {
+        fn luminance_rgb(&self) -> relative_luminance::Rgb<f32> {
+            let Rgb(r, g, b) = self.0;
+            // NOTE Normalize to the range [0.0, 1.0]
+            relative_luminance::Rgb::new(
+                f32::from(r) / 255.0,
+                f32::from(g) / 255.0,
+                f32::from(b) / 255.0,
+            )
+        }
+    }
+
+    impl From<Rgb> for RgbWrapper {
+        fn from(rgb: Rgb) -> Self {
+            Self(rgb)
+        }
+    }
+}
+
+#[cfg(feature = "color")]
+use color_support::*;
