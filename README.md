@@ -22,6 +22,8 @@ A [linguist][linguist]-inspired language classifier with multiple file source ha
 
 ## Installation
 
+[![Packaging status](https://repology.org/badge/vertical-allrepos/rust%3Agengo.svg)](https://repology.org/project/rust%3Agengo/versions)
+
 View [the installation documentation][install-docs].
 
 ## Usage
