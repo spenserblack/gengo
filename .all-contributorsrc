@@ -109,6 +109,15 @@
       "contributions": [
         "platform"
       ]
+    },
+    {
+      "login": "adamperkowski",
+      "name": "Adam Perkowski",
+      "avatar_url": "https://avatars.githubusercontent.com/u/75480869?v=4",
+      "profile": "https://adamperkowski.dev",
+      "contributions": [
+        "platform"
+      ]
     }
   ],
   "contributorsPerLine": 7,
