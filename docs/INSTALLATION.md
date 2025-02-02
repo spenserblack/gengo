@@ -14,6 +14,7 @@ curl https://raw.githubusercontent.com/spenserblack/gengo/main/install.sh | sh
 ```
 
 ## Arch Linux
+
 gengo is available as [an AUR package](https://aur.archlinux.org/packages/gengo/).
 It can be installed using an AUR helper (e.g. paru):
 
