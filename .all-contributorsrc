@@ -119,6 +119,15 @@
         "platform",
         "data"
       ]
+    },
+    {
+      "login": "mertcandav",
+      "name": "Mertcan D.",
+      "avatar_url": "https://avatars.githubusercontent.com/u/54983926?v=4",
+      "profile": "https://github.com/mertcandav",
+      "contributions": [
+        "data"
+      ]
     }
   ],
   "contributorsPerLine": 7,
