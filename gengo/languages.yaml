@@ -519,6 +519,13 @@ Jsonnet:
     extensions:
       - jsonnet
       - libsonnet
+Jule:
+  category: programming
+  color: "#5F7489"
+  nerd-font-glyph: "\U0000e80c"
+  matchers:
+    extensions:
+      - jule
 Julia:
   category: programming
   color: "#9558B2"
