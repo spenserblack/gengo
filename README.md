@@ -44,7 +44,9 @@ being scanned. See the [`ignore`][ignore-crate] for more details.
 ### Git File Source
 
 The git file source is highly opinionated -- it tries to act like a git utility, and uses git tools.
-Its goal is to behave similarly to [linguist].
+Its goal is to behave similarly to [linguist]. This means that this file source does *not* need any
+actual files present, and can work on a bare repository, making it suitable for usage with a Git
+server.
 
 #### Overrides
 
