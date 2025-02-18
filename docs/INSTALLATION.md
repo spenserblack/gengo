@@ -8,7 +8,7 @@ Behind the scenes, this script downloads a binary from the latest GitHub release
 
 Run this command on PowerShell:
 ```shell
-irm https://raw.githubusercontent.com/spenserblack/gengo/main/install.ps1 | iex
+Invoke-RestMethod https://raw.githubusercontent.com/spenserblack/gengo/main/install.ps1 | Invoke-Expression
 ```
 If this doesn't work, try to run following command on PowerShell with administrative privileges and then rerun script:
 ```shell
