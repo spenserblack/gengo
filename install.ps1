@@ -12,7 +12,7 @@ try {
     # Download and extract gengo
     $tempFile = "gengo-installer.tar.gz"
     Invoke-WebRequest -Uri "https://github.com/spenserblack/gengo/releases/latest/download/gengo-x86_64-pc-windows-msvc.tar.gz" -OutFile $tempFile
-    tar -xzf $tempFile
+    tar.exe -xzf $tempFile
 
     # Move executable to AppData/Roaming/gengo
     Move-Item -Force "gengo.exe" $gengoPath
