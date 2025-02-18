@@ -10,10 +10,7 @@ Run this command on PowerShell:
 ```shell
 Invoke-RestMethod https://raw.githubusercontent.com/spenserblack/gengo/main/install.ps1 | Invoke-Expression
 ```
-If this doesn't work, try to run following command on PowerShell with administrative privileges and then rerun script:
-```shell
-Set-ExecutionPolicy Unrestricted
-```
+If you get an error regarding execution policy, please read the error carefully and determine the execution policy that is right for you. You may try re-running the installation script if you have updated the execution policy.
 
 ### Unix
 
