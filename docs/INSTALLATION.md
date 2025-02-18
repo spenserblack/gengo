@@ -30,6 +30,13 @@ It can be installed using an AUR helper (e.g. paru):
 paru -S gengo
 ```
 
+## Scoop
+
+gengo is available in [Scoop](https://scoop.sh). Note that manifest [published only as GitHub Gist](https://gist.github.com/ankddev/0f5ba567eb70b52825aa92b3a3532494)
+```shell
+scoop install https://gist.githubusercontent.com/ankddev/0f5ba567eb70b52825aa92b3a3532494/raw/gengo.json
+```
+
 ## From GitHub Releases
 
 Download the appropriate file from [a release](https://github.com/spenserblack/gengo/releases).
