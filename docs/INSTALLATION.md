@@ -4,10 +4,18 @@
 
 Behind the scenes, this script downloads a binary from the latest GitHub release.
 
-**This will activate `sudo` to write the executable.** Please review the install script before
-running it.
+### Windows
+
+```powershell
+Invoke-RestMethod "https://raw.githubusercontent.com/spenserblack/gengo/main/install.ps1" | Invoke-Expression
+```
+
+If you get an error regarding execution policy, please read the error carefully and determine the execution policy that is right for you. You may try re-running the installation script if you have updated the execution policy.
 
 ### Unix
+
+**This will activate `sudo` to write the executable.** Please review the install script before
+running it.
 
 ```shell
 curl https://raw.githubusercontent.com/spenserblack/gengo/main/install.sh | sh
