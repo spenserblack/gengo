@@ -6,10 +6,10 @@ Behind the scenes, this script downloads a binary from the latest GitHub release
 
 ### Windows
 
-Run this command on PowerShell:
-```shell
-Invoke-RestMethod https://raw.githubusercontent.com/spenserblack/gengo/main/install.ps1 | Invoke-Expression
+```powershell
+Invoke-RestMethod "https://raw.githubusercontent.com/spenserblack/gengo/main/install.ps1" | Invoke-Expression
 ```
+
 If you get an error regarding execution policy, please read the error carefully and determine the execution policy that is right for you. You may try re-running the installation script if you have updated the execution policy.
 
 ### Unix
