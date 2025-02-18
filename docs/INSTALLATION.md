@@ -4,10 +4,21 @@
 
 Behind the scenes, this script downloads a binary from the latest GitHub release.
 
-**This will activate `sudo` to write the executable.** Please review the install script before
-running it.
+### Windows
+
+Run this command on PowerShell:
+```shell
+irm https://raw.githubusercontent.com/spenserblack/gengo/main/install.ps1 | iex
+```
+If this doesn't work, try to run following command on PowerShell with administrative privileges and then rerun script:
+```shell
+Set-ExecutionPolicy Unrestricted
+```
 
 ### Unix
+
+**This will activate `sudo` to write the executable.** Please review the install script before
+running it.
 
 ```shell
 curl https://raw.githubusercontent.com/spenserblack/gengo/main/install.sh | sh
