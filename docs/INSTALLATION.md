@@ -32,9 +32,9 @@ paru -S gengo
 
 ## Scoop
 
-gengo is available in [Scoop](https://scoop.sh). Note that manifest [published only as GitHub Gist](https://gist.github.com/ankddev/0f5ba567eb70b52825aa92b3a3532494)
+gengo is available in [Scoop](https://scoop.sh). Note that manifest placed in `scoop/gengo.json` in this repo.
 ```shell
-scoop install https://gist.githubusercontent.com/ankddev/0f5ba567eb70b52825aa92b3a3532494/raw/gengo.json
+scoop install https://raw.githubusercontent.com/spenserblack/gengo/main/scoop/gengo.json
 ```
 
 ## From GitHub Releases
