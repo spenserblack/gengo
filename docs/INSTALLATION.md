@@ -10,6 +10,14 @@ Behind the scenes, this script downloads a binary from the latest GitHub release
 Invoke-RestMethod "https://raw.githubusercontent.com/spenserblack/gengo/main/install.ps1" | Invoke-Expression
 ```
 
+#### Scoop
+
+gengo is installable via [Scoop](https://scoop.sh). See the [Scoop manifest][scoop-manifest].
+
+```shell
+scoop install https://raw.githubusercontent.com/spenserblack/gengo/main/scoop/gengo.json
+```
+
 If you get an error regarding execution policy, please read the error carefully and determine the execution policy that is right for you. You may try re-running the installation script if you have updated the execution policy.
 
 ### Unix
@@ -54,3 +62,4 @@ docker run --rm -v $(pwd):$(pwd) -w $(pwd) -t gengo
 Or pull it from the [GitHub Container Registry][ghcr-package].
 
 [ghcr-package]: https://github.com/users/spenserblack/packages/container/package/gengo
+[scoop-manifest]: ../scoop/gengo.json
