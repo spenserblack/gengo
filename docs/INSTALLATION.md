@@ -1,16 +1,20 @@
 # Installation
 
-## Install Script
+## Windows
 
-Behind the scenes, this script downloads a binary from the latest GitHub release.
+### Installation script
 
-### Windows
+This will download a binary from the latest GitHub release.
 
 ```powershell
 Invoke-RestMethod "https://raw.githubusercontent.com/spenserblack/gengo/main/install.ps1" | Invoke-Expression
 ```
 
-#### Scoop
+If you get an error regarding execution policy, please read the error carefully and
+determine the execution policy that is right for you. You may try re-running the
+installation script if you have updated the execution policy.
+
+### Scoop
 
 gengo is installable via [Scoop](https://scoop.sh). See the [Scoop manifest][scoop-manifest].
 
@@ -18,18 +22,19 @@ gengo is installable via [Scoop](https://scoop.sh). See the [Scoop manifest][sco
 scoop install https://raw.githubusercontent.com/spenserblack/gengo/main/scoop/gengo.json
 ```
 
-If you get an error regarding execution policy, please read the error carefully and determine the execution policy that is right for you. You may try re-running the installation script if you have updated the execution policy.
+## Unix
 
-### Unix
+### Installation script
 
-**This will activate `sudo` to write the executable.** Please review the install script before
-running it.
+This will download a binary from the latest GitHub release.
+**This will activate `sudo` to write the executable.** Please review the install script
+before running it.
 
 ```shell
 curl https://raw.githubusercontent.com/spenserblack/gengo/main/install.sh | sh
 ```
 
-## Arch Linux
+### Arch Linux
 
 gengo is available as [an AUR package](https://aur.archlinux.org/packages/gengo/).
 It can be installed using an AUR helper (e.g. paru):
@@ -38,11 +43,13 @@ It can be installed using an AUR helper (e.g. paru):
 paru -S gengo
 ```
 
-## From GitHub Releases
+## Universal
+
+### From GitHub Releases
 
 Download the appropriate file from [a release](https://github.com/spenserblack/gengo/releases).
 
-## With `cargo`
+### With `cargo`
 
 The following installs the `gengo` binary.
 
@@ -50,7 +57,7 @@ The following installs the `gengo` binary.
 cargo install gengo-bin
 ```
 
-## Docker
+### Docker
 
 You can build a docker image and run it as well.
 
