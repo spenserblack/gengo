@@ -18,7 +18,7 @@ installation script if you have updated the execution policy.
 
 gengo is installable via [Scoop](https://scoop.sh). See the [Scoop manifest][scoop-manifest].
 
-```shell
+```batch
 scoop install https://raw.githubusercontent.com/spenserblack/gengo/main/scoop/gengo.json
 ```
 
