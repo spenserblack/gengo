@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<types>
+    <dataTypes>
+        <type>
+            <name>Integer</name>
+            <description>Whole number data type</description>
+            <example>42</example>
+        </type>
+        <type>
+            <name>String</name>
+            <description>Text data type</description>
+            <example>Hello World</example>
+        </type>
+        <type>
+            <name>Boolean</name>
+            <description>Logical data type</description>
+            <example>true</example>
+        </type>
+        <type>
+            <name>Float</name>
+            <description>Decimal number data type</description>
+            <example>3.14</example>
+        </type>
+    </dataTypes>
+</types>
