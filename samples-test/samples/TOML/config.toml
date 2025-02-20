@@ -1,0 +1,12 @@
+# App's settings
+[app]
+# App's name
+name = "My App"
+# App's version
+version = "1.0.0"
+# App's description
+description = "My App's description"
+# App's license
+license = "MIT"
+# App's repository
+repository = "
