@@ -9,7 +9,7 @@ function parseExpression(expression) {
         const cleanExpression = expression.replace(/\s+/g, '');
         
         // Check for invalid characters
-        if (!/^[0-9+\-*/().]+$/.test(cleanExpression)) {
+        if (/[^0-9+\-*/().]/.test(cleanExpression)) {
             throw new Error('Invalid characters in expression');
         }
 
