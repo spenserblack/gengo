@@ -1,0 +1,14 @@
+{
+    "name": "Development Container",
+    "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+    "features": {},
+    "customizations": {
+        "vscode": {
+            "extensions": []
+        }
+    },
+    "forwardPorts": [],
+    // Use 'postCreateCommand' to run commands after the container is created
+    "postCreateCommand": "echo 'Container is ready!'",
+    "remoteUser": "vscode"
+}
