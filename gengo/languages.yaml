@@ -785,6 +785,13 @@ Regex:
   matchers:
     extensions:
       - rpy
+reStructured Text:
+  category: prose
+  color: "#141414"
+  matchers:
+    extensions:
+      - rst
+      - rest
 Ruby:
   category: programming
   color: "#D21304"
