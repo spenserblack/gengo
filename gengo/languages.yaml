@@ -785,13 +785,6 @@ Regex:
   matchers:
     extensions:
       - rpy
-reStructured Text:
-  category: prose
-  color: "#141414"
-  matchers:
-    extensions:
-      - rest
-      - rst
 Ruby:
   category: programming
   color: "#D21304"
@@ -1040,3 +1033,10 @@ fish:  # NOTE: fish is always lowercase in their documentation
       - fish
     interpreters:
       - fish
+reStructured Text:
+  category: prose
+  color: "#141414"
+  matchers:
+    extensions:
+      - rest
+      - rst
