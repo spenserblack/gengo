@@ -1,0 +1,13 @@
+.env
+.env.local
+node_modules
+README.md
+.gitignore
+.vscode
+.idea
+tests
+*.test.js
+*.spec.js
+coverage
+dist
+build
