@@ -9,4 +9,5 @@ description = "My App's description"
 # App's license
 license = "MIT"
 # App's repository
-repository = "
+repository = "https://github.com/ghost/example.git"
+
