@@ -790,8 +790,8 @@ reStructured Text:
   color: "#141414"
   matchers:
     extensions:
-      - rst
       - rest
+      - rst
 Ruby:
   category: programming
   color: "#D21304"
