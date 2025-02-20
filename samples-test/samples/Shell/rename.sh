@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Check if correct number of arguments is provided
 if [ $# -ne 2 ]; then
