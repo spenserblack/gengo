@@ -145,7 +145,7 @@ C:
   color: "#178600"
   nerd-font-glyph: "\U000f031b"
   heuristics:
-    - "^\\s*(using\\s+[A-Z][\\s\\w.]+;|namespace\\s*[\\w\\.]+\\s*(\\{|;)|\\/\\/)"
+    - '^\s*(using\s+[A-Z][\s\w.]+;|namespace\s*[\w\.]+\s*(\{|;)|\/\/)'
   matchers:
     extensions:
       - cake
