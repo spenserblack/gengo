@@ -145,7 +145,7 @@ C:
   color: "#178600"
   nerd-font-glyph: "\U000f031b"
   heuristics:
-    - "^\\s*(using\\s+[A-Z][\\s\\w.]+;|namespace\\s*[\\w\\.]+\\s*(\\{|;)|\\/\\/)"
+    - '^\s*(using\s+[A-Z][\s\w.]+;|namespace\s*[\w\.]+\s*(\{|;)|\/\/)'
   matchers:
     extensions:
       - cake
@@ -471,7 +471,7 @@ JSON with Comments:
   color: "#CCCCCC"
   nerd-font-glyph: "\U0000eb0f"
   heuristics:
-    - "(?m)^\\s*/[/\\*]"
+    - '(?m)^\s*/[/\*]'
   matchers:
     extensions:
       - json
@@ -505,8 +505,8 @@ Jinja-like:
   color: "#A00000"
   nerd-font-glyph: "\U0000e66f"
   heuristics:
-    - "^\\{%\\sextends\\s"
-    - "\\{%\\s.+?\\s%\\}"
+    - '^\{%\sextends\s'
+    - '\{%\s.+?\s%\}'
   matchers:
     extensions:
       - html
@@ -917,9 +917,9 @@ TypeScript:
   color: "#2F74C0"
   nerd-font-glyph: "\U0000e628"
   heuristics:
-    - "(?m)^/// <reference "
-    - "(?m)^export\\s+\\w[\\w\\d_]*?"
-    - "(?m)^import\\s+"
+    - '(?m)^/// <reference '
+    - '(?m)^export\s+\w[\w\d_]*?'
+    - '(?m)^import\s+'
   matchers:
     extensions:
       - ts
@@ -994,7 +994,7 @@ XML:
   color: "#005FAF"
   nerd-font-glyph: "\U000f05c0"
   heuristics:
-    - "<TS version=\"\\d+(?:\\.d+)+\" language=\""
+    - '<TS version="\d+(?:\.d+)+" language="'
   matchers:
     extensions:
       - ts
