@@ -135,6 +135,9 @@ C:
   category: programming
   color: "#8888CC"
   nerd-font-glyph: "\U0000e61e"
+  heuristics:
+    - '(?m)^#include\s+<(stdio\.h|stdlib\.h|string\.h|math\.h)>'
+    - '(?m)^int\s+main\s*\(\s*(void|int\s+argc\s*,\s*char\s*\*\s*argv\[\s*\])\s*SW\)'
   matchers:
     extensions:
       - c
@@ -155,6 +158,11 @@ C:
   category: programming
   color: "#88CC88"
   nerd-font-glyph: "\U0000e61d"
+  heuristics:
+    - '(?m)^#include\s+<(iostream|vector|string|algorithm)>'
+    - '(?m)^(namespace\s+\w+\s*\{|using\s+namespace\s+\w+;)'
+    - '(?m)^(class|template|typename)\b'
+    - '(?m)\b(std::|nullptr|constexpr)\b'
   matchers:
     extensions:
       - c++
