@@ -160,8 +160,8 @@ C:
   nerd-font-glyph: "\U0000e61d"
   heuristics:
     - '(?m)^#include\s+<(iostream|vector|string|algorithm)>'
-    - '(?m)^\s*(namespace\s+\w+\s*\{|using\s+namespace\s+\w+;)'
-    - '(?m)^\s*(class|template|typename)\b'
+    - '(?m)^(namespace\s+\w+\s*\{|using\s+namespace\s+\w+;)'
+    - '(?m)^(class|template|typename)\b'
     - '(?m)\b(std::|nullptr|constexpr)\b'
   matchers:
     extensions:
