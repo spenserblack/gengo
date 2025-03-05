@@ -91,3 +91,25 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+  scoop:
+    name: Update scoop manifest
+    if: ${{ github.event_name != 'workflow_dispatch' }}
+    needs: github
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      TAG: ${{ github.ref_name }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update manifest for ${{ env.TAG }}
+        run: './scripts/update-scoop.rb ./scoop/gengo.json "${TAG}"'
+      - name: Commit and push changes
+        run: |
+          git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git config --global user.name 'github-actions[bot]'
+          git add ./scoop/gengo.json
+          git commit -m "Update scoop manifest for ${TAG}"
+          git push
