@@ -104,6 +104,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Update manifest for ${{ env.TAG }}
         run: './scripts/update-scoop.rb ./scoop/gengo.json "${TAG}"'
       - name: Commit and push changes
