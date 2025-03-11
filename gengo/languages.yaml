@@ -384,6 +384,12 @@ GitHub Workflow:
       - ".github/workflows/*.yaml"
       - ".github/workflows/*.yml"
   priority: 75
+Gleam:
+  category: programming
+  color: "#ffaff3"
+  matchers:
+    extensions:
+      - gleam
 Go:
   category: programming
   color: "#00ADD8"
@@ -391,12 +397,6 @@ Go:
   matchers:
     extensions:
       - go
-Gleam:
-  category: programming
-  color: "#ffaff3"
-  matchers:
-    extensions:
-      - gleam
 GraphQL:
   category: query
   color: "#E10098"
