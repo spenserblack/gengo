@@ -391,6 +391,12 @@ Go:
   matchers:
     extensions:
       - go
+Gleam:
+  category: programming
+  color: "#ffaff3"
+  matchers:
+    extensions:
+      - gleam
 GraphQL:
   category: query
   color: "#E10098"
