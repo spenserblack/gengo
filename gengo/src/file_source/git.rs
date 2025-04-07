@@ -132,6 +132,7 @@ impl<'repo> FileSource<'repo> for Git {
         path: impl AsRef<Path>,
         (state, repository): &mut Self::State,
     ) -> Overrides {
+        let path = path.as_ref();
         let Ok(platform) = state.attr_stack.at_path(
             path,
             Some(EntryMode::FILE | EntryMode::FILE_EXECUTABLE),
