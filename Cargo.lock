@@ -158,6 +158,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
+name = "chromaterm"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fffd51f7de585398eefaf092a37e355acd09066bf3d85360fda2da22172f0356"
+
+[[package]]
 name = "ciborium"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -484,6 +490,7 @@ dependencies = [
 name = "gengo"
 version = "0.12.3"
 dependencies = [
+ "chromaterm",
  "criterion",
  "gix",
  "glob",
@@ -505,11 +512,11 @@ dependencies = [
 name = "gengo-bin"
 version = "0.12.3"
 dependencies = [
+ "chromaterm",
  "clap",
  "gengo",
  "indexmap",
  "insta",
- "owo-colors",
  "relative-luminance",
  "serde_json",
 ]
