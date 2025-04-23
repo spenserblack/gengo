@@ -46,7 +46,7 @@ pub struct CLI {
     /// Control when colors are displayed.
     #[cfg(feature = "color")]
     #[arg(long, default_value = "auto")]
-    pub color: ColorControl,
+    color: ColorControl,
     /// The format to use for output.
     #[arg(short = 'F', long, default_value = "pretty")]
     format: Format,
@@ -224,11 +224,7 @@ impl CLI {
 
     #[cfg(feature = "color")]
     fn colorize(&self, s: &str, color: &colors::True) -> String {
-        use chromaterm::{
-            colors::{Simple, True},
-            Color,
-        };
-        use ColorControl::*;
+        use chromaterm::{colors::Simple, Color};
 
         let fg = if Self::is_bright(color) {
             Simple::Black
