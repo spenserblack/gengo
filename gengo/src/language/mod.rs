@@ -210,6 +210,15 @@ impl serde::Serialize for Language {
     }
 }
 
+#[cfg(feature = "chromaterm")]
+impl Language {
+    /// Converts the color to RGB true color.
+    pub const fn chromaterm_color(&self) -> chromaterm::colors::True {
+        let (r, g, b) = self.color_rgb();
+        chromaterm::colors::True::from_rgb(r, g, b)
+    }
+}
+
 #[cfg(feature = "owo-colors")]
 impl Language {
     /// Converts the color to RGB.

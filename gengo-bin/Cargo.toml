@@ -18,13 +18,13 @@ name = "gengo"
 
 [features]
 default = ["color", "gengo/max-performance"]
-color = ["gengo/owo-colors", "owo-colors", "relative-luminance"]
+color = ["gengo/chromaterm", "chromaterm", "relative-luminance"]
 
 [dependencies]
+chromaterm = { workspace = true, optional = true }
 clap = { version = "4", features = ["derive", "wrap_help"] }
 gengo = { path = "../gengo", version = "0.13", default-features = false }
 indexmap.workspace = true
-owo-colors = { workspace = true, optional = true }
 relative-luminance = { version = "1", optional = true }
 serde_json.workspace = true
 

@@ -1,9 +1,9 @@
+#[cfg(feature = "color")]
+use chromaterm::{colors, prelude::*};
 use clap::Error as ClapError;
 use clap::{Parser, Subcommand, ValueEnum};
 use gengo::{Analysis, Builder, Directory, Git, analysis::SummaryOpts};
 use indexmap::IndexMap;
-#[cfg(feature = "color")]
-use owo_colors::Rgb;
 #[cfg(feature = "color")]
 use relative_luminance::Luminance;
 use std::error::Error as BaseError;
@@ -45,7 +45,7 @@ pub struct CLI {
     breakdown: bool,
     /// Control when colors are displayed.
     #[cfg(feature = "color")]
-    #[arg(long, default_value = "always")]
+    #[arg(long, default_value = "auto")]
     color: ColorControl,
     /// The format to use for output.
     #[arg(short = 'F', long, default_value = "pretty")]
@@ -74,6 +74,8 @@ enum Commands {
 #[cfg(feature = "color")]
 #[derive(ValueEnum, Debug, Clone)]
 enum ColorControl {
+    /// Automatically detect if colors are supported.
+    Auto,
     /// Always use colors.
     Always,
     /// Use only the 8 ANSI colors.
@@ -92,6 +94,19 @@ enum Format {
 
 impl CLI {
     pub fn run(&self, mut out: impl Write, mut err: impl Write) -> Result<(), io::Error> {
+        #[cfg(feature = "color")]
+        {
+            use ColorControl::*;
+            use chromaterm::ColorSupport;
+
+            chromaterm::config::convert_to_supported(true);
+            match self.color {
+                Auto => chromaterm::config::use_default_color_support(),
+                Always => chromaterm::config::use_color_support(ColorSupport::True),
+                Ansi => chromaterm::config::use_color_support(ColorSupport::Simple),
+                Never => chromaterm::config::use_color_support(ColorSupport::None),
+            }
+        }
         let results = self.command.analyze(self.read_limit);
         let results = match results {
             Ok(results) => results,
@@ -121,13 +136,13 @@ impl CLI {
         for (language, size) in summary.iter() {
             let percentage = (*size * 100) as f64 / total;
             #[cfg(feature = "color")]
-            let color = language.owo_color();
+            let color = language.chromaterm_color();
             #[cfg(not(feature = "color"))]
             let color = ();
 
             let stats = format!("{:>6.2}% {}", percentage, size);
             let line = format!("{:<15} {}", stats, language.name());
-            let line = self.colorize(&line, color);
+            let line = self.colorize(&line, &color);
             writeln!(out, "{}", line)?;
         }
 
@@ -183,11 +198,11 @@ impl CLI {
 
         for (language, files) in files_per_language.into_iter() {
             #[cfg(feature = "color")]
-            let color = language.owo_color();
+            let color = language.chromaterm_color();
             #[cfg(not(feature = "color"))]
             let color = ();
 
-            writeln!(out, "{}", self.colorize(language.name(), color))?;
+            writeln!(out, "{}", self.colorize(language.name(), &color))?;
 
             let files = {
                 let mut files = files;
@@ -199,7 +214,7 @@ impl CLI {
                 writeln!(
                     out,
                     "  {}",
-                    self.colorize(&file.display().to_string(), color)
+                    self.colorize(&file.display().to_string(), &color)
                 )?;
             }
             writeln!(out)?;
@@ -208,61 +223,21 @@ impl CLI {
     }
 
     #[cfg(feature = "color")]
-    fn colorize(&self, s: &str, color: owo_colors::Rgb) -> String {
-        use ColorControl::*;
-        use owo_colors::{AnsiColors::*, OwoColorize, Rgb};
+    fn colorize(&self, s: &str, color: &colors::True) -> String {
+        use chromaterm::{Color, colors::True};
 
-        match self.color {
-            Never => String::from(s),
-            Always => {
-                let fg = if Self::is_bright(color) {
-                    Rgb(0, 0, 0)
-                } else {
-                    Rgb(0xFF, 0xFF, 0xFF)
-                };
-                s.on_color(color).color(fg).to_string()
-            }
-            Ansi => {
-                let (bg, (r, g, b)) = Self::closest_color(color);
-                let fg = if Self::is_bright(Rgb(r, g, b)) {
-                    Black
-                } else {
-                    White
-                };
-                s.on_color(bg).color(fg).to_string()
-            }
-        }
+        let fg = if Self::is_bright(color) {
+            True::from_rgb(0, 0, 0)
+        } else {
+            True::from_rgb(0xFF, 0xFF, 0xFF)
+        };
+        let (r, g, b) = color.rgb_u8();
+        s.on_rgb(r, g, b).color(fg).to_string()
     }
 
     #[cfg(feature = "color")]
-    fn is_bright<T: Into<RgbWrapper>>(color: T) -> bool {
+    fn is_bright<'a, T: Into<RgbWrapper<'a>>>(color: T) -> bool {
         color.into().relative_luminance() > 0.5
-    }
-
-    #[cfg(feature = "color")]
-    fn closest_color(rgb: owo_colors::Rgb) -> (owo_colors::AnsiColors, (u8, u8, u8)) {
-        use owo_colors::AnsiColors::*;
-        // NOTE Gets the closest color by Euclidean distance
-        [
-            (Black, (0u8, 0u8, 0u8)),
-            (Red, (0xFF, 0, 0)),
-            (Green, (0, 0xFF, 0)),
-            (Yellow, (0xFF, 0xFF, 0)),
-            (Blue, (0, 0, 0xFF)),
-            (Magenta, (0xFF, 0, 0xFF)),
-            (Cyan, (0, 0xFF, 0xFF)),
-            (White, (0xFF, 0xFF, 0xFF)),
-        ]
-        .into_iter()
-        .min_by_key(|(_, (r, g, b))| {
-            // NOTE As a shortcut we'll just skip the square root step
-            [(r, rgb.0), (g, rgb.1), (b, rgb.2)]
-                .into_iter()
-                .map(|(p1, p2)| u32::from(p1.abs_diff(p2)))
-                .map(|diff| diff * diff)
-                .sum::<u32>()
-        })
-        .unwrap()
     }
 
     #[cfg(not(feature = "color"))]
@@ -293,13 +268,15 @@ impl Commands {
 
 #[cfg(feature = "color")]
 mod color_support {
+    use chromaterm::Color;
+
     use super::*;
 
-    pub(super) struct RgbWrapper(Rgb);
+    pub(super) struct RgbWrapper<'a>(&'a colors::True);
 
-    impl Luminance<f32> for RgbWrapper {
+    impl Luminance<f32> for RgbWrapper<'_> {
         fn luminance_rgb(&self) -> relative_luminance::Rgb<f32> {
-            let Rgb(r, g, b) = self.0;
+            let (r, g, b) = self.0.rgb_u8();
             // NOTE Normalize to the range [0.0, 1.0]
             relative_luminance::Rgb::new(
                 f32::from(r) / 255.0,
@@ -309,8 +286,8 @@ mod color_support {
         }
     }
 
-    impl From<Rgb> for RgbWrapper {
-        fn from(rgb: Rgb) -> Self {
+    impl<'a> From<&'a colors::True> for RgbWrapper<'a> {
+        fn from(rgb: &'a colors::True) -> Self {
             Self(rgb)
         }
     }
