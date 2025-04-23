@@ -30,7 +30,7 @@ impl Generated {
 
     fn matches_filenames(&self, filepath: impl AsRef<Path>) -> bool {
         let filename = filepath.as_ref().file_name().and_then(|f| f.to_str());
-        filename.map_or(false, |f| self.filenames.contains(f))
+        filename.is_some_and(|f| self.filenames.contains(f))
     }
 
     fn matches_globs(&self, filepath: impl AsRef<Path>) -> bool {

@@ -1,6 +1,6 @@
 use clap::Error as ClapError;
 use clap::{Parser, Subcommand, ValueEnum};
-use gengo::{analysis::SummaryOpts, Analysis, Builder, Directory, Git};
+use gengo::{Analysis, Builder, Directory, Git, analysis::SummaryOpts};
 use indexmap::IndexMap;
 #[cfg(feature = "color")]
 use owo_colors::Rgb;
@@ -209,8 +209,8 @@ impl CLI {
 
     #[cfg(feature = "color")]
     fn colorize(&self, s: &str, color: owo_colors::Rgb) -> String {
-        use owo_colors::{AnsiColors::*, OwoColorize, Rgb};
         use ColorControl::*;
+        use owo_colors::{AnsiColors::*, OwoColorize, Rgb};
 
         match self.color {
             Never => String::from(s),
