@@ -52,6 +52,8 @@ jobs:
 
       - name: Test
         run: cargo test --verbose ${{ matrix.feature-flags }}
+        env:
+          COLORTERM: truecolor
 
   coverage:
     name: Coverage ${{ matrix.feature-flags }} (${{ matrix.os }})
