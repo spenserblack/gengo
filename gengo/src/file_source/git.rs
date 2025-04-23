@@ -1,13 +1,13 @@
 use super::{FileSource, Overrides};
 use crate::{Error, ErrorKind};
 use gix::{
-    attrs::search::Outcome as AttrOutcome,
+    Repository, ThreadSafeRepository,
     attrs::StateRef,
+    attrs::search::Outcome as AttrOutcome,
     bstr::ByteSlice,
     discover::Error as DiscoverError,
     index::{self, entry::Mode as EntryMode},
-    worktree::{stack::state::attributes::Source as AttrSource, Stack as WTStack},
-    Repository, ThreadSafeRepository,
+    worktree::{Stack as WTStack, stack::state::attributes::Source as AttrSource},
 };
 use std::borrow::Cow;
 use std::path::Path;
@@ -24,7 +24,7 @@ impl Builder {
         let repository = match gix::discover(path) {
             Ok(r) => r,
             Err(DiscoverError::Discover(err)) => {
-                return Err(Box::new(Error::with_source(ErrorKind::NoRepository, err)))
+                return Err(Box::new(Error::with_source(ErrorKind::NoRepository, err)));
             }
             Err(err) => return Err(err.into()),
         };

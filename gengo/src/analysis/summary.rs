@@ -1,6 +1,6 @@
 use crate::Language;
-use indexmap::map::Iter as IndexMapIter;
 use indexmap::IndexMap;
+use indexmap::map::Iter as IndexMapIter;
 
 /// The summary of an analysis.
 #[derive(Debug)]

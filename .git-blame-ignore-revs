@@ -15,3 +15,6 @@ b67e485e1182063787a48a495afdf0e24af9e544
 
 # Format scoop manifest
 c2b4032cb45697b1957c5620f381ff3e38fce2d1
+
+# Clippy and format for Rust 1.86
+2d4910cbb56db25c2c353310db54c93a16beb02b

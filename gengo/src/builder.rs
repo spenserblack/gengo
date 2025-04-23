@@ -1,8 +1,8 @@
+use super::Gengo;
 use super::binary::Binary;
 use super::documentation::Documentation;
 use super::generated::Generated;
 use super::vendored::Vendored;
-use super::Gengo;
 
 use crate::file_source::FileSource;
 use std::error::Error as ErrorTrait;

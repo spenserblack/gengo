@@ -25,7 +25,7 @@ jobs:
           - --no-default-features
           - --no-default-features --features color
         rust-version:
-          - "1.80"
+          - "1.86"
           - "stable"
 
     steps:
@@ -58,6 +58,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     needs:
       - build
+      - lint
     strategy:
       fail-fast: false
       matrix:
@@ -74,7 +75,7 @@ jobs:
     - name: Fetch Test Branches
       run: git fetch origin test/javascript:test/javascript
     - name: Setup Rust
-      uses: dtolnay/rust-toolchain@1.80
+      uses: dtolnay/rust-toolchain@1.86
       id: setup-rust
     - name: Main Cache
       uses: actions/cache@v4
@@ -113,7 +114,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Setup Rust
-        uses: dtolnay/rust-toolchain@1.80
+        uses: dtolnay/rust-toolchain@1.86
         id: setup-rust
         with:
           components: clippy, rustfmt
@@ -149,15 +150,16 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - build
+      - lint
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 3
-      - name: Setup Rust 1.80
+      - name: Setup Rust 1.86
         uses: dtolnay/rust-toolchain@master
         id: setup-rust
         with:
-          toolchain: "1.80"
+          toolchain: "1.86"
       - name: Cache
         uses: actions/cache@v4
         with:

@@ -2,7 +2,7 @@
 use chromaterm::{colors, prelude::*};
 use clap::Error as ClapError;
 use clap::{Parser, Subcommand, ValueEnum};
-use gengo::{analysis::SummaryOpts, Analysis, Builder, Directory, Git};
+use gengo::{Analysis, Builder, Directory, Git, analysis::SummaryOpts};
 use indexmap::IndexMap;
 #[cfg(feature = "color")]
 use relative_luminance::Luminance;
