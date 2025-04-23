@@ -114,4 +114,4 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git add ./scoop/gengo.json
           git commit -m "Update scoop manifest for ${TAG}"
-          git push
+          git push origin HEAD:main
