@@ -96,8 +96,8 @@ impl CLI {
     pub fn run(&self, mut out: impl Write, mut err: impl Write) -> Result<(), io::Error> {
         #[cfg(feature = "color")]
         {
-            use chromaterm::ColorSupport;
             use ColorControl::*;
+            use chromaterm::ColorSupport;
 
             chromaterm::config::convert_to_supported(true);
             match self.color {
@@ -224,7 +224,7 @@ impl CLI {
 
     #[cfg(feature = "color")]
     fn colorize(&self, s: &str, color: &colors::True) -> String {
-        use chromaterm::{colors::{Simple, True}, Color};
+        use chromaterm::{Color, colors::True};
 
         let fg = if Self::is_bright(color) {
             True::from_rgb(0, 0, 0)
@@ -274,7 +274,7 @@ mod color_support {
 
     pub(super) struct RgbWrapper<'a>(&'a colors::True);
 
-    impl<'a> Luminance<f32> for RgbWrapper<'a> {
+    impl Luminance<f32> for RgbWrapper<'_> {
         fn luminance_rgb(&self) -> relative_luminance::Rgb<f32> {
             let (r, g, b) = self.0.rgb_u8();
             // NOTE Normalize to the range [0.0, 1.0]
