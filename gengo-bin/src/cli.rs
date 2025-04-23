@@ -3,7 +3,7 @@ use clap::{Parser, Subcommand, ValueEnum};
 use gengo::{analysis::SummaryOpts, Analysis, Builder, Directory, Git};
 use indexmap::IndexMap;
 #[cfg(feature = "color")]
-use owo_colors::Rgb;
+use chromaterm::{prelude::*, colors};
 #[cfg(feature = "color")]
 use relative_luminance::Luminance;
 use std::error::Error as BaseError;
@@ -45,8 +45,8 @@ pub struct CLI {
     breakdown: bool,
     /// Control when colors are displayed.
     #[cfg(feature = "color")]
-    #[arg(long, default_value = "always")]
-    color: ColorControl,
+    #[arg(long, default_value = "auto")]
+    pub color: ColorControl,
     /// The format to use for output.
     #[arg(short = 'F', long, default_value = "pretty")]
     format: Format,
@@ -74,6 +74,8 @@ enum Commands {
 #[cfg(feature = "color")]
 #[derive(ValueEnum, Debug, Clone)]
 enum ColorControl {
+    /// Automatically detect if colors are supported.
+    Auto,
     /// Always use colors.
     Always,
     /// Use only the 8 ANSI colors.
@@ -92,6 +94,19 @@ enum Format {
 
 impl CLI {
     pub fn run(&self, mut out: impl Write, mut err: impl Write) -> Result<(), io::Error> {
+        #[cfg(feature = "color")]
+        {
+            use ColorControl::*;
+            use chromaterm::ColorSupport;
+
+            chromaterm::config::convert_to_supported(true);
+            match self.color {
+                Auto => chromaterm::config::use_default_color_support(),
+                Always => chromaterm::config::use_color_support(ColorSupport::True),
+                Ansi => chromaterm::config::use_color_support(ColorSupport::Simple),
+                Never => chromaterm::config::use_color_support(ColorSupport::None),
+            }
+        }
         let results = self.command.analyze(self.read_limit);
         let results = match results {
             Ok(results) => results,
@@ -121,7 +136,7 @@ impl CLI {
         for (language, size) in summary.iter() {
             let percentage = (*size * 100) as f64 / total;
             #[cfg(feature = "color")]
-            let color = language.owo_color();
+            let color = language.chromaterm_color();
             #[cfg(not(feature = "color"))]
             let color = ();
 
@@ -183,7 +198,7 @@ impl CLI {
 
         for (language, files) in files_per_language.into_iter() {
             #[cfg(feature = "color")]
-            let color = language.owo_color();
+            let color = language.chromaterm_color();
             #[cfg(not(feature = "color"))]
             let color = ();
 
@@ -208,61 +223,21 @@ impl CLI {
     }
 
     #[cfg(feature = "color")]
-    fn colorize(&self, s: &str, color: owo_colors::Rgb) -> String {
-        use owo_colors::{AnsiColors::*, OwoColorize, Rgb};
+    fn colorize(&self, s: &str, color: chromaterm::colors::True) -> String {
+        use chromaterm::colors::{True, Simple};
         use ColorControl::*;
 
-        match self.color {
-            Never => String::from(s),
-            Always => {
-                let fg = if Self::is_bright(color) {
-                    Rgb(0, 0, 0)
-                } else {
-                    Rgb(0xFF, 0xFF, 0xFF)
-                };
-                s.on_color(color).color(fg).to_string()
-            }
-            Ansi => {
-                let (bg, (r, g, b)) = Self::closest_color(color);
-                let fg = if Self::is_bright(Rgb(r, g, b)) {
-                    Black
-                } else {
-                    White
-                };
-                s.on_color(bg).color(fg).to_string()
-            }
-        }
+        let fg = if Self::is_bright(&color) {
+            Simple::Black
+        } else {
+            Simple::BrightWhite
+        };
+        s.on_color(color).color(fg).to_string()
     }
 
     #[cfg(feature = "color")]
     fn is_bright<T: Into<RgbWrapper>>(color: T) -> bool {
         color.into().relative_luminance() > 0.5
-    }
-
-    #[cfg(feature = "color")]
-    fn closest_color(rgb: owo_colors::Rgb) -> (owo_colors::AnsiColors, (u8, u8, u8)) {
-        use owo_colors::AnsiColors::*;
-        // NOTE Gets the closest color by Euclidean distance
-        [
-            (Black, (0u8, 0u8, 0u8)),
-            (Red, (0xFF, 0, 0)),
-            (Green, (0, 0xFF, 0)),
-            (Yellow, (0xFF, 0xFF, 0)),
-            (Blue, (0, 0, 0xFF)),
-            (Magenta, (0xFF, 0, 0xFF)),
-            (Cyan, (0, 0xFF, 0xFF)),
-            (White, (0xFF, 0xFF, 0xFF)),
-        ]
-        .into_iter()
-        .min_by_key(|(_, (r, g, b))| {
-            // NOTE As a shortcut we'll just skip the square root step
-            [(r, rgb.0), (g, rgb.1), (b, rgb.2)]
-                .into_iter()
-                .map(|(p1, p2)| u32::from(p1.abs_diff(p2)))
-                .map(|diff| diff * diff)
-                .sum::<u32>()
-        })
-        .unwrap()
     }
 
     #[cfg(not(feature = "color"))]
