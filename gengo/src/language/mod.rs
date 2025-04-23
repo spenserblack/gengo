@@ -121,9 +121,9 @@ impl Language {
         languages
             .iter()
             .filter(|language| {
-                HEURISTICS.get(language).map_or(false, |heuristics| {
-                    heuristics.iter().any(|re| re.is_match(contents))
-                })
+                HEURISTICS
+                    .get(language)
+                    .is_some_and(|heuristics| heuristics.iter().any(|re| re.is_match(contents)))
             })
             .cloned()
             .collect()
