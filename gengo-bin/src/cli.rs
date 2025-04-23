@@ -224,12 +224,12 @@ impl CLI {
 
     #[cfg(feature = "color")]
     fn colorize(&self, s: &str, color: &colors::True) -> String {
-        use chromaterm::{colors::Simple, Color};
+        use chromaterm::{colors::{Simple, True}, Color};
 
         let fg = if Self::is_bright(color) {
-            Simple::Black
+            True::from_rgb(0, 0, 0)
         } else {
-            Simple::BrightWhite
+            True::from_rgb(0xFF, 0xFF, 0xFF)
         };
         let (r, g, b) = color.rgb_u8();
         s.on_rgb(r, g, b).color(fg).to_string()
