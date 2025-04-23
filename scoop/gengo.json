@@ -1,9 +1,9 @@
 {
-  "version": "0.12.2",
+  "version": "0.13.0",
   "description": "A linguist-inspired language classifier with multiple file source handlers",
   "homepage": "https://github.com/spenserblack/gengo",
   "license": "MIT | Apache-2.0",
-  "url": "https://github.com/spenserblack/gengo/releases/download/v0.12.2/gengo-x86_64-pc-windows-msvc.tar.gz",
+  "url": "https://github.com/spenserblack/gengo/releases/download/v0.13.0/gengo-x86_64-pc-windows-msvc.tar.gz",
   "hash": "c799d64cf2cb8ef5ce5407ca76cd3bd949a8847bee14e79a29865f1e984a8034",
   "bin": "gengo.exe",
   "checkver": "github",
