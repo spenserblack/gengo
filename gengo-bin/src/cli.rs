@@ -1,9 +1,9 @@
+#[cfg(feature = "color")]
+use chromaterm::{colors, prelude::*};
 use clap::Error as ClapError;
 use clap::{Parser, Subcommand, ValueEnum};
 use gengo::{analysis::SummaryOpts, Analysis, Builder, Directory, Git};
 use indexmap::IndexMap;
-#[cfg(feature = "color")]
-use chromaterm::{prelude::*, colors};
 #[cfg(feature = "color")]
 use relative_luminance::Luminance;
 use std::error::Error as BaseError;
@@ -96,8 +96,8 @@ impl CLI {
     pub fn run(&self, mut out: impl Write, mut err: impl Write) -> Result<(), io::Error> {
         #[cfg(feature = "color")]
         {
-            use ColorControl::*;
             use chromaterm::ColorSupport;
+            use ColorControl::*;
 
             chromaterm::config::convert_to_supported(true);
             match self.color {
@@ -142,7 +142,7 @@ impl CLI {
 
             let stats = format!("{:>6.2}% {}", percentage, size);
             let line = format!("{:<15} {}", stats, language.name());
-            let line = self.colorize(&line, color);
+            let line = self.colorize(&line, &color);
             writeln!(out, "{}", line)?;
         }
 
@@ -202,7 +202,7 @@ impl CLI {
             #[cfg(not(feature = "color"))]
             let color = ();
 
-            writeln!(out, "{}", self.colorize(language.name(), color))?;
+            writeln!(out, "{}", self.colorize(language.name(), &color))?;
 
             let files = {
                 let mut files = files;
@@ -214,7 +214,7 @@ impl CLI {
                 writeln!(
                     out,
                     "  {}",
-                    self.colorize(&file.display().to_string(), color)
+                    self.colorize(&file.display().to_string(), &color)
                 )?;
             }
             writeln!(out)?;
@@ -223,20 +223,24 @@ impl CLI {
     }
 
     #[cfg(feature = "color")]
-    fn colorize(&self, s: &str, color: chromaterm::colors::True) -> String {
-        use chromaterm::colors::{True, Simple};
+    fn colorize(&self, s: &str, color: &colors::True) -> String {
+        use chromaterm::{
+            colors::{Simple, True},
+            Color,
+        };
         use ColorControl::*;
 
-        let fg = if Self::is_bright(&color) {
+        let fg = if Self::is_bright(color) {
             Simple::Black
         } else {
             Simple::BrightWhite
         };
-        s.on_color(color).color(fg).to_string()
+        let (r, g, b) = color.rgb_u8();
+        s.on_rgb(r, g, b).color(fg).to_string()
     }
 
     #[cfg(feature = "color")]
-    fn is_bright<T: Into<RgbWrapper>>(color: T) -> bool {
+    fn is_bright<'a, T: Into<RgbWrapper<'a>>>(color: T) -> bool {
         color.into().relative_luminance() > 0.5
     }
 
@@ -268,13 +272,15 @@ impl Commands {
 
 #[cfg(feature = "color")]
 mod color_support {
+    use chromaterm::Color;
+
     use super::*;
 
-    pub(super) struct RgbWrapper(Rgb);
+    pub(super) struct RgbWrapper<'a>(&'a colors::True);
 
-    impl Luminance<f32> for RgbWrapper {
+    impl<'a> Luminance<f32> for RgbWrapper<'a> {
         fn luminance_rgb(&self) -> relative_luminance::Rgb<f32> {
-            let Rgb(r, g, b) = self.0;
+            let (r, g, b) = self.0.rgb_u8();
             // NOTE Normalize to the range [0.0, 1.0]
             relative_luminance::Rgb::new(
                 f32::from(r) / 255.0,
@@ -284,8 +290,8 @@ mod color_support {
         }
     }
 
-    impl From<Rgb> for RgbWrapper {
-        fn from(rgb: Rgb) -> Self {
+    impl<'a> From<&'a colors::True> for RgbWrapper<'a> {
+        fn from(rgb: &'a colors::True) -> Self {
             Self(rgb)
         }
     }
