@@ -1,5 +1,26 @@
 # Installation
 
+## Unix
+
+### Installation script
+
+This will download a binary from the latest GitHub release.
+**This will activate `sudo` to write the executable.** Please review the install script
+before running it.
+
+```shell
+curl https://raw.githubusercontent.com/spenserblack/gengo/main/install.sh | sh
+```
+
+### Arch Linux
+
+gengo is available as [an AUR package](https://aur.archlinux.org/packages/gengo/).
+It can be installed using an AUR helper (e.g. paru):
+
+```shell
+paru -S gengo
+```
+
 ## Windows
 
 ### Installation script
@@ -20,27 +41,6 @@ gengo is installable via [Scoop](https://scoop.sh). See the [Scoop manifest][sco
 
 ```batch
 scoop install https://raw.githubusercontent.com/spenserblack/gengo/main/scoop/gengo.json
-```
-
-## Unix
-
-### Installation script
-
-This will download a binary from the latest GitHub release.
-**This will activate `sudo` to write the executable.** Please review the install script
-before running it.
-
-```shell
-curl https://raw.githubusercontent.com/spenserblack/gengo/main/install.sh | sh
-```
-
-### Arch Linux
-
-gengo is available as [an AUR package](https://aur.archlinux.org/packages/gengo/).
-It can be installed using an AUR helper (e.g. paru):
-
-```shell
-paru -S gengo
 ```
 
 ## Universal
