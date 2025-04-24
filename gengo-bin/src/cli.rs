@@ -29,26 +29,26 @@ pub struct CLI {
     /// This is useful for large files that can impact performance.
     ///
     /// The format is in bytes. The default is 1 MiB.
-    #[arg(short = 'l', long, default_value = "1048576")]
+    #[arg(short = 'l', long, default_value = "1048576", global = true)]
     read_limit: usize,
     /// Report on all files, even if they are not detectable.
     ///
     /// This only applies to the pretty format, as machine-readable
     /// formats always include all files.
-    #[arg(short = 'a', long)]
+    #[arg(short = 'a', long, global = true)]
     all: bool,
     /// Include detailed statistics for each language.
     ///
     /// This only applies to the pretty format, as machine-readable
     /// formats always include detailed statistics.
-    #[arg(short = 'b', long)]
+    #[arg(short = 'b', long, global = true)]
     breakdown: bool,
     /// Control when colors are displayed.
     #[cfg(feature = "color")]
-    #[arg(long, default_value = "auto")]
+    #[arg(long, default_value = "auto", global = true)]
     color: ColorControl,
     /// The format to use for output.
-    #[arg(short = 'F', long, default_value = "pretty")]
+    #[arg(short = 'F', long, default_value = "pretty", global = true)]
     format: Format,
 }
 
