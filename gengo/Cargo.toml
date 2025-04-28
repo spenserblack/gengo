@@ -19,7 +19,7 @@ max-performance-safe = ["gix/max-performance-safe"]
 
 [dependencies]
 chromaterm = { workspace = true, optional = true }
-gix = { version = ">= 0.56, <= 0.71", default-features = false, features = [
+gix = { version = ">= 0.56, <= 0.72", default-features = false, features = [
     "attributes",
     "index",
     "parallel",
