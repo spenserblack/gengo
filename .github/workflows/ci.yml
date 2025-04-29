@@ -55,6 +55,16 @@ jobs:
         env:
           COLORTERM: truecolor
 
+  docker:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+    needs:
+      - check-languages-file
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Docker Image
+        run: docker build .
+
   coverage:
     name: Coverage ${{ matrix.feature-flags }} (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
