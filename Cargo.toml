@@ -3,7 +3,7 @@ members = ["gengo", "gengo-bin", "samples-test"]
 resolver = "2"
 
 [workspace.dependencies]
-chromaterm = "0.1"
+chromaterm = "0.1.1"
 indexmap = "2"
 owo-colors = ">=3, <=4"
 serde_json = "1"
