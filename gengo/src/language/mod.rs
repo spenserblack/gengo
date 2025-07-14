@@ -1,6 +1,7 @@
 use crate::GLOB_MATCH_OPTIONS;
 use regex::Regex;
 use std::collections::HashMap;
+use std::ffi::OsStr;
 use std::path::Path;
 use std::str::FromStr;
 use std::sync::LazyLock;
@@ -151,6 +152,8 @@ impl Language {
     ///
     /// When checking heuristics, only the first `read_limit` bytes will be read.
     pub fn pick(path: impl AsRef<Path>, contents: &[u8], read_limit: usize) -> Option<Self> {
+        let path = path.as_ref();
+        let path = Self::maybe_strip_example_extension(path);
         let languages = Self::find_simple(&path, contents);
         if languages.len() == 1 {
             return Some(languages[0]);
@@ -171,6 +174,21 @@ impl Language {
         };
 
         found_languages.into_iter().max_by_key(Self::priority)
+    }
+
+    /// Strips the .example prefix if it exists, or returns the original path reference.
+    fn maybe_strip_example_extension<'a>(path: &'a Path) -> &'a Path {
+        const EXAMPLE_EXT: &[u8] = b".example";
+        path.as_os_str()
+            .as_encoded_bytes()
+            .strip_suffix(EXAMPLE_EXT)
+            .map(|bytes| {
+                // SAFETY
+                // - Only contains content from the original OsStr backing the Path
+                unsafe { OsStr::from_encoded_bytes_unchecked(bytes) }
+            })
+            .map(Path::new)
+            .unwrap_or(path)
     }
 
     /// Returns an object that implements `serde::Serialize` for the language to
@@ -272,5 +290,18 @@ mod language_tests {
     fn test_from_shebang(shebang: &[u8], language: Language) {
         let languages = Language::from_shebang(shebang);
         assert!(languages.contains(&language));
+    }
+
+    #[rstest(
+        input,
+        expected,
+        case("path/to/data.json", "path/to/data.json"),
+        case("path/to/data.json.example", "path/to/data.json")
+    )]
+    fn test_maybe_strip_example_extension(input: &str, expected: &str) {
+        let input = Path::new(input);
+        let expected = Path::new(expected);
+        let actual = Language::maybe_strip_example_extension(input);
+        assert_eq!(actual, expected);
     }
 }
