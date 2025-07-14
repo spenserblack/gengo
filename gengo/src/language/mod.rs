@@ -154,7 +154,7 @@ impl Language {
     pub fn pick(path: impl AsRef<Path>, contents: &[u8], read_limit: usize) -> Option<Self> {
         let path = path.as_ref();
         let path = Self::maybe_strip_example_extension(path);
-        let languages = Self::find_simple(&path, contents);
+        let languages = Self::find_simple(path, contents);
         if languages.len() == 1 {
             return Some(languages[0]);
         }
@@ -177,7 +177,7 @@ impl Language {
     }
 
     /// Strips the .example prefix if it exists, or returns the original path reference.
-    fn maybe_strip_example_extension<'a>(path: &'a Path) -> &'a Path {
+    fn maybe_strip_example_extension(path: &Path) -> &Path {
         const EXAMPLE_EXT: &[u8] = b".example";
         path.as_os_str()
             .as_encoded_bytes()
