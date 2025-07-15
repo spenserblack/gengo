@@ -29,5 +29,15 @@ but should provide a clear summary that a user can understand.
 
 >Increase contrast of colored terminal output
 
+## For maintainers
+
+### Showing appreciation
+
+This project uses [all-contributors][all-contributors] to track contributions to help
+show appreciation for all types of contributions. When a GitHub user contributes, don't
+forget to ask the bot to track their contribution! For example, when adding support for
+a new language, you can comment `@all-contributors add @USERNAME for data`.
+
+[all-contributors]: https://allcontributors.org/
 [hacking]: ./HACKING.md
 [new-language-issue]: https://github.com/spenserblack/gengo/issues/new/choose
