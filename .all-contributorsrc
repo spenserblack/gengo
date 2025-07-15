@@ -138,6 +138,15 @@
         "platform",
         "data"
       ]
+    },
+    {
+      "login": "mst-mkt",
+      "name": "keito",
+      "avatar_url": "https://avatars.githubusercontent.com/u/131662659?v=4",
+      "profile": "http://links.keito.dev",
+      "contributions": [
+        "data"
+      ]
     }
   ],
   "contributorsPerLine": 7,
