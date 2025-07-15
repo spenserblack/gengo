@@ -940,6 +940,12 @@ TypeScript:
       - tsx
     interpreters:
       - deno
+TypeSpec:
+  category: data
+  color: "#4A3665"
+  matchers:
+    extensions:
+      - tsp
 VHDL:
   category: programming
   color: "#888888"
