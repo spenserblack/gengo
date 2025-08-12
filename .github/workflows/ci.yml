@@ -29,7 +29,7 @@ jobs:
           - "stable"
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Fetch Test Branches
         run: git fetch origin test/javascript:test/javascript
       - name: Setup Rust ${{ matrix.rust-version }}
@@ -61,7 +61,7 @@ jobs:
     needs:
       - check-languages-file
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Build Docker Image
         run: docker build .
 
@@ -83,7 +83,7 @@ jobs:
       TARPAULIN_VERSION: "0.30.0"
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - name: Fetch Test Branches
       run: git fetch origin test/javascript:test/javascript
     - name: Setup Rust
@@ -124,7 +124,7 @@ jobs:
     needs:
       - build
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@1.86
         id: setup-rust
@@ -150,7 +150,7 @@ jobs:
     name: Check Languages File
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.0'
@@ -164,7 +164,7 @@ jobs:
       - build
       - lint
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 3
       - name: Setup Rust 1.86
