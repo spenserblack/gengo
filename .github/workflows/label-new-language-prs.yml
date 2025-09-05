@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Fetch current languages.yaml
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           path: old
           ref: ${{ github.event.pull_request.base.sha }}
@@ -21,7 +21,7 @@ jobs:
           sparse-checkout-cone-mode: false
           clean: false
       - name: Fetch updated languages.yaml
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           path: new
           ref: ${{ github.event.pull_request.head.sha }}
@@ -29,7 +29,7 @@ jobs:
           sparse-checkout-cone-mode: false
           clean: false
       - name: Checkout scripts
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           path: scripts
           sparse-checkout: scripts/
