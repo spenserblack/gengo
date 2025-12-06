@@ -7,14 +7,26 @@
 //!
 //! Provides the `Directory` file source, which reads files from a local directory.
 //!
+//! ## `git`
+//!
+//! Provides the `Git` file source, which reads files from a git repository. It reads
+//! from a specified revision and supports git attributes for overrides, making it the
+//! most similar to [GitHub Linguist][github-linguist]. Because of this, it also works
+//! on bare repositories.
+//!
 //! # Example
 //!
 //! ```no_run
+//! # #[cfg(feature = "git")]
+//! # {
 //! use gengo::{Builder, Git};
 //! let git = Git::new("path/to/repo", "HEAD").unwrap();
 //! let gengo = Builder::new(git).build().unwrap();
 //! let results = gengo.analyze().unwrap();
+//! # }
 //! ```
+//!
+//! [github-linguist]: https://github.com/github-linguist/linguist
 
 pub use analysis::Analysis;
 use binary::Binary;
@@ -26,7 +38,11 @@ use generated::Generated;
 
 #[cfg(feature = "directory")]
 pub use file_source::Directory;
-pub use file_source::{FileSource, Git};
+
+#[cfg(feature = "git")]
+pub use file_source::Git;
+
+pub use file_source::FileSource;
 use glob::MatchOptions;
 use indexmap::IndexMap;
 use language::Category;
