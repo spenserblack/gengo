@@ -18,7 +18,7 @@ name = "gengo"
 
 [features]
 default = ["color", "gengo/max-performance"]
-color = ["gengo/chromaterm", "chromaterm", "relative-luminance"]
+color = ["chromaterm", "gengo/chromaterm", "relative-luminance"]
 
 [dependencies]
 chromaterm = { workspace = true, optional = true }
