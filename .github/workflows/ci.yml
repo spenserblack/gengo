@@ -22,6 +22,7 @@ jobs:
           - ubuntu-latest
           - windows-latest
         feature-flags:
+          - "" # Default features
           - --no-default-features
           - --no-default-features --features color
         rust-version:
@@ -77,6 +78,7 @@ jobs:
         os:
           - ubuntu-latest
         feature-flags:
+          - "" # Default features
           - --no-default-features
           - --no-default-features --features color
     env:
