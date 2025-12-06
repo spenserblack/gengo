@@ -23,7 +23,9 @@ color = ["chromaterm", "gengo/chromaterm", "relative-luminance"]
 [dependencies]
 chromaterm = { workspace = true, optional = true }
 clap = { version = "4", features = ["derive", "wrap_help"] }
-gengo = { path = "../gengo", version = "0.13", default-features = false }
+gengo = { path = "../gengo", version = "0.13", default-features = false, features = [
+    "directory",
+] }
 indexmap.workspace = true
 relative-luminance = { version = "1", optional = true }
 serde_json.workspace = true

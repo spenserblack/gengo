@@ -13,7 +13,11 @@ keywords.workspace = true
 exclude = ["README.md"]
 
 [features]
-default = ["max-performance-safe"]
+default = ["directory", "max-performance-safe"]
+
+# directory provides the ability to walk and analyze a filesystem directory
+directory = ["dep:ignore"]
+
 max-performance = ["gix/max-performance"]
 max-performance-safe = ["gix/max-performance-safe"]
 
@@ -26,7 +30,7 @@ gix = { version = ">= 0.56, <= 0.72", default-features = false, features = [
     "revision",
 ] }
 glob = "0.3"
-ignore = "0.4"
+ignore = { version = "0.4", optional = true }
 indexmap = { workspace = true, features = ["rayon", "serde"] }
 owo-colors = { workspace = true, optional = true }
 rayon = "1"

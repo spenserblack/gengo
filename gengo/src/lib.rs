@@ -1,6 +1,12 @@
 //! Gengo is a language detection library for collections of files.
 //! Currently, it supports reading from git repositories.
 //!
+//! # Features
+//!
+//! ## `directory`
+//!
+//! Provides the `Directory` file source, which reads files from a local directory.
+//!
 //! # Example
 //!
 //! ```no_run
@@ -18,7 +24,9 @@ use documentation::Documentation;
 pub use error::{Error, ErrorKind};
 use generated::Generated;
 
-pub use file_source::{Directory, FileSource, Git};
+#[cfg(feature = "directory")]
+pub use file_source::Directory;
+pub use file_source::{FileSource, Git};
 use glob::MatchOptions;
 use indexmap::IndexMap;
 use language::Category;
