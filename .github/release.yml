@@ -4,7 +4,9 @@ changelog:
       - ignore-for-release
     authors:
       - dependabot
+      - dependabot[bot]
       - allcontributors
+      - allcontributors[bot]
   categories:
     - title: ":jack_o_lantern: Hacktoberfest Contributions"
       labels:
