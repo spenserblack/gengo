@@ -13,20 +13,28 @@ keywords.workspace = true
 exclude = ["README.md"]
 
 [features]
-default = ["max-performance-safe"]
-max-performance = ["gix/max-performance"]
-max-performance-safe = ["gix/max-performance-safe"]
+default = ["directory", "git", "max-performance-safe"]
+
+# directory provides the ability to walk and analyze a filesystem directory
+directory = ["dep:ignore"]
+
+# git provides the ability to read from git repositories
+git = ["dep:gix"]
+
+# TODO Rename to gix-*
+max-performance = ["dep:gix", "gix/max-performance"]
+max-performance-safe = ["dep:gix", "gix/max-performance-safe"]
 
 [dependencies]
 chromaterm = { workspace = true, optional = true }
-gix = { version = ">= 0.56, <= 0.72", default-features = false, features = [
+gix = { version = ">= 0.56, <= 0.72", optional = true, default-features = false, features = [
     "attributes",
     "index",
     "parallel",
     "revision",
 ] }
 glob = "0.3"
-ignore = "0.4"
+ignore = { version = "0.4", optional = true }
 indexmap = { workspace = true, features = ["rayon", "serde"] }
 owo-colors = { workspace = true, optional = true }
 rayon = "1"
@@ -41,7 +49,10 @@ serde_yaml = "0.9"
 quote = "1"
 
 [dev-dependencies]
-criterion = { version = "0.8", default-features = false, features = ["rayon", "cargo_bench_support"] }
+criterion = { version = "0.8", default-features = false, features = [
+    "cargo_bench_support",
+    "rayon",
+] }
 insta = "1"
 rstest = { version = "0.26", default-features = false }
 serde_yaml = "0.9"

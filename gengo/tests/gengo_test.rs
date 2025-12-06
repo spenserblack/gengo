@@ -1,3 +1,4 @@
+#![cfg(feature = "git")]
 use gengo::{Builder, Git};
 
 const ROOT: &str = env!("CARGO_MANIFEST_DIR");

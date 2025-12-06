@@ -10,7 +10,7 @@ serde_json = "1"
 
 [workspace.package]
 description = "Get the language distribution stats of your repository"
-version = "0.13.1"
+version = "0.13.2"
 edition = "2024"
 repository = "https://github.com/spenserblack/gengo"
 readme = "README.md"

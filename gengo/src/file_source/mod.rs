@@ -1,12 +1,19 @@
 //! Provides sources to get files and their attributes.
 
 use crate::Language;
+
+#[cfg(feature = "directory")]
 pub use directory::Directory;
+
+#[cfg(feature = "git")]
 pub use git::Git;
 use std::marker::{Send, Sync};
 use std::path::Path;
 
+#[cfg(feature = "directory")]
 mod directory;
+
+#[cfg(feature = "git")]
 mod git;
 
 /// Provides files and overrides.
