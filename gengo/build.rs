@@ -308,8 +308,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     );
     let color_hex_mixin = quote! {
         impl Language {
-            /// Gets the color associated with the language.
-            pub const fn color(&self) -> &'static str {
+            /// Gets the hex code associated with the language.
+            pub const fn hex(&self) -> &'static str {
                 match self {
                     #(#color_hex_mappings ,)*
                 }
@@ -335,7 +335,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let color_rgb_mixin = quote! {
         impl Language {
             /// Gets the RGB color associated with the language.
-            const fn color_rgb(&self) -> (u8, u8, u8) {
+            pub const fn rgb(&self) -> (u8, u8, u8) {
                 match self {
                     #(#color_rgb_mappings ,)*
                 }

@@ -9,7 +9,7 @@ expression: json
     "generated": false,
     "language": {
       "category": "programming",
-      "color": "#F0DC4E",
+      "hex": "#F0DC4E",
       "name": "JavaScript",
       "nerd_font_glyph": ""
     },
@@ -22,7 +22,7 @@ expression: json
     "generated": true,
     "language": {
       "category": "prose",
-      "color": "#000000",
+      "hex": "#000000",
       "name": "Plain Text",
       "nerd_font_glyph": null
     },
@@ -35,7 +35,7 @@ expression: json
     "generated": false,
     "language": {
       "category": "markup",
-      "color": "#E96228",
+      "hex": "#E96228",
       "name": "HTML",
       "nerd_font_glyph": ""
     },
@@ -48,7 +48,7 @@ expression: json
     "generated": false,
     "language": {
       "category": "programming",
-      "color": "#F0DC4E",
+      "hex": "#F0DC4E",
       "name": "JavaScript",
       "nerd_font_glyph": ""
     },
@@ -61,7 +61,7 @@ expression: json
     "generated": false,
     "language": {
       "category": "programming",
-      "color": "#2F74C0",
+      "hex": "#2F74C0",
       "name": "TypeScript",
       "nerd_font_glyph": ""
     },

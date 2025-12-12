@@ -198,7 +198,7 @@ impl Language {
         Serialize {
             name: self.name(),
             category: self.category(),
-            color: self.color(),
+            hex: self.hex(),
             nerd_font_glyph: self.nerd_font_glyph(),
         }
     }
@@ -228,24 +228,6 @@ impl serde::Serialize for Language {
     }
 }
 
-#[cfg(feature = "chromaterm")]
-impl Language {
-    /// Converts the color to RGB true color.
-    pub const fn chromaterm_color(&self) -> chromaterm::colors::True {
-        let (r, g, b) = self.color_rgb();
-        chromaterm::colors::True::from_rgb(r, g, b)
-    }
-}
-
-#[cfg(feature = "owo-colors")]
-impl Language {
-    /// Converts the color to RGB.
-    pub const fn owo_color(&self) -> owo_colors::Rgb {
-        let (r, g, b) = self.color_rgb();
-        owo_colors::Rgb(r, g, b)
-    }
-}
-
 /// A category for a language.
 #[non_exhaustive]
 #[derive(Clone, Debug, serde::Deserialize, Eq, Hash, PartialEq, serde::Serialize)]
@@ -270,7 +252,7 @@ pub enum Category {
 struct Serialize {
     name: &'static str,
     category: Category,
-    color: &'static str,
+    hex: &'static str,
     nerd_font_glyph: Option<&'static str>,
 }
 

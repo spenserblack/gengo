@@ -18,12 +18,12 @@ name = "gengo"
 
 [features]
 default = ["color", "gengo/max-performance"]
-color = ["chromaterm", "gengo/chromaterm", "relative-luminance"]
+color = ["dep:chromaterm", "dep:relative-luminance"]
 
 [dependencies]
-chromaterm = { workspace = true, optional = true }
+chromaterm = { version = "0.1.1", optional = true }
 clap = { version = "4", features = ["derive", "wrap_help"] }
-gengo = { path = "../gengo", version = "0.13", default-features = false, features = [
+gengo = { path = "../gengo", version = "0.14", default-features = false, features = [
     "directory",
     "git",
 ] }

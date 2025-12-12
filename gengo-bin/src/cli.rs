@@ -136,7 +136,10 @@ impl CLI {
         for (language, size) in summary.iter() {
             let percentage = (*size * 100) as f64 / total;
             #[cfg(feature = "color")]
-            let color = language.chromaterm_color();
+            let color = {
+                let (r, g, b) = language.rgb();
+                chromaterm::colors::True::from_rgb(r, g, b)
+            };
             #[cfg(not(feature = "color"))]
             let color = ();
 
@@ -198,7 +201,10 @@ impl CLI {
 
         for (language, files) in files_per_language.into_iter() {
             #[cfg(feature = "color")]
-            let color = language.chromaterm_color();
+            let color = {
+                let (r, g, b) = language.rgb();
+                chromaterm::colors::True::from_rgb(r, g, b)
+            };
             #[cfg(not(feature = "color"))]
             let color = ();
 
