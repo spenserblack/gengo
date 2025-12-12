@@ -232,7 +232,7 @@ impl serde::Serialize for Language {
 impl Language {
     /// Converts the color to RGB true color.
     pub const fn chromaterm_color(&self) -> chromaterm::colors::True {
-        let (r, g, b) = self.color_rgb();
+        let (r, g, b) = self.rgb();
         chromaterm::colors::True::from_rgb(r, g, b)
     }
 }
@@ -241,7 +241,7 @@ impl Language {
 impl Language {
     /// Converts the color to RGB.
     pub const fn owo_color(&self) -> owo_colors::Rgb {
-        let (r, g, b) = self.color_rgb();
+        let (r, g, b) = self.rgb();
         owo_colors::Rgb(r, g, b)
     }
 }

@@ -335,7 +335,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let color_rgb_mixin = quote! {
         impl Language {
             /// Gets the RGB color associated with the language.
-            const fn color_rgb(&self) -> (u8, u8, u8) {
+            pub const fn rgb(&self) -> (u8, u8, u8) {
                 match self {
                     #(#color_rgb_mappings ,)*
                 }
