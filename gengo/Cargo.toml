@@ -26,7 +26,6 @@ max-performance = ["dep:gix", "gix/max-performance"]
 max-performance-safe = ["dep:gix", "gix/max-performance-safe"]
 
 [dependencies]
-chromaterm = { workspace = true, optional = true }
 gix = { version = ">= 0.56, <= 0.72", optional = true, default-features = false, features = [
     "attributes",
     "index",
@@ -36,7 +35,6 @@ gix = { version = ">= 0.56, <= 0.72", optional = true, default-features = false,
 glob = "0.3"
 ignore = { version = "0.4", optional = true }
 indexmap = { workspace = true, features = ["rayon", "serde"] }
-owo-colors = { workspace = true, optional = true }
 rayon = "1"
 regex = "1"
 serde = { version = "1", features = ["derive"] }
