@@ -39,7 +39,7 @@ jobs:
         with:
           toolchain: ${{ matrix.rust-version }}
       - name: Cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.cargo/registry/index/
@@ -92,7 +92,7 @@ jobs:
       uses: dtolnay/rust-toolchain@1.86
       id: setup-rust
     - name: Main Cache
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: |
           ~/.cargo/registry/index/
@@ -102,7 +102,7 @@ jobs:
         key: ${{ runner.os }}-${{ steps.setup-rust.outputs.cachekey }}-cargo-${{ hashFiles('**/Cargo.lock') }}
     - name: Bin Cache
       id: bin-cache
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: |
           ~/.cargo/bin/
@@ -133,7 +133,7 @@ jobs:
         with:
           components: clippy, rustfmt
       - name: Cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.cargo/registry/index/
@@ -175,7 +175,7 @@ jobs:
         with:
           toolchain: "1.86"
       - name: Cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.cargo/registry/index/
