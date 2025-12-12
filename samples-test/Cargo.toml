@@ -10,4 +10,4 @@ license.workspace = true
 keywords.workspace = true
 
 [dependencies]
-gengo = { path = "../gengo", version = "0.13", default-features = false }
+gengo = { path = "../gengo", version = "0.14", default-features = false }

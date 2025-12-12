@@ -308,8 +308,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     );
     let color_hex_mixin = quote! {
         impl Language {
-            /// Gets the color associated with the language.
-            pub const fn color(&self) -> &'static str {
+            /// Gets the hex code associated with the language.
+            pub const fn hex(&self) -> &'static str {
                 match self {
                     #(#color_hex_mappings ,)*
                 }

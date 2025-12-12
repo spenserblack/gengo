@@ -198,7 +198,7 @@ impl Language {
         Serialize {
             name: self.name(),
             category: self.category(),
-            color: self.color(),
+            hex: self.hex(),
             nerd_font_glyph: self.nerd_font_glyph(),
         }
     }
@@ -270,7 +270,7 @@ pub enum Category {
 struct Serialize {
     name: &'static str,
     category: Category,
-    color: &'static str,
+    hex: &'static str,
     nerd_font_glyph: Option<&'static str>,
 }
 
