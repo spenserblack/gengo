@@ -18,13 +18,11 @@ for using insta and installing the `cargo insta` executable.
 
 ### Language Support
 
-While the library does support providing your own language definitions, the
-"out-of-the-box" language definitions are defined in
-[`./gengo/languages.yaml`][languages-file]. This is where you register
-new languages, add extensions, filenames, filepath patterns, or interpreters
-to help identify languages, etc. Pretty much anything involving language
-detection or the returned language data comes from this file (but there are
-a few exceptions).
+Language definitions are defined in [`./gengo/languages.yaml`][languages-file].
+This is where you register new languages, add extensions, filenames, filepath
+patterns, or interpreters to help identify languages, etc. Pretty much anything
+involving language detection or the returned language data comes from this file
+(but there are a few exceptions).
 
 #### The `languages.yaml` file
 
