@@ -98,6 +98,16 @@ Because this project analyzes git revisions, some of the tests are run on
 commits in this project that are unreachable from `main`. Make sure to
 fetch branches that are prefixed with `test/` from this repository.
 
+## Updating dependencies
+
+For dependencies that use *ranges* for their version requirement, please don't jump up several
+breaking versions in a single commit. Instead, increment the breaking version by one for each
+commit. This makes it easier to bisect any issues with the dependency and ensure that each
+breaking version in the range has been tested. For example, if you're bumping a version requirement
+from `>= 1, < 2` to `>= 1, < 5`, then you should make *3 commits* (bump to `< 3`, bump to `< 4`, and
+bump to `< 5`).
+
+
 [check-languages-script]: ./scripts/check-languages-file.rb
 [editorconfig]: https://editorconfig.org/
 [insta]: https://crates.io/crates/insta
