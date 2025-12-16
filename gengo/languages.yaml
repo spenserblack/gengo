@@ -121,6 +121,7 @@ Astro:
 AutoHotkey:
   category: programming
   color: "#334455"
+  nerd-font-glyph: "\U000f0b08"
   matchers:
     extensions:
       - ahk
