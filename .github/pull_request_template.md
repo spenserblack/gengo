@@ -1,1 +1,0 @@
-Adding a new language? Please use the [new language template](?template=new_language.md)
