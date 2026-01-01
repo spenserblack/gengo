@@ -500,10 +500,8 @@ dependencies = [
 name = "gengo-language"
 version = "0.14.0"
 dependencies = [
- "criterion",
  "glob",
  "indexmap",
- "insta",
  "proc-macro2",
  "quote",
  "regex",

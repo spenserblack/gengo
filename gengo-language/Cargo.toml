@@ -22,10 +22,4 @@ serde_yaml = "0.9"
 quote = "1"
 
 [dev-dependencies]
-criterion = { version = "0.8", default-features = false, features = [
-    "cargo_bench_support",
-    "rayon",
-] }
-insta = "1"
 rstest.workspace = true
-serde_yaml = "0.9"
