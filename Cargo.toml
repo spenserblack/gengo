@@ -1,14 +1,19 @@
 [workspace]
-members = ["gengo", "gengo-bin", "samples-test"]
+members = ["gengo", "gengo-bin", "gengo-language", "samples-test"]
 resolver = "2"
 
 [workspace.dependencies]
+glob = "0.3"
 indexmap = "2"
+regex = "1"
+rstest = { version = "0.26", default-features = false }
+serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+serde_yaml = "0.9"
 
 [workspace.package]
 description = "Get the language distribution stats of your repository"
-version = "0.14.0"
+version = "0.14.1"
 edition = "2024"
 repository = "https://github.com/spenserblack/gengo"
 readme = "README.md"

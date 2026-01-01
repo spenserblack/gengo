@@ -157,7 +157,7 @@ jobs:
         with:
           ruby-version: '3.0'
       - name: Check Languages File
-        run: ruby ./scripts/check-languages-file.rb ./gengo/languages.yaml
+        run: ruby ./scripts/check-languages-file.rb ./gengo-language/languages.yaml
 
   benchmarks:
     name: Benchmarks

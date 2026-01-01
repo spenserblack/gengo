@@ -468,27 +468,25 @@ dependencies = [
 
 [[package]]
 name = "gengo"
-version = "0.14.0"
+version = "0.14.1"
 dependencies = [
  "criterion",
+ "gengo-language",
  "gix",
  "glob",
  "ignore",
  "indexmap",
  "insta",
- "proc-macro2",
- "quote",
  "rayon",
  "regex",
  "rstest",
  "serde",
- "serde_json",
  "serde_yaml",
 ]
 
 [[package]]
 name = "gengo-bin"
-version = "0.14.0"
+version = "0.14.1"
 dependencies = [
  "chromaterm",
  "clap",
@@ -497,6 +495,21 @@ dependencies = [
  "insta",
  "relative-luminance",
  "serde_json",
+]
+
+[[package]]
+name = "gengo-language"
+version = "0.14.1"
+dependencies = [
+ "glob",
+ "indexmap",
+ "proc-macro2",
+ "quote",
+ "regex",
+ "rstest",
+ "serde",
+ "serde_json",
+ "serde_yaml",
 ]
 
 [[package]]
@@ -1697,7 +1710,7 @@ dependencies = [
 
 [[package]]
 name = "samples-test"
-version = "0.14.0"
+version = "0.14.1"
 dependencies = [
  "gengo",
 ]

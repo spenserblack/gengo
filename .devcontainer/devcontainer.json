@@ -9,7 +9,7 @@
   },
   "customizations": {
     "codespaces": {
-      "openFiles": ["docs/CONTRIBUTING.md", "docs/HACKING.md", "gengo/languages.yaml"]
+      "openFiles": ["docs/CONTRIBUTING.md", "docs/HACKING.md", "gengo-language/languages.yaml"]
     },
     "vscode": {
       "extensions": [

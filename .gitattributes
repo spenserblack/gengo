@@ -1,5 +1,5 @@
 *.snap -whitespace linguist-language=Text gengo-language=PlainText
-/gengo/languages.yaml gengo-detectable linguist-detectable
+/gengo-language/languages.yaml gengo-detectable linguist-detectable
 
 # Fix GitHub's detected language
 .vscode/*.json linguist-language=JSON-with-Comments
