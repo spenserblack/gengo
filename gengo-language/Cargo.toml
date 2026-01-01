@@ -18,8 +18,9 @@ serde.workspace = true
 indexmap = { version = "2", features = ["serde"] }
 proc-macro2 = "1"
 serde_json.workspace = true
-serde_yaml = "0.9"
+serde_yaml.workspace = true
 quote = "1"
 
 [dev-dependencies]
 rstest.workspace = true
+serde_yaml.workspace = true

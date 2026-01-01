@@ -9,6 +9,7 @@ regex = "1"
 rstest = { version = "0.26", default-features = false }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+serde_yaml = "0.9"
 
 [workspace.package]
 description = "Get the language distribution stats of your repository"

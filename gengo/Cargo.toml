@@ -47,6 +47,7 @@ criterion = { version = "0.8", default-features = false, features = [
 ] }
 insta = "1"
 rstest.workspace = true
+serde_yaml.workspace = true
 
 [[bench]]
 # NOTE: We run on this repo as a real-world example

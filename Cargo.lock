@@ -481,6 +481,7 @@ dependencies = [
  "regex",
  "rstest",
  "serde",
+ "serde_yaml",
 ]
 
 [[package]]
