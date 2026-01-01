@@ -17,7 +17,7 @@ jobs:
         with:
           path: old
           ref: ${{ github.event.pull_request.base.sha }}
-          sparse-checkout: gengo/languages.yaml
+          sparse-checkout: gengo-language/languages.yaml
           sparse-checkout-cone-mode: false
           clean: false
       - name: Fetch updated languages.yaml
@@ -25,7 +25,7 @@ jobs:
         with:
           path: new
           ref: ${{ github.event.pull_request.head.sha }}
-          sparse-checkout: gengo/languages.yaml
+          sparse-checkout: gengo-language/languages.yaml
           sparse-checkout-cone-mode: false
           clean: false
       - name: Checkout scripts
@@ -39,7 +39,7 @@ jobs:
         with:
           ruby-version: '3.0'
       - name: Compare languages
-        run: (ruby ./scripts/scripts/should-tag-new-language.rb old/gengo/languages.yaml new/gengo/languages.yaml && echo "should-label=true" || echo "should-label=false") >> "$GITHUB_OUTPUT"
+        run: (ruby ./scripts/scripts/should-tag-new-language.rb old/gengo-language/languages.yaml new/gengo-language/languages.yaml && echo "should-label=true" || echo "should-label=false") >> "$GITHUB_OUTPUT"
         id: compare
         shell: bash
 

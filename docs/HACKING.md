@@ -18,7 +18,7 @@ for using insta and installing the `cargo insta` executable.
 
 ### Language Support
 
-Language definitions are defined in [`./gengo/languages.yaml`][languages-file].
+Language definitions are defined in [`./gengo-language/languages.yaml`][languages-file].
 This is where you register new languages, add extensions, filenames, filepath
 patterns, or interpreters to help identify languages, etc. Pretty much anything
 involving language detection or the returned language data comes from this file
@@ -109,6 +109,6 @@ bump to `< 5`).
 [check-languages-script]: ./scripts/check-languages-file.rb
 [editorconfig]: https://editorconfig.org/
 [insta]: https://crates.io/crates/insta
-[languages-file]: ./gengo/languages.yaml
+[languages-file]: ./gengo-language/languages.yaml
 [lib-src]: ./gengo/src
 [regex-syntax]: https://docs.rs/regex/latest/regex/#syntax
