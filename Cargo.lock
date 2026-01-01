@@ -471,19 +471,16 @@ name = "gengo"
 version = "0.14.0"
 dependencies = [
  "criterion",
+ "gengo-language",
  "gix",
  "glob",
  "ignore",
  "indexmap",
  "insta",
- "proc-macro2",
- "quote",
  "rayon",
  "regex",
  "rstest",
  "serde",
- "serde_json",
- "serde_yaml",
 ]
 
 [[package]]
@@ -497,6 +494,23 @@ dependencies = [
  "insta",
  "relative-luminance",
  "serde_json",
+]
+
+[[package]]
+name = "gengo-language"
+version = "0.14.0"
+dependencies = [
+ "criterion",
+ "glob",
+ "indexmap",
+ "insta",
+ "proc-macro2",
+ "quote",
+ "regex",
+ "rstest",
+ "serde",
+ "serde_json",
+ "serde_yaml",
 ]
 
 [[package]]

@@ -1,9 +1,12 @@
 [workspace]
-members = ["gengo", "gengo-bin", "samples-test"]
+members = ["gengo", "gengo-bin", "gengo-language", "samples-test"]
 resolver = "2"
 
 [workspace.dependencies]
+glob = "0.3"
 indexmap = "2"
+regex = "1"
+rstest = { version = "0.26", default-features = false }
 serde_json = "1"
 
 [workspace.package]

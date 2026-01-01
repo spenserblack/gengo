@@ -141,6 +141,7 @@ impl<FS: for<'fs> FileSource<'fs>> Gengo<FS> {
             Category::Pattern | Category::Programming | Category::Markup | Category::Query => {
                 !(generated || documentation || vendored)
             }
+            category => unimplemented!("Failed check if category {category:?} is detectable"),
         };
         let detectable = overrides.is_detectable.unwrap_or(detectable);
 

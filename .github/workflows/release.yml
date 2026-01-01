@@ -16,6 +16,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
+      - name: Publish Languages
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+        run: cargo publish -p gengo-language
       - name: Publish Library
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}

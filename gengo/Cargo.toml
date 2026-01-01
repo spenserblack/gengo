@@ -26,25 +26,19 @@ max-performance = ["dep:gix", "gix/max-performance"]
 max-performance-safe = ["dep:gix", "gix/max-performance-safe"]
 
 [dependencies]
+gengo-language = { path = "../gengo-language", version = "0.14" }
 gix = { version = ">= 0.56, <= 0.76", optional = true, default-features = false, features = [
     "attributes",
     "index",
     "parallel",
     "revision",
 ] }
-glob = "0.3"
+glob.workspace = true
 ignore = { version = "0.4", optional = true }
 indexmap = { workspace = true, features = ["rayon", "serde"] }
 rayon = "1"
-regex = "1"
+regex.workspace = true
 serde = { version = "1", features = ["derive"] }
-
-[build-dependencies]
-indexmap = { version = "2", features = ["serde"] }
-proc-macro2 = "1"
-serde_json.workspace = true
-serde_yaml = "0.9"
-quote = "1"
 
 [dev-dependencies]
 criterion = { version = "0.8", default-features = false, features = [
@@ -52,8 +46,7 @@ criterion = { version = "0.8", default-features = false, features = [
     "rayon",
 ] }
 insta = "1"
-rstest = { version = "0.26", default-features = false }
-serde_yaml = "0.9"
+rstest.workspace = true
 
 [[bench]]
 # NOTE: We run on this repo as a real-world example

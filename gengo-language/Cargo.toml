@@ -1,0 +1,31 @@
+[package]
+name = "gengo-language"
+description.workspace = true
+version.workspace = true
+edition.workspace = true
+repository.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+keywords.workspace = true
+
+[dependencies]
+glob.workspace = true
+regex.workspace = true
+serde = { version = "1", features = ["derive"] }
+
+[build-dependencies]
+indexmap = { version = "2", features = ["serde"] }
+proc-macro2 = "1"
+serde_json.workspace = true
+serde_yaml = "0.9"
+quote = "1"
+
+[dev-dependencies]
+criterion = { version = "0.8", default-features = false, features = [
+    "cargo_bench_support",
+    "rayon",
+] }
+insta = "1"
+rstest.workspace = true
+serde_yaml = "0.9"
