@@ -498,7 +498,7 @@ dependencies = [
 
 [[package]]
 name = "gengo-language"
-version = "0.14.1-rc.1"
+version = "0.14.1"
 dependencies = [
  "glob",
  "indexmap",
