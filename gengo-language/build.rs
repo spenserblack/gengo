@@ -17,7 +17,7 @@ const DEFAULT_PRIORITY: u8 = 50;
 /// `languages.json`.
 fn main() -> Result<(), Box<dyn Error>> {
     // TODO This looks messy, and can use cleanup.
-    let languages: IndexMap<String, serde_json::Value> = serde_yaml::from_str(LANGUAGES)?;
+    let languages: IndexMap<String, serde_yaml::Value> = serde_yaml::from_str(LANGUAGES)?;
     let languages_target_dir = Path::new(&env::var("OUT_DIR")?).join("languages");
     fs::create_dir_all(&languages_target_dir)?;
 
@@ -41,7 +41,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         .iter()
         .map(|(language_name, language_attrs)| {
             let language_attrs = language_attrs
-                .as_object()
+                .as_mapping()
                 .expect("language attributes to be an object");
             let variant = rustify_language_name(language_name);
             let variant = Ident::new(&variant, Span::call_site());
@@ -101,14 +101,14 @@ fn main() -> Result<(), Box<dyn Error>> {
             let priority = Literal::u8_unsuffixed(priority);
 
             let matchers = language_attrs["matchers"]
-                .as_object()
+                .as_mapping()
                 .expect("matchers to be an object");
 
             let extensions = matchers
                 .get("extensions")
                 .map(|extensions| {
                     extensions
-                        .as_array()
+                        .as_sequence()
                         .expect("extensions to be an array")
                         .to_owned()
                 })
@@ -126,7 +126,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 .get("filenames")
                 .map(|filenames| {
                     filenames
-                        .as_array()
+                        .as_sequence()
                         .expect("filenames to be an array")
                         .to_owned()
                 })
@@ -144,7 +144,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 .get("interpreters")
                 .map(|interpreters| {
                     interpreters
-                        .as_array()
+                        .as_sequence()
                         .expect("interpreters to be an array")
                         .to_owned()
                 })
@@ -162,7 +162,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 .get("patterns")
                 .map(|patterns| {
                     patterns
-                        .as_array()
+                        .as_sequence()
                         .expect("patterns to be an array")
                         .to_owned()
                 })
@@ -180,7 +180,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 .get("heuristics")
                 .map(|heuristics| {
                     heuristics
-                        .as_array()
+                        .as_sequence()
                         .expect("heuristics to be an array")
                         .to_owned()
                         .iter()

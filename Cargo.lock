@@ -508,7 +508,6 @@ dependencies = [
  "regex",
  "rstest",
  "serde",
- "serde_json",
  "serde_yaml",
 ]
 

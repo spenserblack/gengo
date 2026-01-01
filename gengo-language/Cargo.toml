@@ -17,7 +17,6 @@ serde.workspace = true
 [build-dependencies]
 indexmap = { version = "2", features = ["serde"] }
 proc-macro2 = "1"
-serde_json.workspace = true
 serde_yaml.workspace = true
 quote = "1"
 
