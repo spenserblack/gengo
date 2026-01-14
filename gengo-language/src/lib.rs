@@ -160,7 +160,7 @@ impl Language {
     /// When checking heuristics, only the first `read_limit` bytes will be read.
     pub fn pick(path: impl AsRef<Path>, contents: &[u8], read_limit: usize) -> Option<Self> {
         let path = path.as_ref();
-        let path = Self::maybe_strip_example_extension(path);
+        let path = Self::maybe_strip_suffix_extensions(path);
         let languages = Self::find_simple(path, contents);
         if languages.len() == 1 {
             return Some(languages[0]);
@@ -183,15 +183,29 @@ impl Language {
         found_languages.into_iter().max_by_key(Self::priority)
     }
 
-    /// Strips the .example prefix if it exists, or returns the original path reference.
-    fn maybe_strip_example_extension(path: &Path) -> &Path {
-        const EXAMPLE_EXT: &[u8] = b".example";
-        path.as_os_str()
-            .as_encoded_bytes()
-            .strip_suffix(EXAMPLE_EXT)
+    /// Strips common extensions that may be appended after the "real" file extension.
+    fn maybe_strip_suffix_extensions(path: &Path) -> &Path {
+        /// Extensions that are appended to the "real" filename.
+        const EXTENSIONS: &[&[u8]] = &[b".bak", b".example"];
+        debug_assert!(EXTENSIONS.iter().all(|bytes| bytes.is_ascii()));
+
+        // NOTE Continuously removes the known extensions until the path doesn't have any more.
+        EXTENSIONS
+            .iter()
+            .cycle()
+            .scan(path.as_os_str().as_encoded_bytes(), |path, extension| {
+                *path = path.strip_suffix(*extension).unwrap_or(path);
+                Some(*path)
+            })
+            // HACK Using `strip_suffix` to confirm we don't have the suffix
+            .find(|path| {
+                EXTENSIONS
+                    .iter()
+                    .all(|ext| path.strip_suffix(*ext).is_none())
+            })
             .map(|bytes| {
-                // SAFETY
-                // - Only contains content from the original OsStr backing the Path
+                // SAFETY:
+                // - Only ASCII suffixes have been stripped, retaining ASCII bounds
                 unsafe { OsStr::from_encoded_bytes_unchecked(bytes) }
             })
             .map(Path::new)
@@ -285,12 +299,14 @@ mod language_tests {
         input,
         expected,
         case("path/to/data.json", "path/to/data.json"),
-        case("path/to/data.json.example", "path/to/data.json")
+        case("path/to/data.json.example", "path/to/data.json"),
+        case("path/to/data.json.bak", "path/to/data.json"),
+        case("path/to/data.json.example.bak", "path/to/data.json")
     )]
-    fn test_maybe_strip_example_extension(input: &str, expected: &str) {
+    fn test_maybe_strip_suffix_extensions(input: &str, expected: &str) {
         let input = Path::new(input);
         let expected = Path::new(expected);
-        let actual = Language::maybe_strip_example_extension(input);
+        let actual = Language::maybe_strip_suffix_extensions(input);
         assert_eq!(actual, expected);
     }
 }
