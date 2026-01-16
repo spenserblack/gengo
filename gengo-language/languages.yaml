@@ -1045,6 +1045,15 @@ Zig:
   matchers:
     extensions:
       - zig
+fish:  # NOTE: fish is always lowercase in their documentation
+  category: programming
+  color: "#4AAE47"
+  nerd-font-glyph: "\U0000ee41"
+  matchers:
+    extensions:
+      - fish
+    interpreters:
+      - fish
 # NOTE: These files are unique to Go and are typically referenced in the documentation
 #       by their filenames.
 "go.mod":
@@ -1061,15 +1070,6 @@ Zig:
   matchers:
     filenames:
       - go.sum
-fish:  # NOTE: fish is always lowercase in their documentation
-  category: programming
-  color: "#4AAE47"
-  nerd-font-glyph: "\U0000ee41"
-  matchers:
-    extensions:
-      - fish
-    interpreters:
-      - fish
 reStructured Text:
   category: prose
   color: "#141414"
