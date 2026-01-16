@@ -586,8 +586,7 @@ fn rustify_language_name(name: &str) -> String {
     //      spaces in the name.
     let name =
         name.split(' ')
-            .map(|name| name.split('.'))
-            .flatten()
+            .flat_map(|name| name.split('.'))
             .fold(String::new(), |name, word| {
                 let mut chars = word.chars();
                 // NOTE If there is a special character like ß it will become SS, but
