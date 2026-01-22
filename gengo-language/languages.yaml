@@ -73,15 +73,6 @@ ABNF:
   matchers:
     extensions:
       - abnf
-ATS:
-  category: programming
-  color: "#0005FB"
-  matchers:
-    extensions:
-      - atxt
-      - dats
-      - hats
-      - sats
 Ada:
   category: programming
   color: "#005A00"
@@ -118,6 +109,15 @@ Astro:
   matchers:
     extensions:
       - astro
+ATS:
+  category: programming
+  color: "#0005FB"
+  matchers:
+    extensions:
+      - atxt
+      - dats
+      - hats
+      - sats
 AutoHotkey:
   category: programming
   color: "#334455"
@@ -172,28 +172,6 @@ C:
       - h++
       - hh
       - hpp
-CMake:
-  category: programming
-  color: "#CCCCCC"
-  matchers:
-    extensions:
-      - cmake
-    filenames:
-      - CMakeLists.txt
-CSS:
-  category: markup
-  color: "#AA88AA"
-  nerd-font-glyph: "\U0000e749"
-  matchers:
-    extensions:
-      - css
-CSV:
-  category: data
-  color: "#1D6F42"
-  nerd-font-glyph: "\U0000e64a"
-  matchers:
-    extensions:
-      - csv
 Ceylon:
   category: programming
   color: "#F7941E"
@@ -209,6 +187,14 @@ Clojure:
       - clj
       - cljc
       - cljs
+CMake:
+  category: programming
+  color: "#CCCCCC"
+  matchers:
+    extensions:
+      - cmake
+    filenames:
+      - CMakeLists.txt
 CoffeeScript:
   category: programming
   color: "#C0FFEE"
@@ -248,6 +234,20 @@ Crystal:
       - cr
     interpreters:
       - crystal
+CSS:
+  category: markup
+  color: "#AA88AA"
+  nerd-font-glyph: "\U0000e749"
+  matchers:
+    extensions:
+      - css
+CSV:
+  category: data
+  color: "#1D6F42"
+  nerd-font-glyph: "\U0000e64a"
+  matchers:
+    extensions:
+      - csv
 D:
   category: programming
   color: "#B03931"
@@ -318,6 +318,25 @@ Erlang:
     extensions:
       - fs
       - fsx
+fish:  # NOTE: fish is always lowercase in their documentation
+  category: programming
+  color: "#4AAE47"
+  nerd-font-glyph: "\U0000ee41"
+  matchers:
+    extensions:
+      - fish
+    interpreters:
+      - fish
+Forth:
+  category: programming
+  color: "#EF5350"
+  matchers:
+    extensions:
+      - 4th
+      - f
+      - forth
+      - fs
+      - fth
 "FORTRAN Legacy":
   category: programming
   color: "#716152"
@@ -329,16 +348,6 @@ Erlang:
       - for
       - ftn
       - pfo
-Forth:
-  category: programming
-  color: "#EF5350"
-  matchers:
-    extensions:
-      - 4th
-      - f
-      - forth
-      - fs
-      - fth
 "Fortran Modern":
   category: programming
   color: "#725196"
@@ -356,6 +365,21 @@ GDScript:
   matchers:
     extensions:
       - gd
+GitHub Workflow:
+  category: programming
+  color: "#2088FF"
+  nerd-font-glyph: "\U0000eaff"
+  matchers:
+    patterns:
+      - ".github/workflows/*.yaml"
+      - ".github/workflows/*.yml"
+  priority: 75
+Gleam:
+  category: programming
+  color: "#ffaff3"
+  matchers:
+    extensions:
+      - gleam
 GLSL:
   category: programming
   color: "#5586A4"
@@ -376,21 +400,6 @@ GLSL:
       - tesc
       - tese
       - vert
-GitHub Workflow:
-  category: programming
-  color: "#2088FF"
-  nerd-font-glyph: "\U0000eaff"
-  matchers:
-    patterns:
-      - ".github/workflows/*.yaml"
-      - ".github/workflows/*.yml"
-  priority: 75
-Gleam:
-  category: programming
-  color: "#ffaff3"
-  matchers:
-    extensions:
-      - gleam
 Go:
   category: programming
   color: "#00ADD8"
@@ -398,6 +407,22 @@ Go:
   matchers:
     extensions:
       - go
+# NOTE: These files are unique to Go and are typically referenced in the documentation
+#       by their filenames.
+"go.mod":
+  category: data
+  color: "#00ADD8"
+  nerd-font-glyph: "\U0000e627"
+  matchers:
+    filenames:
+      - go.mod
+"go.sum":
+  category: data
+  color: "#00ADD8"
+  nerd-font-glyph: "\U0000e627"
+  matchers:
+    filenames:
+      - go.sum
 GraphQL:
   category: query
   color: "#E10098"
@@ -414,6 +439,19 @@ Groovy:
       - groovy
     interpreters:
       - groovy
+Haskell:
+  category: programming
+  color: "#5E5086"
+  nerd-font-glyph: "\U0000e777"
+  matchers:
+    extensions:
+      - hs
+Haxe:
+  category: programming
+  color: "#F68712"
+  matchers:
+    extensions:
+      - hx
 HCL:
   category: programming
   color: "#7B42BC"
@@ -428,26 +466,6 @@ HLSL:
   matchers:
     extensions:
       - hlsl
-HTML:
-  category: markup
-  color: "#E96228"
-  nerd-font-glyph: "\U0000e736"
-  matchers:
-    extensions:
-      - html
-Haskell:
-  category: programming
-  color: "#5E5086"
-  nerd-font-glyph: "\U0000e777"
-  matchers:
-    extensions:
-      - hs
-Haxe:
-  category: programming
-  color: "#F68712"
-  matchers:
-    extensions:
-      - hx
 HolyC:
   category: programming
   color: "#FFFF00"
@@ -455,6 +473,13 @@ HolyC:
   matchers:
     extensions:
       - hc
+HTML:
+  category: markup
+  color: "#E96228"
+  nerd-font-glyph: "\U0000e736"
+  matchers:
+    extensions:
+      - html
 Idris:
   category: programming
   color: "#C74350"
@@ -471,33 +496,6 @@ Ignore List:
       - ".gitignore"
       - ".npmignore"
       - ".vercelignore"
-JSON:
-  category: data
-  color: "#AAAAAA"
-  nerd-font-glyph: "\U0000eb0f"
-  matchers:
-    extensions:
-      - json
-    filenames:
-      - .all-contributorsrc
-  priority: 75
-JSON with Comments:
-  category: data
-  color: "#CCCCCC"
-  nerd-font-glyph: "\U0000eb0f"
-  heuristics:
-    - '(?m)^\s*/[/\*]'
-  matchers:
-    extensions:
-      - json
-      - jsonc
-    filenames:
-      - devcontainer.json
-      - tsconfig.json
-    patterns:
-      - .vscode/*.json
-      - tsconfig.*.json
-  priority: 25
 Java:
   category: programming
   color: "#5283A2"
@@ -526,6 +524,33 @@ Jinja-like:
     extensions:
       - html
       - tera
+  priority: 25
+JSON:
+  category: data
+  color: "#AAAAAA"
+  nerd-font-glyph: "\U0000eb0f"
+  matchers:
+    extensions:
+      - json
+    filenames:
+      - .all-contributorsrc
+  priority: 75
+JSON with Comments:
+  category: data
+  color: "#CCCCCC"
+  nerd-font-glyph: "\U0000eb0f"
+  heuristics:
+    - '(?m)^\s*/[/\*]'
+  matchers:
+    extensions:
+      - json
+      - jsonc
+    filenames:
+      - devcontainer.json
+      - tsconfig.json
+    patterns:
+      - .vscode/*.json
+      - tsconfig.*.json
   priority: 25
 Jsonnet:
   category: programming
@@ -617,6 +642,13 @@ Nix:
   matchers:
     extensions:
       - nix
+Objective-C:
+  category: programming
+  color: "#0BC0BC"
+  matchers:
+    extensions:
+      - h
+      - m
 OCaml:
   category: programming
   color: "#f48904"
@@ -625,13 +657,6 @@ OCaml:
     extensions:
       - ml
       - mli
-Objective-C:
-  category: programming
-  color: "#0BC0BC"
-  matchers:
-    extensions:
-      - h
-      - m
 Odin:
   category: programming
   color: "#3882D2"
@@ -657,13 +682,6 @@ Oz:
   matchers:
     extensions:
       - oz
-PHP:
-  category: programming
-  color: "#7A86B8"
-  nerd-font-glyph: "\U0000e608"
-  matchers:
-    extensions:
-      - php
 Pascal:
   category: programming
   color: "#79A0DE"
@@ -681,6 +699,13 @@ Perl:
     interpreters:
       - perl
   priority: 75
+PHP:
+  category: programming
+  color: "#7A86B8"
+  nerd-font-glyph: "\U0000e608"
+  matchers:
+    extensions:
+      - php
 Plain Text:
   category: prose
   color: "#000000"
@@ -800,6 +825,13 @@ Regex:
   matchers:
     extensions:
       - rpy
+reStructured Text:
+  category: prose
+  color: "#141414"
+  matchers:
+    extensions:
+      - rest
+      - rst
 Ruby:
   category: programming
   color: "#D21304"
@@ -820,20 +852,6 @@ Rust:
   matchers:
     extensions:
       - rs
-SQL:
-  category: query
-  color: "#FFBF1E"
-  nerd-font-glyph: "\U0000e737"
-  matchers:
-    extensions:
-      - sql
-SVG:
-  category: data
-  color: "#FFB13B"
-  nerd-font-glyph: "\U000f0721"
-  matchers:
-    extensions:
-      - svg
 Sass:
   category: markup
   color: "#CF649A"
@@ -878,6 +896,13 @@ Solidity:
   matchers:
     extensions:
       - sol
+SQL:
+  category: query
+  color: "#FFBF1E"
+  nerd-font-glyph: "\U0000e737"
+  matchers:
+    extensions:
+      - sql
 Svelte:
   category: programming
   color: "#FF3E00"
@@ -885,6 +910,13 @@ Svelte:
   matchers:
     extensions:
       - svelte
+SVG:
+  category: data
+  color: "#FFB13B"
+  nerd-font-glyph: "\U000f0721"
+  matchers:
+    extensions:
+      - svg
 Swift:
   category: programming
   color: "#DC5114"
@@ -898,6 +930,18 @@ SystemVerilog:
     extensions:
       - sv
       - svh
+Tcl:
+  category: programming
+  color: "#F14524"
+  matchers:
+    extensions:
+      - tcl
+TeX:
+  category: markup
+  color: "#000080"
+  matchers:
+    extensions:
+      - tex
 TOML:
   category: data
   color: "#9C4221"
@@ -915,18 +959,6 @@ TSV:
   matchers:
     extensions:
       - tsv
-Tcl:
-  category: programming
-  color: "#F14524"
-  matchers:
-    extensions:
-      - tcl
-TeX:
-  category: markup
-  color: "#000080"
-  matchers:
-    extensions:
-      - tex
 TypeScript:
   category: programming
   color: "#2F74C0"
@@ -947,13 +979,6 @@ TypeSpec:
   matchers:
     extensions:
       - tsp
-VHDL:
-  category: programming
-  color: "#888888"
-  matchers:
-    extensions:
-      - vhd
-      - vhdl
 Vala:
   category: programming
   color: "#7239B3"
@@ -966,6 +991,13 @@ Verilog:
   matchers:
     extensions:
       - v
+VHDL:
+  category: programming
+  color: "#888888"
+  matchers:
+    extensions:
+      - vhd
+      - vhdl
 Vim Script:
   category: programming
   color: "#019833"
@@ -1045,35 +1077,3 @@ Zig:
   matchers:
     extensions:
       - zig
-fish:  # NOTE: fish is always lowercase in their documentation
-  category: programming
-  color: "#4AAE47"
-  nerd-font-glyph: "\U0000ee41"
-  matchers:
-    extensions:
-      - fish
-    interpreters:
-      - fish
-# NOTE: These files are unique to Go and are typically referenced in the documentation
-#       by their filenames.
-"go.mod":
-  category: data
-  color: "#00ADD8"
-  nerd-font-glyph: "\U0000e627"
-  matchers:
-    filenames:
-      - go.mod
-"go.sum":
-  category: data
-  color: "#00ADD8"
-  nerd-font-glyph: "\U0000e627"
-  matchers:
-    filenames:
-      - go.sum
-reStructured Text:
-  category: prose
-  color: "#141414"
-  matchers:
-    extensions:
-      - rest
-      - rst
