@@ -496,6 +496,17 @@ Ignore List:
       - ".gitignore"
       - ".npmignore"
       - ".vercelignore"
+INI:
+  category: data
+  color: "#DDEEFF"
+  nerd-font-glyph: "\U0000e615"
+  matchers:
+    extensions:
+      - "ini"
+    filenames:
+      - ".editorconfig"
+      - ".flake8"
+      - ".isort.cfg"
 Java:
   category: programming
   color: "#5283A2"
