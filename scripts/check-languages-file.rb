@@ -4,7 +4,7 @@ require 'yaml'
 def sorted?(array)
   sorted = true
   array.each_cons(2) do |a, b|
-    if a > b
+    if a.downcase > b.downcase
       sorted = false
       yield a, b if block_given?
     end
