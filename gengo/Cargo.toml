@@ -27,7 +27,7 @@ max-performance-safe = ["dep:gix", "gix/max-performance-safe"]
 
 [dependencies]
 gengo-language = { path = "../gengo-language", version = "0.14" }
-gix = { version = ">= 0.56, <= 0.78", optional = true, default-features = false, features = [
+gix = { version = ">= 0.56, <= 0.79", optional = true, default-features = false, features = [
     "attributes",
     "index",
     "parallel",
