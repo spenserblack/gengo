@@ -639,6 +639,14 @@ Mermaid:
     extensions:
       - mermaid
       - mmd
+MoonBit:
+  category: programming
+  color: "#b92381"
+  matchers:
+    extensions:
+      - mbt
+      - mbti
+      - mbtx
 Nim:
   category: programming
   color: "#ffe953"
