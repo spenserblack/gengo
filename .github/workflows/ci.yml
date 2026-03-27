@@ -103,7 +103,7 @@ jobs:
     - name: Generate Coverage
       run: cargo tarpaulin --verbose ${{ matrix.feature-flags }} --workspace --timeout 120 --out xml
     - name: Upload Coverage
-      uses: codecov/codecov-action@v5
+      uses: codecov/codecov-action@v6
       with:
         flags: ${{ matrix.os }},${{ matrix.feature-flags }}
         token: ${{ secrets.CODECOV_TOKEN }}
