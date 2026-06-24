@@ -31,7 +31,7 @@ jobs:
       - name: Fetch Test Branches
         run: git fetch origin test/javascript:test/javascript
       - name: Cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cargo/registry/index/
@@ -81,7 +81,7 @@ jobs:
     - name: Fetch Test Branches
       run: git fetch origin test/javascript:test/javascript
     - name: Main Cache
-      uses: actions/cache@v5
+      uses: actions/cache@v6
       with:
         path: |
           ~/.cargo/registry/index/
@@ -91,7 +91,7 @@ jobs:
         key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
     - name: Bin Cache
       id: bin-cache
-      uses: actions/cache@v5
+      uses: actions/cache@v6
       with:
         path: |
           ~/.cargo/bin/
@@ -117,7 +117,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cargo/registry/index/
@@ -154,7 +154,7 @@ jobs:
         with:
           fetch-depth: 3
       - name: Cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cargo/registry/index/
