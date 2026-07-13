@@ -1,5 +1,5 @@
 use glob::MatchOptions;
-use regex::Regex;
+use regex::{Regex, regex};
 use std::collections::HashMap;
 use std::ffi::OsStr;
 use std::path::Path;
@@ -67,11 +67,8 @@ impl Language {
         // NOTE Handle trailing spaces, `\r`, etc.
         let first_line = first_line.trim_end();
 
-        static RE: LazyLock<Regex> = LazyLock::new(|| {
-            Regex::new(r"^#!(?:/usr(?:/local)?)?/bin/(?:env\s+)?([\w\d]+)\r?$").unwrap()
-        });
-
-        RE.captures(first_line)
+        regex!(r"^#!(?:/usr(?:/local)?)?/bin/(?:env\s+)?([\w\d]+)\r?$")
+            .captures(first_line)
             .and_then(|c| c.get(1))
             .map_or(vec![], |m| {
                 let interpreter = m.as_str();
