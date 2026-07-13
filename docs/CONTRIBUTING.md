@@ -1,6 +1,8 @@
 # Contributing
 
-Thank you for taking the time to contribute!
+Thank you for taking the time to contribute! Please see the [AI Policy](./AI_POLICY.md)
+if you are planning to submit LLM generated code and/or have an AI Agent automate your
+contribution.
 
 ## Development
 
