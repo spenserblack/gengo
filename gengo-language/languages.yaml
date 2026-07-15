@@ -222,6 +222,8 @@ Common Lisp:
 Coq:
   category: programming
   color: "#D0B68C"
+  heuristics:
+    - '(?m)^\s*(Require\s+(Import|Export)\s|(Theorem|Lemma|Definition|Inductive|Fixpoint|Notation)\s|(Proof|Qed)\s*\.)'
   matchers:
     extensions:
       - v
@@ -1007,6 +1009,8 @@ Vala:
 Verilog:
   category: programming
   color: "#088020"
+  heuristics:
+    - '(?m)^\s*(module|endmodule|always|assign|initial)\s'
   matchers:
     extensions:
       - v
