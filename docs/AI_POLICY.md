@@ -16,4 +16,6 @@ reviewed and cleaned up the contribution. When the contributor does not review t
 own contribution, this becomes what some may call spam or slop.
 
 If you are merely passing off issues or review feedback to an AI agent to address, then
-why are *you* doing it when anyone else with access to an AI agent can?
+why are *you* doing it when anyone else with access to an AI agent can? The purpose of
+this question isn't to shame you for using AI, but to encourage you to add your own
+knowledge or expertise to your contribution.
