@@ -584,21 +584,20 @@ fn rustify_language_name(name: &str) -> String {
 
     // HACK This will break if there are any leading, trailing, or consecutive
     //      spaces in the name.
-    let name =
-        name.split(' ')
-            .flat_map(|name| name.split('.'))
-            .fold(String::new(), |name, word| {
-                let mut chars = word.chars();
-                // NOTE If there is a special character like ß it will become SS, but
-                //      that should never happen.
-                let first_char = chars.next().unwrap().to_uppercase();
-                assert!(first_char.len() == 1);
-                let rest = chars
-                    .map(|c| c.to_lowercase().to_string())
-                    .collect::<String>();
-                format!("{name}{first_char}{rest}")
-            });
-    name
+
+    name.split(' ')
+        .flat_map(|name| name.split('.'))
+        .fold(String::new(), |name, word| {
+            let mut chars = word.chars();
+            // NOTE If there is a special character like ß it will become SS, but
+            //      that should never happen.
+            let first_char = chars.next().unwrap().to_uppercase();
+            assert!(first_char.len() == 1);
+            let rest = chars
+                .map(|c| c.to_lowercase().to_string())
+                .collect::<String>();
+            format!("{name}{first_char}{rest}")
+        })
 }
 
 /// Replaces special characters in a language name with their ASCII
@@ -612,13 +611,11 @@ fn asciiify_language_name(name: &str) -> String {
     // NOTE Maps special characters to their ASCII equivalents.
     let mappings = [("-", ""), ("'", ""), ("+", "Plus"), ("#", "Sharp")];
 
-    let name = mappings
+    mappings
         .iter()
         .fold(name.to_string(), |name, (pattern, replacement)| {
             // NOTE Adding a leading space to the replacement to ensure that it
             //      is treated as a word boundary.
             name.replace(pattern, &format!(" {replacement}"))
-        });
-
-    name
+        })
 }
