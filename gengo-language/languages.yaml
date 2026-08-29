@@ -663,6 +663,14 @@ Nix:
   matchers:
     extensions:
       - nix
+Nushell:
+  category: programming
+  color: "#4E9906"
+  matchers:
+    extensions:
+      - nu
+    interpreters:
+      - nu
 Objective-C:
   category: programming
   color: "#0BC0BC"
