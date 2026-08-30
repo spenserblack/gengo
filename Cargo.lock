@@ -485,7 +485,7 @@ dependencies = [
 
 [[package]]
 name = "gengo"
-version = "0.14.3"
+version = "0.15.0"
 dependencies = [
  "criterion",
  "gengo-language",
@@ -503,7 +503,7 @@ dependencies = [
 
 [[package]]
 name = "gengo-bin"
-version = "0.14.3"
+version = "0.15.0"
 dependencies = [
  "chromaterm",
  "clap",
@@ -516,7 +516,7 @@ dependencies = [
 
 [[package]]
 name = "gengo-language"
-version = "0.14.3"
+version = "0.15.0"
 dependencies = [
  "glob",
  "indexmap",
@@ -1735,7 +1735,7 @@ dependencies = [
 
 [[package]]
 name = "samples-test"
-version = "0.14.3"
+version = "0.15.0"
 dependencies = [
  "gengo",
 ]
