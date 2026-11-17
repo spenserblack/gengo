@@ -37,7 +37,7 @@ jobs:
           clean: false
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.0'
+          ruby-version: '4.0'
       - name: Compare languages
         run: (ruby ./scripts/scripts/should-tag-new-language.rb old/gengo-language/languages.yaml new/gengo-language/languages.yaml && echo "should-label=true" || echo "should-label=false") >> "$GITHUB_OUTPUT"
         id: compare
