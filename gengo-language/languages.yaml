@@ -217,6 +217,7 @@ Common Lisp:
   matchers:
     extensions:
       - asd
+      - cl
       - lisp
       - lsp
 Coq:
